@@ -16,6 +16,7 @@
 </head>
 <body class="bg-slate-900 text-slate-100 antialiased min-h-screen flex flex-col selection:bg-rose-500 selection:text-white">
 
+    <!-- GİRİŞ EKRANI -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center p-4">
         <div class="bg-slate-900 p-8 rounded-3xl max-w-sm w-full text-center space-y-6 border border-slate-800 shadow-2xl">
             <div class="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-rose-500/20">
@@ -74,9 +75,9 @@
             <div class="flex items-center gap-2 border-b border-slate-800 pb-px overflow-x-auto no-scrollbar">
                 <button onclick="window.switchTab('stores')" id="tab-stores" class="px-6 py-3 font-bold text-sm border-b-2 border-rose-500 text-rose-400 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="store" class="w-4 h-4"></i> Mağazalar & Paketler</button>
                 <button onclick="window.switchTab('requests')" id="tab-requests" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="bell" class="w-4 h-4"></i> Gelen Talepler <span id="requestBadge" class="hidden bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>
-                <button onclick="window.switchTab('products')" id="tab-products" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="layers" class="w-4 h-4"></i> İlan (Ürün) Denetimi</button>
+                <button onclick="window.switchTab('products')" id="tab-products" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="layers" class="w-4 h-4"></i> İlan Denetimi</button>
                 <button onclick="window.switchTab('reviews')" id="tab-reviews" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="message-square" class="w-4 h-4"></i> Müşteri Yorumları</button>
-                <button onclick="window.switchTab('settings')" id="tab-settings" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="layout-template" class="w-4 h-4"></i> Sistem & Vitrin Ayarları</button>
+                <button onclick="window.switchTab('settings')" id="tab-settings" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="layout-template" class="w-4 h-4"></i> Sistem Ayarları</button>
             </div>
 
             <!-- 1. MAĞAZALAR -->
@@ -130,7 +131,7 @@
                 </div>
             </div>
 
-            <!-- 4. YORUM DENETİMİ (YENİ) -->
+            <!-- 4. YORUM DENETİMİ -->
             <div id="reviewsView" class="space-y-4 hidden">
                 <div class="bg-slate-800/30 border border-slate-700/50 rounded-3xl overflow-hidden p-4 sm:p-6">
                     <div class="flex items-center justify-between mb-6">
@@ -182,15 +183,14 @@
                                     <img id="setMainImagePreview" src="" class="w-32 h-16 object-cover rounded-xl bg-slate-900 border border-slate-700 hidden">
                                     <input type="file" id="setMainImageInput" accept="image/*" onchange="window.previewAdminImage(this, 'setMainImagePreview')" class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:font-bold file:bg-rose-500/10 file:text-rose-400 hover:file:bg-rose-500/20 cursor-pointer">
                                 </div>
-                                <p class="text-[10px] text-slate-500 mt-1">Görsel yüklemezseniz varsayılan renkli arka plan kullanılır.</p>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-400 mb-1">Küçük Etiket (Badge)</label>
                                 <input type="text" id="setMainTag" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-400 mb-1">Büyük Başlık (HTML Kullanılabilir)</label>
-                                <input type="text" id="setMainTitle" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none" placeholder="Örn: Yılbaşı İndirimleri Başladı!">
+                                <label class="block text-xs font-bold text-slate-400 mb-1">Büyük Başlık</label>
+                                <input type="text" id="setMainTitle" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-bold text-slate-400 mb-1">Alt Metin (Açıklama)</label>
@@ -204,7 +204,7 @@
                             
                             <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-400 mb-1">Yönlendirme Türü (Tıklanınca)</label>
+                                    <label class="block text-xs font-bold text-slate-400 mb-1">Yönlendirme Türü</label>
                                     <select id="setMainLinkType" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-rose-500">
                                         <option value="category">Kategori Filtresi</option>
                                         <option value="store">Mağaza Profili (Mağaza ID)</option>
@@ -214,9 +214,8 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-400 mb-1">Hedef Değer (Kategori, ID veya URL)</label>
-                                    <input type="text" id="setMainLinkValue" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-rose-500" placeholder="Örn: Moda, https://..., veya ID">
-                                    <p class="text-[9px] text-slate-500 mt-1">* Ürün veya Mağaza ID'sini yukarıdaki tablolardan kopyalayabilirsiniz.</p>
+                                    <label class="block text-xs font-bold text-slate-400 mb-1">Hedef Değer</label>
+                                    <input type="text" id="setMainLinkValue" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-rose-500">
                                 </div>
                             </div>
                         </div>
@@ -226,16 +225,16 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Yan Afiş 1 -->
                         <div class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-6">
-                            <h3 class="text-sm font-black text-white flex items-center gap-2 mb-4"><i data-lucide="sidebar" class="w-4 h-4 text-orange-500"></i> Yan Afiş 1 (Üst)</h3>
+                            <h3 class="text-sm font-black text-white flex items-center gap-2 mb-4"><i data-lucide="sidebar" class="w-4 h-4 text-orange-500"></i> Yan Afiş 1</h3>
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 mb-1">Kapak Görseli (İsteğe Bağlı)</label>
+                                    <label class="block text-[10px] font-bold text-slate-400 mb-1">Kapak Görseli</label>
                                     <input type="file" id="setSide1ImageInput" accept="image/*" onchange="window.previewAdminImage(this, 'setSide1ImagePreview')" class="w-full text-xs file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-slate-700 file:text-white cursor-pointer">
                                     <img id="setSide1ImagePreview" src="" class="mt-2 w-full h-16 object-cover rounded-lg hidden">
                                 </div>
                                 <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Başlık</label><input type="text" id="setSide1Title" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
                                 <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Alt Metin</label><input type="text" id="setSide1Subtitle" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
-                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Lucide İkon Adı</label><input type="text" id="setSide1Icon" placeholder="Örn: laptop" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Lucide İkon Adı</label><input type="text" id="setSide1Icon" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
                                 <div class="grid grid-cols-2 gap-2 bg-slate-900/50 p-2 rounded-lg border border-slate-700/50">
                                     <div>
                                         <label class="block text-[9px] font-bold text-slate-400 mb-1">Tür</label>
@@ -243,7 +242,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-[9px] font-bold text-slate-400 mb-1">Değer</label>
-                                        <input type="text" id="setSide1LinkValue" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white outline-none" placeholder="Hedef...">
+                                        <input type="text" id="setSide1LinkValue" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white outline-none">
                                     </div>
                                 </div>
                             </div>
@@ -251,16 +250,16 @@
 
                         <!-- Yan Afiş 2 -->
                         <div class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-6">
-                            <h3 class="text-sm font-black text-white flex items-center gap-2 mb-4"><i data-lucide="sidebar" class="w-4 h-4 text-emerald-500"></i> Yan Afiş 2 (Alt)</h3>
+                            <h3 class="text-sm font-black text-white flex items-center gap-2 mb-4"><i data-lucide="sidebar" class="w-4 h-4 text-emerald-500"></i> Yan Afiş 2</h3>
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 mb-1">Kapak Görseli (İsteğe Bağlı)</label>
+                                    <label class="block text-[10px] font-bold text-slate-400 mb-1">Kapak Görseli</label>
                                     <input type="file" id="setSide2ImageInput" accept="image/*" onchange="window.previewAdminImage(this, 'setSide2ImagePreview')" class="w-full text-xs file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-slate-700 file:text-white cursor-pointer">
                                     <img id="setSide2ImagePreview" src="" class="mt-2 w-full h-16 object-cover rounded-lg hidden">
                                 </div>
                                 <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Başlık</label><input type="text" id="setSide2Title" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
                                 <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Alt Metin</label><input type="text" id="setSide2Subtitle" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
-                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Lucide İkon Adı</label><input type="text" id="setSide2Icon" placeholder="Örn: home" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Lucide İkon Adı</label><input type="text" id="setSide2Icon" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
                                 <div class="grid grid-cols-2 gap-2 bg-slate-900/50 p-2 rounded-lg border border-slate-700/50">
                                     <div>
                                         <label class="block text-[9px] font-bold text-slate-400 mb-1">Tür</label>
@@ -268,7 +267,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-[9px] font-bold text-slate-400 mb-1">Değer</label>
-                                        <input type="text" id="setSide2LinkValue" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white outline-none" placeholder="Hedef...">
+                                        <input type="text" id="setSide2LinkValue" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white outline-none">
                                     </div>
                                 </div>
                             </div>
@@ -347,7 +346,6 @@
         let systemSettings = {};
         let currentTab = 'stores';
 
-        // Güvenli Bildirim Sistemi (Toast)
         window.showMessage = (msg, type = 'success') => {
             const toast = document.createElement('div');
             const color = type === 'error' ? 'bg-rose-500' : 'bg-emerald-500';
@@ -355,15 +353,10 @@
             toast.innerHTML = `<i data-lucide="${type === 'error' ? 'alert-circle' : 'check-circle'}" class="w-5 h-5"></i> ${msg}`;
             document.body.appendChild(toast);
             lucide.createIcons();
-            
             setTimeout(() => { toast.classList.remove('translate-y-10', 'opacity-0'); }, 10);
-            setTimeout(() => { 
-                toast.classList.add('translate-y-10', 'opacity-0'); 
-                setTimeout(() => toast.remove(), 300); 
-            }, 3000);
+            setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
         };
 
-        // Kopyalama Fonksiyonu (ID'ler için)
         window.copyToClipboard = (text) => {
             const input = document.createElement('input');
             input.value = text;
@@ -374,9 +367,8 @@
             window.showMessage("Kopyalandı: " + text);
         };
 
-        // Auth Logic
         onAuthStateChanged(auth, (user) => {
-            if(user) {
+            if(user && !user.isAnonymous) {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('adminApp').classList.remove('hidden');
                 document.getElementById('adminApp').classList.add('flex');
@@ -389,11 +381,7 @@
             }
         });
 
-        window.loginAdmin = async () => {
-            try { await signInWithPopup(auth, provider); window.showMessage("Giriş yapıldı."); } 
-            catch(e) { window.showMessage("Giriş başarısız.", "error"); }
-        };
-        
+        window.loginAdmin = async () => { try { await signInWithPopup(auth, provider); window.showMessage("Giriş yapıldı."); } catch(e) { window.showMessage("Giriş başarısız.", "error"); } };
         window.logoutAdmin = () => { signOut(auth); };
 
         window.switchTab = (tab) => {
@@ -403,18 +391,15 @@
                 document.getElementById(`tab-${t}`).classList.remove('border-rose-500', 'text-rose-400');
                 document.getElementById(`tab-${t}`).classList.add('border-transparent', 'text-slate-500');
             });
-            
             document.getElementById(`${tab}View`).classList.remove('hidden');
             document.getElementById(`tab-${tab}`).classList.add('border-rose-500', 'text-rose-400');
             document.getElementById(`tab-${tab}`).classList.remove('border-transparent', 'text-slate-500');
         };
 
-        // Data Fetching
         function initData() {
             onSnapshot(storesRef, (snap) => {
                 dbStores = [];
-                let pendingCount = 0;
-                let premiumCount = 0;
+                let pendingCount = 0; let premiumCount = 0;
                 snap.forEach(doc => {
                     const data = doc.data();
                     dbStores.push({id: doc.id, ...data});
@@ -424,8 +409,7 @@
                 document.getElementById('statStores').innerText = dbStores.filter(s=>s.status==='active').length;
                 document.getElementById('statPending').innerText = pendingCount;
                 document.getElementById('statPremium').innerText = premiumCount;
-                renderStores();
-                renderRequests();
+                renderStores(); renderRequests();
             });
 
             onSnapshot(productsRef, (snap) => {
@@ -435,22 +419,19 @@
                 renderProducts();
             });
             
-            // Yorumları Dinle (YENİ)
             onSnapshot(reviewsRef, (snap) => {
                 dbReviews = [];
                 snap.forEach(doc => dbReviews.push({id: doc.id, ...doc.data()}));
-                dbReviews.sort((a,b) => b.createdAt - a.createdAt); // En yeni en üstte
+                dbReviews.sort((a,b) => b.createdAt - a.createdAt);
                 renderReviews();
             });
 
             onSnapshot(settingsRef, (snap) => {
-                if(snap.exists()) {
-                    systemSettings = snap.data();
-                    populateSettingsForm();
-                }
+                if(snap.exists()) { systemSettings = snap.data(); populateSettingsForm(); }
             });
         }
 
+        // MAĞAZALAR
         function renderStores() {
             const tbody = document.getElementById('storesTableBody');
             if(dbStores.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500">Kayıtlı mağaza bulunmuyor.</td></tr>`; return; }
@@ -475,7 +456,7 @@
                 }
 
                 html += `
-                    <tr class="hover:bg-slate-800/50 transition">
+                    <tr id="store-row-${s.id}" class="hover:bg-slate-800/50 transition scroll-mt-24">
                         <td class="px-6 py-4">
                             <a href="index.html" onclick="localStorage.setItem('admin_redirect_store', '${s.id}')" target="_blank" class="font-black text-white text-sm hover:text-rose-400 transition flex items-center gap-1.5" title="Satıcı Profiline Git">
                                 ${s.name} <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-500"></i>
@@ -518,15 +499,12 @@
             if(requests.length > 0) {
                 document.getElementById('requestBadge').innerText = requests.length;
                 document.getElementById('requestBadge').classList.remove('hidden');
-            } else {
-                document.getElementById('requestBadge').classList.add('hidden');
-            }
+            } else { document.getElementById('requestBadge').classList.add('hidden'); }
 
             if(requests.length === 0) { container.innerHTML = `<div class="col-span-full py-8 text-center text-slate-500 bg-slate-800/30 rounded-3xl border border-slate-700/50">Bekleyen paket yükseltme talebi yok.</div>`; return; }
 
             let html = '';
             requests.forEach(s => {
-                const reqType = s.upgradeRequest.toUpperCase();
                 const color = s.upgradeRequest === 'premium' ? 'text-purple-400' : 'text-blue-400';
                 html += `
                     <div class="bg-slate-800/80 border border-slate-700 p-5 rounded-3xl relative">
@@ -535,7 +513,7 @@
                         <p class="text-xs text-slate-400 mt-1 mb-3">${s.whatsapp} | ${s.district}</p>
                         <div class="bg-slate-900/50 p-3 rounded-xl mb-4 border border-slate-700/50">
                             <span class="text-[10px] text-slate-500 block mb-1">Talep Edilen Paket:</span>
-                            <span class="font-black ${color} text-lg">${reqType}</span>
+                            <span class="font-black ${color} text-lg">${s.upgradeRequest.toUpperCase()}</span>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="window.approveRequest('${s.id}', '${s.upgradeRequest}')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl font-bold text-xs transition">Onayla</button>
@@ -547,6 +525,7 @@
             container.innerHTML = html;
         }
 
+        // ÜRÜNLER
         function renderProducts() {
             const tbody = document.getElementById('productsTableBody');
             if(dbProducts.length === 0) { tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-500">Sistemde ilan bulunmuyor.</td></tr>`; return; }
@@ -559,7 +538,7 @@
                         <td class="px-6 py-3 flex items-center gap-3">
                             <img src="${img}" class="w-10 h-10 rounded-lg object-cover bg-slate-800 shrink-0" />
                             <div>
-                                <div class="font-bold text-white text-xs line-clamp-1 max-w-[200px]">${p.title}</div>
+                                <button onclick="localStorage.setItem('admin_redirect_product', '${p.id}'); window.open('index.html', '_blank')" class="font-bold text-white hover:text-orange-400 text-xs line-clamp-1 max-w-[200px] text-left transition">${p.title}</button>
                                 <div class="text-[10px] text-slate-400 font-mono mt-1 flex items-center gap-1.5">
                                     ÜRÜN ID: <span class="text-slate-300 font-bold bg-slate-800 px-1.5 py-0.5 rounded">${p.id}</span>
                                     <button onclick="window.copyToClipboard('${p.id}')" class="text-slate-500 hover:text-white transition" title="ID Kopyala"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
@@ -568,15 +547,15 @@
                             </div>
                         </td>
                         <td class="px-6 py-3">
-                            <a href="index.html" onclick="localStorage.setItem('admin_redirect_store', '${p.storeId}')" target="_blank" class="text-xs font-bold text-orange-400 hover:text-orange-300 flex items-center gap-1" title="Satıcıya Git">
-                                ${p.storeName} <i data-lucide="external-link" class="w-3 h-3"></i>
-                            </a>
+                            <button onclick="window.switchTab('stores'); window.highlightStore('${p.storeId}')" class="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1" title="Mağazayı Bul">
+                                ${p.storeName || 'Bilinmeyen Mağaza'} <i data-lucide="search" class="w-3 h-3"></i>
+                            </button>
                             <div class="text-[9px] text-slate-500 font-mono mt-1 flex items-center gap-1">
-                                MAĞAZA: <span class="text-slate-400">${p.storeId.substring(0,8)}...</span>
+                                MAĞAZA ID: <span class="text-slate-400">${p.storeId.substring(0,8)}...</span>
                                 <button onclick="window.copyToClipboard('${p.storeId}')" class="text-slate-600 hover:text-slate-400"><i data-lucide="copy" class="w-3 h-3"></i></button>
                             </div>
                         </td>
-                        <td class="px-6 py-3 text-sm font-black text-emerald-400">${p.price.toLocaleString('tr-TR')} TL</td>
+                        <td class="px-6 py-3 text-sm font-black text-emerald-400">${(p.price || 0).toLocaleString('tr-TR')} TL</td>
                         <td class="px-6 py-3 text-right">
                             <button onclick="window.deleteProductDirectly('${p.id}')" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 p-2 rounded-xl transition" title="İlanı Yayından Kaldır">
                                 <i data-lucide="trash" class="w-4 h-4"></i>
@@ -589,7 +568,7 @@
             lucide.createIcons();
         }
         
-        // YENİ: Yorumları Listeleme Fonksiyonu
+        // YORUMLAR
         function renderReviews() {
             const container = document.getElementById('reviewsContainer');
             if(dbReviews.length === 0) { 
@@ -602,9 +581,14 @@
                 const date = new Date(r.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit' });
                 const stars = '⭐'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
                 
-                // İlgili ürünü bulup adını yazalım (yoksa silinmiş olabilir)
                 const product = dbProducts.find(p => p.id === r.productId);
-                const pName = product ? product.title : 'Bilinmeyen/Silinmiş Ürün';
+                const pName = product ? product.title : 'Silinmiş Ürün';
+                const pStoreId = product ? product.storeId : null;
+                const storeObj = pStoreId ? dbStores.find(s => s.id === pStoreId) : null;
+                const sName = storeObj ? storeObj.name : 'Silinmiş/Bilinmeyen Mağaza';
+
+                const productLinkAction = product ? `onclick="localStorage.setItem('admin_redirect_product', '${r.productId}'); window.open('index.html', '_blank')"` : '';
+                const storeLinkAction = storeObj ? `onclick="window.switchTab('stores'); window.highlightStore('${pStoreId}')"` : '';
 
                 const isApproved = r.status === 'approved';
                 const statusBadge = isApproved 
@@ -628,9 +612,16 @@
                                     ${statusBadge}
                                 </div>
                             </div>
-                            <div class="text-[9px] font-bold text-orange-400 mb-3 bg-orange-500/10 inline-block px-2 py-1 rounded truncate max-w-full" title="${pName}">
-                                📦 ${pName}
+                            
+                            <div class="flex flex-col items-start gap-1 mb-3">
+                                <button ${productLinkAction} class="text-[10px] font-bold text-orange-400 bg-orange-500/10 hover:bg-orange-500/20 px-2 py-1 rounded truncate max-w-full transition flex items-center gap-1" title="Ürünü İncele (Ana Sayfada)">
+                                    📦 ${pName}
+                                </button>
+                                <button ${storeLinkAction} class="text-[10px] font-bold text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 px-2 py-1 rounded truncate max-w-full transition flex items-center gap-1" title="Mağazayı Bul (Admin Panelinde)">
+                                    <i data-lucide="store" class="w-3 h-3"></i> ${sName}
+                                </button>
                             </div>
+                            
                             <p class="text-xs text-slate-300 leading-relaxed italic border-l-2 border-slate-600 pl-3 mb-4">"${r.comment}"</p>
                         </div>
                         
@@ -646,7 +637,17 @@
             lucide.createIcons();
         }
 
-        // YENİ: Yorum Düzenleme İşlemleri
+        window.highlightStore = (storeId) => {
+            setTimeout(() => {
+                const row = document.getElementById(`store-row-${storeId}`);
+                if (row) {
+                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    row.classList.add('bg-rose-500/30', 'border', 'border-rose-500');
+                    setTimeout(() => { row.classList.remove('bg-rose-500/30', 'border', 'border-rose-500'); }, 4000);
+                } else { window.showMessage("Bu mağaza sistemde bulunamadı veya silinmiş olabilir.", "error"); }
+            }, 100);
+        };
+
         window.openEditReview = (id, currentRating, currentComment) => {
             document.getElementById('editReviewId').value = id;
             document.getElementById('editReviewRating').value = currentRating;
@@ -654,54 +655,39 @@
             document.getElementById('reviewEditModal').classList.remove('hidden');
         };
 
-        window.closeReviewModal = () => {
-            document.getElementById('reviewEditModal').classList.add('hidden');
-        };
+        window.closeReviewModal = () => { document.getElementById('reviewEditModal').classList.add('hidden'); };
 
         window.saveReviewEdit = async () => {
             const id = document.getElementById('editReviewId').value;
             const newRating = parseInt(document.getElementById('editReviewRating').value);
             const newComment = document.getElementById('editReviewComment').value;
-
             try {
-                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', id), {
-                    rating: newRating,
-                    comment: newComment
-                });
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', id), { rating: newRating, comment: newComment });
                 window.showMessage("Yorum başarıyla güncellendi.");
                 window.closeReviewModal();
-            } catch(e) {
-                window.showMessage("Yorum güncellenemedi.", "error");
-            }
+            } catch(e) { window.showMessage("Yorum güncellenemedi.", "error"); }
         };
 
         window.deleteReview = async (id) => {
             if(!confirm("Bu yorumu tamamen silmek istediğinize emin misiniz?")) return;
-            try {
-                await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', id));
-                window.showMessage("Yorum sistemden kalıcı olarak silindi.");
-            } catch(e) {
-                window.showMessage("Silme işlemi başarısız.", "error");
-            }
+            try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', id)); window.showMessage("Yorum silindi."); }
+            catch(e) { window.showMessage("Silme işlemi başarısız.", "error"); }
         };
 
         window.updateReviewStatus = async (id, newStatus) => {
             try {
                 await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', id), { status: newStatus });
-                window.showMessage(newStatus === 'approved' ? "Yorum onaylandı ve yayına alındı." : "Yorum yayından kaldırıldı.");
-            } catch(e) {
-                window.showMessage("İşlem başarısız oldu.", "error");
-            }
+                window.showMessage(newStatus === 'approved' ? "Yorum onaylandı." : "Yorum yayından kaldırıldı.");
+            } catch(e) { window.showMessage("İşlem başarısız oldu.", "error"); }
         };
 
+        // DİĞER İŞLEMLER
         window.updateStoreStatus = async (id, status) => {
             try {
                 let updates = { status: status };
                 if (status === 'active') {
                     const store = dbStores.find(s => s.id === id);
-                    if(!store.expiryDate || store.expiryDate < Date.now()) {
-                        updates.expiryDate = Date.now() + (30 * 24 * 60 * 60 * 1000);
-                    }
+                    if(!store.expiryDate || store.expiryDate < Date.now()) updates.expiryDate = Date.now() + (30 * 24 * 60 * 60 * 1000);
                 }
                 await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', id), updates);
                 window.showMessage(status === 'active' ? "Mağaza aktifleştirildi." : "Mağaza askıya alındı.");
@@ -720,33 +706,24 @@
 
         window.setPackageDirectly = async (id, pkg) => {
             try {
-                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', id), { 
-                    packageType: pkg, isPremium: pkg === 'premium', upgradeRequest: null 
-                });
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', id), { packageType: pkg, isPremium: pkg === 'premium', upgradeRequest: null });
                 window.showMessage("Paket güncellendi.");
             } catch(e) { window.showMessage("Paket değiştirilemedi.", "error"); }
         };
 
-        window.approveRequest = async (id, requestedPkg) => {
-            await window.setPackageDirectly(id, requestedPkg);
-            window.showMessage("Talep onaylandı ve paket atandı!");
-        };
-
+        window.approveRequest = async (id, requestedPkg) => { await window.setPackageDirectly(id, requestedPkg); window.showMessage("Talep onaylandı!"); };
         window.rejectRequest = async (id) => {
-            try {
-                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', id), { upgradeRequest: null });
-                window.showMessage("Talep reddedildi.");
-            } catch(e) { window.showMessage("İşlem hatası.", "error"); }
+            try { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', id), { upgradeRequest: null }); window.showMessage("Talep reddedildi."); } 
+            catch(e) { window.showMessage("İşlem hatası.", "error"); }
         };
 
         window.deleteProductDirectly = async (id) => {
             if(!confirm("Bu ilanı yayından kaldırmak istediğinize emin misiniz?")) return;
-            try {
-                await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id));
-                window.showMessage("Ürün başarıyla silindi.");
-            } catch(e) { window.showMessage("Ürün silinemedi.", "error"); }
+            try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id)); window.showMessage("Ürün başarıyla silindi."); } 
+            catch(e) { window.showMessage("Ürün silinemedi.", "error"); }
         };
 
+        // AYARLAR
         function populateSettingsForm() {
             if(systemSettings.platformName) document.getElementById('setPlatformName').value = systemSettings.platformName;
             if(systemSettings.platformLogo) {
@@ -821,7 +798,7 @@
                         else { if (height > max_size) { width *= max_size / height; height = max_size; } }
                         canvas.width = width; canvas.height = height;
                         ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.8)); // Hızlı yükleme için JPG %80
+                        resolve(canvas.toDataURL('image/jpeg', 0.8));
                     };
                 };
             });
@@ -864,7 +841,7 @@
                 };
 
                 const logoInput = document.getElementById('setLogoInput');
-                if (logoInput.files.length > 0) updates.platformLogo = await compressAdminImage(logoInput.files[0], 400); // Logo küçük boyutlu
+                if (logoInput.files.length > 0) updates.platformLogo = await compressAdminImage(logoInput.files[0], 400); 
                 
                 const mainImgInput = document.getElementById('setMainImageInput');
                 if (mainImgInput.files.length > 0) updates.mainBanner.image = await compressAdminImage(mainImgInput.files[0], 1600);
@@ -876,7 +853,7 @@
                 if (side2ImgInput.files.length > 0) updates.sideBanner2.image = await compressAdminImage(side2ImgInput.files[0], 800);
 
                 await setDoc(settingsRef, updates, { merge: true });
-                window.showMessage("Sistem ve Vitrin ayarları başarıyla güncellendi. Ana sayfaya yansıdı!");
+                window.showMessage("Sistem ve Vitrin ayarları başarıyla güncellendi.");
             } catch(err) {
                 console.error(err);
                 window.showMessage("Ayarlar kaydedilirken hata oluştu.", "error");
