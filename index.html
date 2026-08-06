@@ -152,7 +152,7 @@
             </div>
         </div>
 
-        <!-- ÜRÜN DETAY MODALI (Varyant & Mağaza Profil Yönlendirmeli) -->
+        <!-- ÜRÜN DETAY MODALI (Varyant, Satıcı & Yorumlar) -->
         <div id="productDetailModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 sm:p-6">
             <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="window.closeProductDetail()"></div>
             <div class="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh]" id="productDetailPanel">
@@ -167,8 +167,8 @@
                     <div id="detailThumbnails" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar"></div>
                 </div>
 
-                <!-- Sağ Taraf (Detaylar) -->
-                <div class="w-full md:w-1/2 p-6 sm:p-8 flex flex-col overflow-y-auto no-scrollbar bg-white">
+                <!-- Sağ Taraf (Detaylar & Yorumlar) -->
+                <div class="w-full md:w-1/2 p-6 sm:p-8 flex flex-col overflow-y-auto no-scrollbar bg-white relative">
                     <h2 id="detailTitle" class="text-2xl sm:text-3xl font-black text-slate-900 mb-3"></h2>
                     
                     <div class="mb-5">
@@ -178,7 +178,7 @@
 
                     <!-- Varyant Alanı -->
                     <div id="detailVariantContainer" class="mb-5 hidden bg-slate-50 border border-slate-100 p-4 rounded-2xl">
-                        <!-- Varyant butonları buraya JS ile gelecek -->
+                        <!-- Varyant butonları JS ile gelecek -->
                     </div>
 
                     <div class="mb-6 p-5 bg-orange-50/50 rounded-2xl border border-orange-100 flex items-center justify-between">
@@ -204,13 +204,51 @@
                         </div>
                         <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 group-hover:text-orange-500 transition-colors"></i>
                     </div>
-                    <input type="hidden" id="detailStoreIdHidden">
 
-                    <div class="mt-auto pt-4 bg-white sticky bottom-0">
+                    <!-- SEPETE EKLE BUTONU (Normal akışa alındı) -->
+                    <div class="mb-8">
+                        <input type="hidden" id="detailStoreIdHidden">
                         <input type="hidden" id="detailProductId">
                         <button id="detailAddToCartBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-xl font-black text-sm transition-all shadow-lg flex items-center justify-center gap-2">
                             <i data-lucide="shopping-cart" class="w-5 h-5"></i> Sepete Ekle
                         </button>
+                    </div>
+
+                    <!-- MÜŞTERİ YORUMLARI BÖLÜMÜ (Butonun altına taşındı) -->
+                    <div class="border-t border-slate-200 pt-8 mb-4">
+                        <h3 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2"><i data-lucide="star" class="w-5 h-5 text-yellow-500 fill-yellow-500"></i> Müşteri Değerlendirmeleri</h3>
+                        
+                        <!-- Listeleme Alanı -->
+                        <div id="detailReviewsContainer" class="space-y-4 mb-6">
+                            <!-- Yorumlar buraya gelecek -->
+                        </div>
+
+                        <!-- Yorum Yapma / Kilit Alanı -->
+                        <div id="reviewLockedMsg" class="bg-blue-50 text-blue-700 p-4 rounded-xl text-xs font-bold flex items-center gap-3 border border-blue-100">
+                            <i data-lucide="lock" class="w-5 h-5 shrink-0"></i> 
+                            Sadece bu ürün için sipariş işlemi başlatan müşterilerimiz yorum yapabilir.
+                        </div>
+
+                        <div id="reviewFormContainer" class="hidden bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                            <h4 class="font-bold text-slate-800 mb-3 text-sm">Ürünü Değerlendir</h4>
+                            <form onsubmit="window.submitReview(event)" class="space-y-3">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 mb-1">Puanınız</label>
+                                    <select id="reviewRating" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-sm font-bold text-slate-700 outline-none focus:border-orange-500">
+                                        <option value="5">⭐⭐⭐⭐⭐ (5 Yıldız - Mükemmel)</option>
+                                        <option value="4">⭐⭐⭐⭐ (4 Yıldız - İyi)</option>
+                                        <option value="3">⭐⭐⭐ (3 Yıldız - İdare Eder)</option>
+                                        <option value="2">⭐⭐ (2 Yıldız - Kötü)</option>
+                                        <option value="1">⭐ (1 Yıldız - Berbat)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 mb-1">Yorumunuz</label>
+                                    <textarea id="reviewComment" required rows="2" class="w-full p-3 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-orange-500" placeholder="Ürün beklentilerinizi karşıladı mı?"></textarea>
+                                </div>
+                                <button type="submit" id="btnSubmitReview" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-lg text-sm transition shadow-sm">Yorumu Gönder</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -261,7 +299,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -280,6 +318,8 @@
         const APP_ID = 'kibris-pazar'; 
         const productsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'products');
         const storesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'stores');
+        const ordersRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'orders');
+        const reviewsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'reviews');
         const settingsRef = doc(db, 'artifacts', APP_ID, 'public', 'settings');
 
         let dbProducts = [];
@@ -292,13 +332,11 @@
             sideBanner2: { title: "Ev & Yaşam", subtitle: "Evinizi yenileyin", icon: "home", linkType: "category", linkValue: "Ev & Yaşam", image: null }
         };
 
-        // Cart stores items with structure: { cartItemId: 'id-variant', product: {}, variant: 'name', quantity: 1 }
         let cart = JSON.parse(localStorage.getItem('cart_items_v2')) || [];
         let favorites = JSON.parse(localStorage.getItem('user_favorites')) || [];
         
         let isCartOpen = false;
         let isUserMenuOpen = false;
-        
         let activeCategory = '';
         let activeDistrict = '';
 
@@ -358,7 +396,6 @@
                 try { await signInAnonymously(auth); } catch (error) { console.warn("Anonim giriş kapalı."); }
             }
 
-            // Ayarları Dinle
             onSnapshot(settingsRef, (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -379,14 +416,12 @@
                 }
             });
 
-            // Mağazaları Dinle
             onSnapshot(storesRef, (snapshot) => {
                 dbStores = [];
                 snapshot.forEach(doc => { dbStores.push({id: doc.id, ...doc.data()}); });
                 window.renderHome(document.getElementById('searchInput').value);
             });
 
-            // Ürünleri Dinle
             onSnapshot(productsRef, (snapshot) => {
                 dbProducts = [];
                 snapshot.forEach(doc => { dbProducts.push({id: doc.id, ...doc.data()}); });
@@ -406,30 +441,15 @@
             container.innerHTML = html;
         };
 
-        window.setCategory = (cat) => {
-            activeCategory = cat;
-            window.renderCategories();
-            window.renderHome(document.getElementById('searchInput').value);
-        };
-
-        window.handleFilterChange = () => {
-            activeDistrict = document.getElementById('districtFilter').value;
-            window.renderHome(document.getElementById('searchInput').value);
-        };
-
-        window.handleSearch = () => {
-            window.renderHome(document.getElementById('searchInput').value);
-        };
+        window.setCategory = (cat) => { activeCategory = cat; window.renderCategories(); window.renderHome(document.getElementById('searchInput').value); };
+        window.handleFilterChange = () => { activeDistrict = document.getElementById('districtFilter').value; window.renderHome(document.getElementById('searchInput').value); };
+        window.handleSearch = () => { window.renderHome(document.getElementById('searchInput').value); };
 
         window.scrollFeatured = (direction) => {
             const container = document.getElementById('featuredContainer');
-            if(container) {
-                const scrollAmount = direction * (window.innerWidth > 640 ? 600 : 300);
-                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-            }
+            if(container) { const scrollAmount = direction * (window.innerWidth > 640 ? 600 : 300); container.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
         };
 
-        // YENİ: Yönlendirme Fonksiyonu
         window.handleBannerClick = (type, value) => {
             if (!type || type === 'none') return;
             if (type === 'category') window.setCategory(value);
@@ -457,7 +477,7 @@
                         <div class="text-[10px] text-slate-500 font-bold mb-1 truncate">${p.storeName} | ${p.district}</div>
                         <h3 class="text-xs font-bold text-slate-800 mb-1 line-clamp-2">${p.title}</h3>
                         ${hasVariants ? `<span class="text-[9px] font-bold text-orange-500 mb-1">Seçenekler Mevcut</span>` : '<span class="text-[9px] mb-1 opacity-0">.</span>'}
-                        <div class="pt-2 border-t border-slate-100 flex items-end justify-between mt-auto">
+                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between mt-auto">
                             <div>
                                 ${p.originalPrice > p.price ? `<span class="block text-[10px] text-slate-400 line-through mb-0.5">${p.originalPrice.toLocaleString('tr-TR')} TL</span>` : ''}
                                 <span class="text-sm font-black text-orange-600 block">${p.price.toLocaleString('tr-TR')} TL</span>
@@ -473,24 +493,19 @@
 
         window.renderHome = (searchQuery = '') => {
             const mainContent = document.getElementById('mainContent');
-            
-            // Sadece Aktif, Onaylı ve Süresi geçmemiş mağazaların ürünlerini al
             const activeStoreIds = dbStores.filter(s => s.status === 'active' && (!s.expiryDate || s.expiryDate > Date.now())).map(s => s.id);
             let displayProducts = dbProducts.filter(p => activeStoreIds.includes(p.storeId));
             
-            // Eğer mağaza Premium ise ürünlerini en başa al
             const premiumStoreIds = dbStores.filter(s => s.isPremium || s.packageType === 'premium').map(s => s.id);
             displayProducts.sort((a, b) => {
                 const aPrem = premiumStoreIds.includes(a.storeId) ? 1 : 0;
                 const bPrem = premiumStoreIds.includes(b.storeId) ? 1 : 0;
-                return bPrem - aPrem; // Premium olanlar önce
+                return bPrem - aPrem;
             });
 
             let html = '';
 
             if (!searchQuery && !activeCategory && !activeDistrict) {
-                
-                // 1. ZENGİN BANNER ALANI (Resim desteği ve dinamik linkler eklendi, Görseller CSS'den HTML IMG yapısına çevrildi)
                 const mainBgContent = appSettings.mainBanner.image ? `<img src="${appSettings.mainBanner.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 z-0"></div>`;
                 const side1BgContent = appSettings.sideBanner1.image ? `<img src="${appSettings.sideBanner1.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-rose-400 z-0"></div>`;
                 const side2BgContent = appSettings.sideBanner2.image ? `<img src="${appSettings.sideBanner2.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 z-0"></div>`;
@@ -499,47 +514,39 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
                         <div class="md:col-span-2 rounded-3xl h-[280px] sm:h-[320px] relative overflow-hidden flex flex-col justify-center p-8 sm:p-12 text-white shadow-xl group">
                             ${mainBgContent}
-                            <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/20 to-transparent z-0"></div> <!-- Sadece yazı arkası kararır -->
-                            <div class="absolute right-0 top-0 w-2/3 h-full bg-gradient-to-l from-orange-500/10 to-transparent z-0"></div>
-                            
+                            <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/30 to-transparent z-0"></div> 
                             <div class="z-10 max-w-sm relative">
                                 <span class="bg-orange-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full mb-4 inline-block tracking-wider shadow-lg shadow-orange-500/30">${appSettings.mainBanner.tag}</span>
                                 <h1 class="text-3xl sm:text-4xl font-black mb-3 leading-tight transform transition-transform duration-700 group-hover:translate-x-2">${appSettings.mainBanner.title}</h1>
                                 <p class="text-slate-300 text-sm font-medium mb-6 line-clamp-2">${appSettings.mainBanner.subtitle}</p>
                                 <button onclick="window.handleBannerClick('${appSettings.mainBanner.linkType}', '${appSettings.mainBanner.linkValue}')" class="bg-white text-slate-900 px-6 py-3 rounded-xl font-black text-sm hover:bg-orange-50 hover:text-orange-600 transition-all flex items-center gap-2 w-max shadow-lg shadow-white/10 group-hover:shadow-white/30 relative z-20">${appSettings.mainBanner.btnText} <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
                             </div>
-                            ${!appSettings.mainBanner.image ? `<div class="absolute -right-20 -bottom-20 w-80 h-80 border-[40px] border-white/5 rounded-full blur-md z-0 pointer-events-none"></div><i data-lucide="shopping-bag" class="absolute -right-6 top-10 w-48 h-48 text-white/5 -rotate-12 z-0 pointer-events-none"></i>` : ''}
                         </div>
                         
                         <div class="flex flex-col gap-4">
                             <div class="flex-1 rounded-3xl p-6 text-white relative overflow-hidden shadow-lg cursor-pointer hover:shadow-xl transition-all hover:-translate-y-1 group" onclick="window.handleBannerClick('${appSettings.sideBanner1.linkType}', '${appSettings.sideBanner1.linkValue}')">
                                 ${side1BgContent}
-                                ${appSettings.sideBanner1.image ? '<div class="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-transparent to-transparent z-0"></div>' : ''}
-                                <div class="z-10 relative">
+                                ${appSettings.sideBanner1.image ? '<div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent z-0"></div>' : ''}
+                                <div class="z-10 relative flex flex-col justify-end h-full">
                                     <h3 class="font-black text-xl mb-1">${appSettings.sideBanner1.title}</h3>
                                     <p class="text-xs text-orange-50 font-medium line-clamp-1">${appSettings.sideBanner1.subtitle}</p>
                                 </div>
-                                <i data-lucide="${appSettings.sideBanner1.icon}" class="absolute -right-4 -bottom-4 w-28 h-28 text-white/20 -rotate-12 group-hover:scale-110 transition-transform duration-500 z-0 pointer-events-none"></i>
+                                <i data-lucide="${appSettings.sideBanner1.icon}" class="absolute -right-4 -top-4 w-24 h-24 text-white/20 rotate-12 group-hover:scale-110 transition-transform duration-500 z-0 pointer-events-none"></i>
                             </div>
                             <div class="flex-1 rounded-3xl p-6 text-white relative overflow-hidden shadow-lg cursor-pointer hover:shadow-xl transition-all hover:-translate-y-1 group" onclick="window.handleBannerClick('${appSettings.sideBanner2.linkType}', '${appSettings.sideBanner2.linkValue}')">
                                 ${side2BgContent}
-                                ${appSettings.sideBanner2.image ? '<div class="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-transparent to-transparent z-0"></div>' : ''}
-                                <div class="z-10 relative">
+                                ${appSettings.sideBanner2.image ? '<div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent z-0"></div>' : ''}
+                                <div class="z-10 relative flex flex-col justify-end h-full">
                                     <h3 class="font-black text-xl mb-1">${appSettings.sideBanner2.title}</h3>
                                     <p class="text-xs text-teal-50 font-medium line-clamp-1">${appSettings.sideBanner2.subtitle}</p>
                                 </div>
-                                <i data-lucide="${appSettings.sideBanner2.icon}" class="absolute -right-4 -bottom-4 w-28 h-28 text-white/20 -rotate-12 group-hover:scale-110 transition-transform duration-500 z-0 pointer-events-none"></i>
+                                <i data-lucide="${appSettings.sideBanner2.icon}" class="absolute -right-4 -top-4 w-24 h-24 text-white/20 rotate-12 group-hover:scale-110 transition-transform duration-500 z-0 pointer-events-none"></i>
                             </div>
                         </div>
                     </div>
                 `;
 
-                // 2. GÖRSEL KATEGORİ VİTRİNİ
-                html += `
-                    <div class="mb-10">
-                        <h2 class="text-xl font-black text-slate-900 mb-5">Kategorilere Göz At</h2>
-                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-4">
-                `;
+                html += `<div class="mb-10"><h2 class="text-xl font-black text-slate-900 mb-5">Kategorilere Göz At</h2><div class="grid grid-cols-3 sm:grid-cols-6 gap-4">`;
                 categoriesList.forEach(cat => {
                     const iconName = categoryIcons[cat] || 'box';
                     html += `
@@ -551,7 +558,6 @@
                 });
                 html += `</div></div>`;
 
-                // 3. PREMIUM (ÖNE ÇIKANLAR)
                 const featuredProducts = displayProducts.filter(p => premiumStoreIds.includes(p.storeId)).slice(0, 10);
                 if (featuredProducts.length > 0) {
                     html += `
@@ -566,15 +572,6 @@
                     html += `</div></div>`;
                 }
 
-                // 4. FAVORİLER
-                const favProducts = displayProducts.filter(p => favorites.includes(p.id));
-                if (favProducts.length > 0) {
-                    html += `<div class="mb-12 bg-rose-50 rounded-3xl p-6 border border-rose-100"><h2 class="text-xl font-black text-rose-900 mb-5">Favorileriniz</h2><div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">`;
-                    favProducts.forEach(p => { html += window.createProductCard(p); });
-                    html += `</div></div>`;
-                }
-
-                // 5. TÜM İLANLAR
                 html += `<div class="mb-5"><h2 class="text-xl font-black text-slate-900">Sizin İçin Seçtiklerimiz</h2></div>`;
                 if(displayProducts.length > 0) {
                     html += `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">`;
@@ -585,7 +582,6 @@
                 }
 
             } else {
-                // Arama ve Filtre Modu
                 if (searchQuery) {
                     const q = searchQuery.toLowerCase();
                     displayProducts = displayProducts.filter(p => p.title.toLowerCase().includes(q) || p.storeName.toLowerCase().includes(q));
@@ -607,7 +603,7 @@
             lucide.createIcons();
         };
 
-        window.openProductDetail = (id) => {
+        window.openProductDetail = async (id) => {
             const product = dbProducts.find(p => p.id === id);
             if(!product) return;
             
@@ -624,6 +620,7 @@
 
             // Bilgiler
             document.getElementById('detailTitle').innerText = product.title;
+            document.getElementById('detailProductId').value = product.id;
             document.getElementById('detailDescription').innerText = product.description || "Açıklama bulunmuyor.";
             document.getElementById('detailPrice').innerText = product.price.toLocaleString('tr-TR') + ' TL';
             
@@ -637,7 +634,7 @@
                 document.getElementById('detailDiscountBadge').classList.add('hidden');
             }
 
-            // Mağaza Bilgisi & Logo
+            // Mağaza Bilgisi
             document.getElementById('detailStoreName').innerText = product.storeName;
             document.getElementById('detailDistrict').innerText = product.district;
             document.getElementById('detailStoreIdHidden').value = product.storeId;
@@ -670,10 +667,106 @@
             
             document.getElementById('detailAddToCartBtn').onclick = () => { window.addToCart(id); };
             
+            // --- YORUMLARI ÇEKME VE KONTROL ---
+            document.getElementById('detailReviewsContainer').innerHTML = `<div class="text-center text-slate-400 text-xs py-4"><i data-lucide="loader-2" class="w-4 h-4 animate-spin mx-auto mb-1"></i> Yorumlar yükleniyor...</div>`;
+            lucide.createIcons();
+            
+            try {
+                // Yorumları getir
+                const rq = query(reviewsRef, where("productId", "==", id));
+                const rSnap = await getDocs(rq);
+                let reviewsHtml = '';
+                
+                if (rSnap.empty) {
+                    reviewsHtml = `<p class="text-xs text-slate-500 italic">Bu ürün için henüz yorum yapılmamış. İlk yorum yapan siz olun!</p>`;
+                } else {
+                    rSnap.forEach(doc => {
+                        const r = doc.data();
+                        const date = new Date(r.createdAt).toLocaleDateString('tr-TR');
+                        let stars = '';
+                        for(let i=1; i<=5; i++) { stars += `<i data-lucide="star" class="w-3.5 h-3.5 ${i <= r.rating ? 'text-yellow-400 fill-yellow-400' : 'text-slate-200'}"></i>`; }
+                        reviewsHtml += `
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-bold text-sm text-slate-800">${r.userName} <span class="text-[9px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded ml-1"><i data-lucide="check-circle" class="w-2.5 h-2.5 inline"></i> Onaylı Alıcı</span></span>
+                                    <span class="text-[10px] text-slate-400 font-medium">${date}</span>
+                                </div>
+                                <div class="flex gap-0.5 mb-2">${stars}</div>
+                                <p class="text-xs text-slate-600">${r.comment}</p>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('detailReviewsContainer').innerHTML = reviewsHtml;
+                lucide.createIcons();
+
+                // Kullanıcının yorum yapma hakkı var mı kontrol et (Sadece giriş yapmış ve ürünü satın/teslim almışsa)
+                let canReview = false;
+                if (auth.currentUser && !auth.currentUser.isAnonymous) {
+                    const uid = auth.currentUser.uid;
+                    const oq = query(ordersRef, where("buyerUid", "==", uid));
+                    const oSnap = await getDocs(oq);
+                    
+                    oSnap.forEach(orderDoc => {
+                        const order = orderDoc.data();
+                        // KURAL DEĞİŞTİ: Teslim edildi şartı kalktı. Ürün sipariş edildiyse yorum açılır.
+                        if (order.productIds && order.productIds.includes(id)) {
+                            canReview = true;
+                        }
+                    });
+                }
+
+                if (canReview) {
+                    document.getElementById('reviewLockedMsg').classList.add('hidden');
+                    document.getElementById('reviewFormContainer').classList.remove('hidden');
+                } else {
+                    document.getElementById('reviewLockedMsg').classList.remove('hidden');
+                    document.getElementById('reviewFormContainer').classList.add('hidden');
+                }
+
+            } catch (err) {
+                console.error("Yorumlar yüklenirken hata:", err);
+                document.getElementById('detailReviewsContainer').innerHTML = `<p class="text-xs text-rose-500">Yorumlar yüklenemedi.</p>`;
+            }
+
             // Modal'ı Aç
             document.getElementById('productDetailModal').classList.remove('hidden');
             setTimeout(() => { document.getElementById('productDetailPanel').classList.remove('scale-95', 'opacity-0'); }, 10);
-            lucide.createIcons();
+        };
+
+        window.submitReview = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitReview');
+            btn.innerHTML = "Gönderiliyor...";
+            btn.disabled = true;
+
+            const pId = document.getElementById('detailProductId').value;
+            const rating = parseInt(document.getElementById('reviewRating').value);
+            const comment = document.getElementById('reviewComment').value;
+
+            try {
+                const reviewData = {
+                    productId: pId,
+                    userId: auth.currentUser.uid,
+                    userName: auth.currentUser.email.split('@')[0], // Gizlilik için sadece ismin başı
+                    rating: rating,
+                    comment: comment,
+                    createdAt: Date.now()
+                };
+                
+                await addDoc(reviewsRef, reviewData);
+                window.showMessage("Yorumunuz başarıyla eklendi! Teşekkür ederiz.");
+                
+                // Formu gizle ve yorumları tekrar yükle
+                document.getElementById('reviewFormContainer').classList.add('hidden');
+                window.openProductDetail(pId); // Sayfayı yenilemek için fonksiyonu tekrar çağır
+
+            } catch (err) {
+                window.showMessage("Yorum gönderilirken bir hata oluştu.", "error");
+            }
+            
+            btn.innerHTML = "Yorumu Gönder";
+            btn.disabled = false;
         };
 
         window.selectVariant = (idx) => {
@@ -853,7 +946,7 @@
                 let html = '';
                 for (const [storeId, orderData] of Object.entries(ordersByStore)) {
                     html += `
-                        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm mb-4">
                             <div class="bg-slate-50 px-4 py-3 border-b border-slate-100 flex items-center gap-2 font-black text-slate-800"><i data-lucide="store" class="w-4 h-4 text-orange-500"></i> ${orderData.storeName}</div>
                             <div class="p-4 space-y-4">
                     `;
@@ -906,7 +999,7 @@
             lucide.createIcons();
         }
 
-        window.checkoutStore = (storeId) => {
+        window.checkoutStore = async (storeId) => {
             const ordersByStore = {};
             cart.forEach(item => {
                 const sId = item.product.storeId;
@@ -921,6 +1014,29 @@
 
             const orderData = ordersByStore[storeId];
             if (!orderData) return;
+
+            // --- YENİ: SİPARİŞİ VERİTABANINA KAYDETME (Yorum Kilidini Açmak İçin) ---
+            try {
+                const buyerUid = auth.currentUser ? auth.currentUser.uid : 'misafir';
+                const buyerName = (auth.currentUser && !auth.currentUser.isAnonymous && auth.currentUser.email) ? auth.currentUser.email : 'WhatsApp Müşterisi';
+                
+                const dbOrder = {
+                    storeId: storeId,
+                    buyerUid: buyerUid,
+                    customerName: buyerName, // Satıcı panelinde görünecek isim
+                    customerPhone: 'WhatsApp üzerinden', 
+                    items: orderData.items.map(i => ({ title: i.product.title + (i.variant ? ` (${i.variant})` : ''), qty: i.quantity, price: i.product.price })),
+                    productIds: orderData.items.map(i => i.product.id), // Hangi ürünleri aldığı (Yorum kontrolü için)
+                    totalAmount: orderData.total,
+                    status: 'pending',
+                    createdAt: Date.now()
+                };
+                
+                await addDoc(ordersRef, dbOrder);
+            } catch (err) {
+                console.error("Sipariş veritabanına kaydedilemedi:", err);
+            }
+            // ---------------------------------------------------------------------
 
             let phone = orderData.storePhone.replace(/\D/g,'');
             if(!phone) {
