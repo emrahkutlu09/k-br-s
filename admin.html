@@ -606,6 +606,15 @@
                 const product = dbProducts.find(p => p.id === r.productId);
                 const pName = product ? product.title : 'Bilinmeyen/Silinmiş Ürün';
 
+                const isApproved = r.status === 'approved';
+                const statusBadge = isApproved 
+                    ? `<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border border-emerald-500/20">Yayında</span>`
+                    : `<span class="bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border border-amber-500/20 animate-pulse">Onay Bekliyor</span>`;
+
+                const approveBtn = isApproved
+                    ? `<button onclick="window.updateReviewStatus('${r.id}', 'pending')" class="flex-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 text-[10px] font-bold py-2 rounded-lg transition flex items-center justify-center gap-1" title="Yayından Kaldır"><i data-lucide="eye-off" class="w-3 h-3"></i> Gizle</button>`
+                    : `<button onclick="window.updateReviewStatus('${r.id}', 'approved')" class="flex-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-[10px] font-bold py-2 rounded-lg transition flex items-center justify-center gap-1" title="Onayla ve Yayınla"><i data-lucide="check" class="w-3 h-3"></i> Onayla</button>`;
+
                 html += `
                     <div class="bg-slate-800/80 border border-slate-700 p-5 rounded-2xl flex flex-col justify-between">
                         <div>
@@ -614,7 +623,10 @@
                                     <h4 class="font-black text-white text-sm">${r.userName}</h4>
                                     <span class="text-[9px] text-slate-400">${date}</span>
                                 </div>
-                                <div class="text-[10px] tracking-widest">${stars}</div>
+                                <div class="flex flex-col items-end gap-1">
+                                    <div class="text-[10px] tracking-widest">${stars}</div>
+                                    ${statusBadge}
+                                </div>
                             </div>
                             <div class="text-[9px] font-bold text-orange-400 mb-3 bg-orange-500/10 inline-block px-2 py-1 rounded truncate max-w-full" title="${pName}">
                                 📦 ${pName}
@@ -623,6 +635,7 @@
                         </div>
                         
                         <div class="flex gap-2 border-t border-slate-700/50 pt-3 mt-auto">
+                            ${approveBtn}
                             <button onclick="window.openEditReview('${r.id}', ${r.rating}, \`${r.comment.replace(/`/g, '')}\`)" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white text-[10px] font-bold py-2 rounded-lg transition flex items-center justify-center gap-1"><i data-lucide="edit-2" class="w-3 h-3"></i> Düzenle</button>
                             <button onclick="window.deleteReview('${r.id}')" class="flex-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 text-[10px] font-bold py-2 rounded-lg transition flex items-center justify-center gap-1"><i data-lucide="trash" class="w-3 h-3"></i> Sil</button>
                         </div>
@@ -669,6 +682,15 @@
                 window.showMessage("Yorum sistemden kalıcı olarak silindi.");
             } catch(e) {
                 window.showMessage("Silme işlemi başarısız.", "error");
+            }
+        };
+
+        window.updateReviewStatus = async (id, newStatus) => {
+            try {
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', id), { status: newStatus });
+                window.showMessage(newStatus === 'approved' ? "Yorum onaylandı ve yayına alındı." : "Yorum yayından kaldırıldı.");
+            } catch(e) {
+                window.showMessage("İşlem başarısız oldu.", "error");
             }
         };
 
