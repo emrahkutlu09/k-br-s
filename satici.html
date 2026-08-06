@@ -147,6 +147,12 @@
                         <i data-lucide="plus-circle" class="w-4 h-4"></i> Yeni İlan Ekle
                     </button>
                 </div>
+
+                <!-- KATEGORİ FİLTRELEME BUTONLARI -->
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-2" id="vendorCategoryFilters">
+                    <!-- JS ile doldurulacak -->
+                </div>
+
                 <div id="vendorProductsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
             </div>
 
@@ -348,6 +354,7 @@
         let myStore = null;
         let myProducts = [];
         let myOrders = [];
+        let currentProductFilter = 'all'; 
 
         lucide.createIcons();
 
@@ -485,6 +492,7 @@
             onSnapshot(productsRef, (snapshot) => {
                 myProducts = [];
                 snapshot.forEach(d => { if(d.data().storeId === myStore.id) myProducts.push({id: d.id, ...d.data()}); });
+                renderCategoryFilters(); 
                 renderProducts();
                 calculateStats();
             });
@@ -500,35 +508,81 @@
         }
 
         function calculateStats() {
-            let totalRevenue = 0, soldCount = 0, deliveredCount = 0;
+            let rev = 0; let sold = 0; let delivered = 0;
             myOrders.forEach(o => {
-                if(o.status === 'delivered') { totalRevenue += (o.price * o.quantity); deliveredCount += o.quantity; }
-                if(o.status !== 'cancelled') soldCount += o.quantity;
+                if(o.status === 'delivered') {
+                    delivered++;
+                    rev += (o.price * o.quantity);
+                    sold += o.quantity;
+                }
             });
-            document.getElementById('statTotalRevenue').innerText = totalRevenue.toLocaleString('tr-TR') + ' TL';
-            document.getElementById('statSoldItems').innerText = soldCount;
-            document.getElementById('statDelivered').innerText = deliveredCount;
+            document.getElementById('statTotalRevenue').innerText = rev.toLocaleString('tr-TR') + ' TL';
+            document.getElementById('statSoldItems').innerText = sold;
+            document.getElementById('statDelivered').innerText = delivered;
             document.getElementById('statActiveProducts').innerText = myProducts.length;
         }
 
+        function renderCategoryFilters() {
+            const filterContainer = document.getElementById('vendorCategoryFilters');
+            
+            // Satıcının ürünlerinde kullanılan benzersiz kategorileri bul
+            const categories = ['all', ...new Set(myProducts.map(p => p.category).filter(Boolean))];
+
+            let html = '';
+            categories.forEach(cat => {
+                const label = cat === 'all' ? 'Tüm Ürünler' : cat;
+                const isActive = currentProductFilter === cat;
+                html += `
+                    <button onclick="window.filterVendorProducts('${cat}')" class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap ${isActive ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}">
+                        ${label}
+                    </button>
+                `;
+            });
+            filterContainer.innerHTML = html;
+        }
+
+        window.filterVendorProducts = (cat) => {
+            currentProductFilter = cat;
+            renderCategoryFilters(); 
+            renderProducts(); 
+        };
+
         function renderProducts() {
             const container = document.getElementById('vendorProductsContainer');
-            document.getElementById('productLimitInfo').innerText = `Yüklenen İlan: ${myProducts.length}`;
-            if(myProducts.length === 0) { container.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400 font-medium">Henüz hiç ilan eklemediniz.</div>'; return; }
+            
+            // Filtreleme işlemi
+            let displayProducts = myProducts;
+            if (currentProductFilter !== 'all') {
+                displayProducts = myProducts.filter(p => p.category === currentProductFilter);
+            }
+
+            document.getElementById('productLimitInfo').innerText = `Yüklenen İlan: ${myProducts.length} (Listelenen: ${displayProducts.length})`;
+            
+            if(displayProducts.length === 0) { 
+                container.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400 font-medium">Bu kategoride hiç ilanınız bulunmuyor.</div>'; 
+                return; 
+            }
             
             let html = '';
-            myProducts.forEach(p => {
-                const img = (p.images && p.images.length > 0) ? p.images[0] : '';
+            displayProducts.forEach(p => {
+                const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500';
+                const variantCount = (p.variants && p.variants.length > 0) ? p.variants.length : 0;
                 html += `
-                    <div class="border border-slate-200 rounded-2xl p-3 relative group bg-white shadow-sm hover:shadow-md transition flex flex-col">
-                        <img src="${img}" class="w-full aspect-[4/5] object-cover rounded-xl bg-slate-100 mb-2">
-                        <h4 class="text-xs font-bold line-clamp-1 mb-1 text-slate-800">${p.title}</h4>
-                        <div class="flex justify-between items-center mt-auto pt-2">
-                            <span class="text-sm font-black text-orange-600">${p.price.toLocaleString('tr-TR')} TL</span>
-                            <div class="flex items-center gap-1">
-                                <button onclick="window.duplicateProduct('${p.id}')" class="text-blue-500 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Çoğalt"><i data-lucide="copy" class="w-4 h-4"></i></button>
-                                <button onclick="window.openEditProduct('${p.id}')" class="text-amber-500 bg-amber-50 hover:bg-amber-100 p-2 rounded-lg transition" title="Düzenle"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                                <button onclick="window.deleteProduct('${p.id}')" class="text-rose-500 bg-rose-50 hover:bg-rose-100 p-2 rounded-lg transition" title="Sil"><i data-lucide="trash" class="w-4 h-4"></i></button>
+                    <div class="border border-slate-200 rounded-3xl p-3 relative group bg-white shadow-sm hover:shadow-xl hover:border-orange-200 transition-all flex flex-col">
+                        <div class="relative w-full aspect-[4/5] object-cover rounded-2xl bg-slate-100 mb-3 overflow-hidden">
+                            <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            ${variantCount > 0 ? `<div class="absolute top-2 left-2 bg-slate-900/80 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow">${variantCount} Varyant</div>` : ''}
+                        </div>
+                        <div class="flex-1 flex flex-col">
+                            <div class="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded w-max mb-1">${p.category}</div>
+                            <h4 class="text-xs font-bold line-clamp-2 mb-2 text-slate-800 leading-tight">${p.title}</h4>
+                            <div class="mt-auto pt-2 border-t border-slate-100">
+                                <span class="text-sm font-black text-orange-600 block mb-2">${p.price.toLocaleString('tr-TR')} TL</span>
+                                <div class="grid grid-cols-3 gap-1">
+                                    <button onclick="window.openEditProduct('${p.id}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 p-2 rounded-xl transition flex items-center justify-center" title="Düzenle"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                                    <button onclick="window.duplicateProduct('${p.id}')" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 p-2 rounded-xl transition flex items-center justify-center" title="Çoğalt"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                                    <button onclick="window.deleteProduct('${p.id}')" class="bg-rose-50 text-rose-500 hover:bg-rose-100 p-2 rounded-xl transition flex items-center justify-center" title="Sil"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
                             </div>
                         </div>
                     </div>
