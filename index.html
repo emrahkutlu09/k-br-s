@@ -703,12 +703,19 @@
             const rq = query(reviewsRef, where("productId", "==", id));
             getDocs(rq).then(snap => {
                 let revHtml = '';
+                let approvedCount = 0;
+                let totalRating = 0;
+
                 if(snap.empty) {
                     revHtml = '<p class="text-xs text-slate-500 font-bold bg-slate-50 p-4 rounded-xl text-center border border-slate-100">Henüz değerlendirme yapılmamış. İlk değerlendiren siz olun!</p>';
                 } else {
-                    let totalRating = 0;
                     snap.forEach(d => {
                         const r = d.data();
+                        
+                        // Sadece Admin tarafından onaylanmış yorumları göster
+                        if (r.status !== 'approved') return; 
+
+                        approvedCount++;
                         totalRating += r.rating;
                         const date = new Date(r.createdAt).toLocaleDateString('tr-TR');
                         const stars = '⭐'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
@@ -723,16 +730,21 @@
                             </div>
                         `;
                     });
-                    const avg = (totalRating / snap.size).toFixed(1);
-                    revHtml = `
-                        <div class="flex items-center gap-4 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                            <div class="text-4xl font-black text-slate-900">${avg}</div>
-                            <div>
-                                <div class="text-orange-500 text-sm tracking-widest">⭐⭐⭐⭐⭐</div>
-                                <div class="text-[10px] font-bold text-slate-500 mt-1">${snap.size} Değerlendirme</div>
+                    
+                    if(approvedCount === 0) {
+                         revHtml = '<p class="text-xs text-slate-500 font-bold bg-slate-50 p-4 rounded-xl text-center border border-slate-100">Henüz onaylanmış değerlendirme bulunmuyor.</p>';
+                    } else {
+                        const avg = (totalRating / approvedCount).toFixed(1);
+                        revHtml = `
+                            <div class="flex items-center gap-4 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <div class="text-4xl font-black text-slate-900">${avg}</div>
+                                <div>
+                                    <div class="text-orange-500 text-sm tracking-widest">⭐⭐⭐⭐⭐</div>
+                                    <div class="text-[10px] font-bold text-slate-500 mt-1">${approvedCount} Değerlendirme</div>
+                                </div>
                             </div>
-                        </div>
-                    ` + revHtml;
+                        ` + revHtml;
+                    }
                 }
                 reviewsContainer.innerHTML = revHtml;
             });
@@ -1190,13 +1202,14 @@
                     userName: userName,
                     rating: rating,
                     comment: comment,
+                    status: 'pending',
                     createdAt: Date.now()
                 };
                 
                 await addDoc(reviewsRef, reviewData);
-                window.showMessage("Değerlendirmeniz başarıyla eklendi! Teşekkürler.");
+                window.showMessage("Değerlendirmeniz başarıyla eklendi! Onaylandıktan sonra yayınlanacaktır.");
                 
-                form.innerHTML = `<div class="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 p-3 rounded-lg text-center flex flex-col items-center gap-1"><i data-lucide="check-circle" class="w-5 h-5"></i> Değerlendirmeniz alındı</div>`;
+                form.innerHTML = `<div class="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 p-3 rounded-lg text-center flex flex-col items-center gap-1"><i data-lucide="check-circle" class="w-5 h-5"></i> Değerlendirmeniz onaya gönderildi</div>`;
                 lucide.createIcons();
             } catch (err) {
                 console.error(err);
