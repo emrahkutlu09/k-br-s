@@ -78,6 +78,9 @@
                             
                             <div id="userDropdown" class="absolute right-0 top-10 mt-2 w-48 bg-white border border-slate-100 shadow-xl rounded-2xl hidden z-50 overflow-hidden transform transition-all">
                                 <div id="unauthMenu" class="p-2 space-y-1">
+                                    <button onclick="window.openMyOrders()" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
+                                        <i data-lucide="package" class="w-4 h-4"></i> Siparişlerim (Misafir)
+                                    </button>
                                     <button onclick="window.loginWithGoogle(event)" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
                                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-4 h-4" alt="Google"> Google ile Giriş
                                     </button>
@@ -739,7 +742,7 @@
 
                 // 2. Müşterinin "Yorum Yapma" yetkisini kontrol et (3. YÖNTEM)
                 let canReview = false;
-                if (auth.currentUser && !auth.currentUser.isAnonymous) {
+                if (auth.currentUser) { // Anonim (misafir) müşteriler de yorum yapabilsin
                     const uid = auth.currentUser.uid;
                     const oq = query(ordersRef, where("buyerUid", "==", uid));
                     const oSnap = await getDocs(oq);
@@ -785,7 +788,7 @@
                 const reviewData = {
                     productId: pId,
                     userId: auth.currentUser.uid,
-                    userName: auth.currentUser.email.split('@')[0],
+                    userName: (auth.currentUser && auth.currentUser.email) ? auth.currentUser.email.split('@')[0] : 'Misafir Müşteri',
                     rating: rating,
                     comment: comment,
                     createdAt: Date.now()
@@ -810,8 +813,8 @@
             document.getElementById('userDropdown').classList.add('hidden');
             isUserMenuOpen = false;
 
-            if(!auth.currentUser || auth.currentUser.isAnonymous) {
-                window.showMessage("Siparişlerinizi görmek için giriş yapmalısınız.", "error");
+            if(!auth.currentUser) {
+                window.showMessage("Sistem yükleniyor, lütfen bekleyin.", "error");
                 return;
             }
 
@@ -826,13 +829,23 @@
                 const oq = query(ordersRef, where("buyerUid", "==", uid));
                 const oSnap = await getDocs(oq);
                 
+                let warningHtml = '';
+                if(auth.currentUser.isAnonymous) {
+                    warningHtml = `
+                        <div class="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl mb-4 text-xs font-bold flex items-start gap-3 shadow-sm">
+                            <i data-lucide="alert-triangle" class="w-5 h-5 shrink-0 mt-0.5"></i>
+                            <p>Şu anda <strong>Misafir</strong> olarak işlem yapıyorsunuz. Başka bir cihaza geçtiğinizde verilerinizi kaybetmemek için Google ile giriş yapmanızı öneririz.</p>
+                        </div>
+                    `;
+                }
+
                 if (oSnap.empty) {
-                    document.getElementById('myOrdersContainer').innerHTML = `<div class="text-center py-10 bg-white rounded-2xl border border-slate-200 shadow-sm"><i data-lucide="package-x" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i><p class="text-slate-500 font-bold">Henüz bir siparişiniz bulunmuyor.</p></div>`;
+                    document.getElementById('myOrdersContainer').innerHTML = warningHtml + `<div class="text-center py-10 bg-white rounded-2xl border border-slate-200 shadow-sm"><i data-lucide="package-x" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i><p class="text-slate-500 font-bold">Henüz bir siparişiniz bulunmuyor.</p></div>`;
                     lucide.createIcons();
                     return;
                 }
 
-                let ordersHtml = '';
+                let ordersHtml = warningHtml;
                 const ordersList = [];
                 oSnap.forEach(doc => ordersList.push({id: doc.id, ...doc.data()}));
                 ordersList.sort((a,b) => b.createdAt - a.createdAt);
