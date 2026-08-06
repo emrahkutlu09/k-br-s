@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style> body { font-family: 'Inter', sans-serif; } .no-scrollbar::-webkit-scrollbar { display: none; } </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-orange-500 selection:text-white">
 
     <!-- UYARI EKRANLARI -->
     <div id="fullScreenLoader" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center flex-col gap-4">
@@ -36,8 +36,8 @@
             <h2 class="text-xl font-black border-b pb-2">İşletme Kaydı</h2>
             <p class="text-xs text-slate-500">Aramıza hoş geldiniz! Mağazanızı oluşturmak için temel bilgileri doldurun. Logoyu daha sonra ayarlardan ekleyebilirsiniz.</p>
             <form onsubmit="window.submitRegistration(event)" class="space-y-4">
-                <input type="text" id="regName" placeholder="Mağaza Adı" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none" />
-                <select id="regDistrict" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none">
+                <input type="text" id="regName" placeholder="Mağaza Adı" required class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none" />
+                <select id="regDistrict" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none">
                     <option value="Girne">Girne</option>
                     <option value="Lefkoşa">Lefkoşa</option>
                     <option value="Gazimağusa">Gazimağusa</option>
@@ -45,7 +45,7 @@
                     <option value="Güzelyurt">Güzelyurt</option>
                     <option value="Lefke">Lefke</option>
                 </select>
-                <input type="text" id="regWhatsapp" placeholder="WhatsApp Numarası (Örn: 905331112233)" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-mono focus:ring-2 focus:ring-orange-500 outline-none" />
+                <input type="text" id="regWhatsapp" placeholder="WhatsApp Numarası (Örn: 905331112233)" required class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-mono focus:ring-2 focus:ring-orange-500 outline-none" />
                 <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-3.5 rounded-xl transition shadow-lg shadow-orange-500/20">Kayıt Ol ve Mağazayı Aç</button>
             </form>
             <button onclick="window.logoutUser()" class="w-full text-xs font-bold text-rose-500 hover:underline pt-2">Farklı Hesapla Giriş Yap</button>
@@ -63,41 +63,31 @@
     </div>
 
     <!-- ANA DASHBOARD (PANEL) -->
-    <div id="dashboardScreen" class="hidden flex-col md:flex-row min-h-screen">
+    <div id="dashboardScreen" class="hidden flex-col min-h-screen">
         
-        <!-- SIDEBAR -->
-        <aside class="w-full md:w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0">
-            <div class="p-6 flex items-center justify-between md:justify-center border-b border-slate-800">
+        <!-- ÜST MENÜ (SADE TASARIM) -->
+        <div class="bg-slate-900 text-white p-4 sm:px-8 flex justify-between items-center shadow-md z-10 relative">
+            <div>
                 <span class="text-xl font-black text-white tracking-tight">KOBİ<span class="text-orange-500">PANEL</span></span>
-                <button class="md:hidden text-white" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')"><i data-lucide="menu"></i></button>
             </div>
-            
-            <div id="mobileMenu" class="hidden md:flex flex-col flex-1 p-4 space-y-2">
-                <button onclick="window.switchTab('stats')" id="tabBtn-stats" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-white bg-slate-800 transition"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> İstatistikler</button>
-                <button onclick="window.switchTab('orders')" id="tabBtn-orders" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold hover:text-white hover:bg-slate-800 transition"><i data-lucide="shopping-cart" class="w-4 h-4"></i> Gelen Siparişler</button>
-                <button onclick="window.switchTab('products')" id="tabBtn-products" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold hover:text-white hover:bg-slate-800 transition"><i data-lucide="package" class="w-4 h-4"></i> Ürün Yönetimi</button>
-                <button onclick="window.switchTab('packages')" id="tabBtn-packages" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold hover:text-white hover:bg-slate-800 transition"><i data-lucide="zap" class="w-4 h-4"></i> Paket Yükselt</button>
-                <button onclick="window.switchTab('settings')" id="tabBtn-settings" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold hover:text-white hover:bg-slate-800 transition"><i data-lucide="settings" class="w-4 h-4"></i> Mağaza Ayarları</button>
-                
-                <div class="mt-auto pt-4 border-t border-slate-800">
-                    <button onclick="window.logoutUser()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 transition"><i data-lucide="log-out" class="w-4 h-4"></i> Güvenli Çıkış</button>
-                </div>
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="text-xs font-bold text-slate-400 hover:text-white transition hidden sm:block">Pazaryerine Dön</a>
+                <button onclick="window.logoutUser()" class="bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition text-rose-400" title="Güvenli Çıkış"><i data-lucide="log-out" class="w-5 h-5"></i></button>
             </div>
-        </aside>
+        </div>
 
-        <!-- MAIN CONTENT -->
-        <main class="flex-1 overflow-y-auto bg-slate-50 p-4 sm:p-8 w-full">
+        <main class="flex-1 max-w-6xl mx-auto w-full p-4 sm:p-6 flex flex-col gap-6 pb-20">
             
-            <!-- HEADER BANNER -->
-            <div class="relative w-full h-48 sm:h-56 rounded-3xl overflow-hidden mb-6 shadow-md bg-slate-800 group">
+            <!-- HEADER BANNER (Görsel Profil) -->
+            <div class="relative w-full h-40 sm:h-56 rounded-3xl overflow-hidden shadow-md bg-slate-800 group shrink-0">
                 <img id="dashboardCover" src="" class="absolute inset-0 w-full h-full object-cover opacity-60 hidden">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-slate-900/50 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
                 
                 <div class="absolute top-4 right-4 bg-slate-900/50 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-bold text-white border border-slate-700/50 flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> <span id="storePackageBadge">Ücretsiz Paket</span>
                 </div>
 
-                <div class="absolute bottom-0 left-0 w-full p-5 sm:p-8 flex items-end gap-4 sm:gap-6">
+                <div class="absolute bottom-0 left-0 w-full p-5 sm:p-6 flex items-end gap-4 sm:gap-6">
                     <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white shadow-xl border-4 border-slate-900 overflow-hidden shrink-0 flex items-center justify-center relative">
                         <img id="dashboardLogo" src="" class="w-full h-full object-cover hidden">
                         <i id="dashboardLogoFallback" data-lucide="store" class="w-10 h-10 text-slate-300"></i>
@@ -109,17 +99,26 @@
                         </h1>
                         <p class="text-xs sm:text-sm text-slate-300 font-medium flex items-center gap-3 mt-1.5">
                             <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-orange-400"></i> <span id="storeDistrictDisplay"></span></span>
-                            <span class="text-slate-600">|</span>
+                            <span class="text-slate-600 hidden sm:inline">|</span>
                             <span class="flex items-center gap-1"><i data-lucide="phone" class="w-3.5 h-3.5 text-orange-400"></i> <span id="storeWhatsappDisplay"></span></span>
                         </p>
                     </div>
                 </div>
             </div>
 
+            <!-- YATAY SEKME MENÜSÜ -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 border-b border-slate-200">
+                <button onclick="window.switchTab('stats')" id="tabBtn-stats" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-900 text-white shadow-md shrink-0 transition flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Genel Bakış</button>
+                <button onclick="window.switchTab('orders')" id="tabBtn-orders" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="shopping-cart" class="w-4 h-4"></i> Siparişler</button>
+                <button onclick="window.switchTab('products')" id="tabBtn-products" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="package" class="w-4 h-4"></i> İlanlarım</button>
+                <button onclick="window.switchTab('packages')" id="tabBtn-packages" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4"></i> Paket & Abonelik</button>
+                <button onclick="window.switchTab('settings')" id="tabBtn-settings" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4"></i> Mağaza Ayarları</button>
+            </div>
+
             <!-- TABS CONTENT -->
+            
             <!-- 1. STATS TAB -->
             <div id="tab-stats" class="space-y-6">
-                <h3 class="text-lg font-black text-slate-800">Genel Bakış</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
                         <div class="flex items-start justify-between mb-2">
@@ -156,7 +155,7 @@
             <div id="tab-orders" class="hidden space-y-4">
                 <div class="flex items-center justify-between mb-2">
                     <h3 class="text-lg font-black text-slate-800">Sipariş Yönetimi</h3>
-                    <button onclick="window.createMockOrder()" class="text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-1 rounded hover:bg-slate-300">Test Siparişi Ekle</button>
+                    <button onclick="window.createMockOrder()" class="text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-1 rounded hover:bg-slate-300 transition">Test Siparişi Ekle</button>
                 </div>
                 <div class="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
                     <div class="overflow-x-auto">
@@ -184,7 +183,7 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h3 class="text-lg font-black text-slate-800">Ürün Yönetimi</h3>
-                        <p class="text-xs font-bold text-slate-500 mt-1">İlanlarınızı ekleyin, düzenleyin ve filtreleyin.</p>
+                        <p class="text-xs font-bold text-slate-500 mt-1">İlanlarınızı ekleyin, düzenleyin ve kategorilere göre filtreleyin.</p>
                     </div>
                     <div class="flex gap-2 w-full sm:w-auto">
                         <button onclick="window.openBulkPriceModal()" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm">
@@ -202,7 +201,7 @@
                     <!-- Kategoriler JS ile eklenecek -->
                 </div>
                 
-                <div id="vendorProductsContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div id="vendorProductsContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     <!-- Ürünler JS ile gelecek -->
                 </div>
             </div>
@@ -212,10 +211,10 @@
                 <h3 class="text-lg font-black text-slate-800 mb-2">Paket & Abonelik Yönetimi</h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative flex flex-col">
                         <h4 class="font-black text-slate-800 mb-1">Ücretsiz</h4>
                         <p class="text-xs text-slate-500 mb-4">Başlangıç için temel özellikler.</p>
-                        <ul class="space-y-2 text-sm font-medium text-slate-600 mb-6">
+                        <ul class="space-y-2 text-sm font-medium text-slate-600 mb-6 flex-1">
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Max 10 İlan</li>
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> İlan Başına 1 Fotoğraf</li>
                             <li class="flex items-center gap-2 text-slate-400"><i data-lucide="x" class="w-4 h-4"></i> Video Yükleme Yok</li>
@@ -224,10 +223,10 @@
                         <button disabled class="w-full bg-slate-100 text-slate-400 font-bold py-2 rounded-xl text-xs">Mevcut veya Daha Alt Paket</button>
                     </div>
 
-                    <div class="bg-gradient-to-b from-blue-50 to-white p-6 rounded-3xl border-2 border-blue-200 shadow-md relative">
+                    <div class="bg-gradient-to-b from-blue-50 to-white p-6 rounded-3xl border-2 border-blue-200 shadow-md relative flex flex-col">
                         <h4 class="font-black text-blue-900 mb-1">Standart Paket</h4>
                         <p class="text-xs text-blue-600 mb-4">Büyüyen işletmeler için.</p>
-                        <ul class="space-y-2 text-sm font-medium text-slate-700 mb-6">
+                        <ul class="space-y-2 text-sm font-medium text-slate-700 mb-6 flex-1">
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-500"></i> Max 50 İlan</li>
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-500"></i> İlan Başına 3 Fotoğraf</li>
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-500"></i> Video Yükleme Özelliği</li>
@@ -236,11 +235,11 @@
                         <button onclick="window.requestPackageUpgrade('standard')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-xs transition shadow-lg shadow-blue-500/30">Standart Pakete Geçiş İste</button>
                     </div>
 
-                    <div class="bg-gradient-to-b from-purple-900 to-slate-900 p-6 rounded-3xl border-2 border-purple-500 shadow-xl relative text-white">
+                    <div class="bg-gradient-to-b from-purple-900 to-slate-900 p-6 rounded-3xl border-2 border-purple-500 shadow-xl relative text-white flex flex-col">
                         <div class="absolute -top-3 right-4 bg-gradient-to-r from-orange-400 to-rose-500 text-[9px] font-black uppercase px-2 py-1 rounded text-white shadow-lg">En Çok Tercih Edilen</div>
                         <h4 class="font-black text-purple-200 mb-1 flex items-center gap-2"><i data-lucide="award" class="w-5 h-5"></i> Premium VIP</h4>
                         <p class="text-xs text-purple-300 mb-4">Sınırları ortadan kaldırın.</p>
-                        <ul class="space-y-2 text-sm font-medium text-purple-100 mb-6">
+                        <ul class="space-y-2 text-sm font-medium text-purple-100 mb-6 flex-1">
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Sınırsız İlan Yükleme</li>
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Sınırsız Görsel & Video</li>
                             <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Ana Sayfa Vitrin Önceliği</li>
@@ -251,7 +250,7 @@
                 </div>
             </div>
 
-            <!-- 5. SETTINGS TAB (YENİ) -->
+            <!-- 5. SETTINGS TAB -->
             <div id="tab-settings" class="hidden space-y-6">
                 <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 max-w-3xl">
                     <h3 class="text-lg font-black text-slate-800 mb-6 flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-orange-500"></i> Mağaza Profili Ayarları</h3>
@@ -323,11 +322,12 @@
     </div>
 
     <!-- MODALS -->
+    
     <!-- Ürün Ekle/Düzenle Modal -->
     <div id="productModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] shadow-2xl">
             <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-black text-lg" id="productModalTitle">İlan Ekle</h3>
+                <h3 class="font-black text-lg text-slate-800" id="productModalTitle">İlan Ekle</h3>
                 <button onclick="window.closeProductModal()" class="text-slate-400 hover:text-slate-600 bg-slate-200 p-1.5 rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
             <div class="p-6 overflow-y-auto">
@@ -559,15 +559,14 @@
             currentTab = tab;
             ['stats', 'orders', 'products', 'packages', 'settings'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`tabBtn-${t}`).classList.remove('text-white', 'bg-slate-800');
-                document.getElementById(`tabBtn-${t}`).classList.add('text-slate-400');
+                const btn = document.getElementById(`tabBtn-${t}`);
+                btn.className = "px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2";
             });
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`tabBtn-${tab}`).classList.add('text-white', 'bg-slate-800');
-            document.getElementById(`tabBtn-${tab}`).classList.remove('text-slate-400');
+            const activeBtn = document.getElementById(`tabBtn-${tab}`);
+            activeBtn.className = "px-5 py-2.5 rounded-full text-sm font-bold bg-slate-900 text-white shadow-md shrink-0 transition flex items-center gap-2";
             
             if(tab === 'settings') populateSettingsForm();
-            if(window.innerWidth < 768) document.getElementById('mobileMenu').classList.add('hidden');
         };
 
         function listenMyData() {
@@ -652,12 +651,12 @@
 
                 const coverInput = document.getElementById('settingsCoverInput');
                 if (coverInput.files.length > 0) {
-                    updates.coverUrl = await compressImage(coverInput.files[0], 1200); // Geniş arka plan için yüksek limit
+                    updates.coverUrl = await compressImage(coverInput.files[0], 1200);
                 }
 
                 const logoInput = document.getElementById('settingsLogoInput');
                 if (logoInput.files.length > 0) {
-                    updates.logoUrl = await compressImage(logoInput.files[0], 400); // Logo için düşük limit
+                    updates.logoUrl = await compressImage(logoInput.files[0], 400);
                 }
 
                 await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), updates);
@@ -745,10 +744,9 @@
         // PRODUCTS (ÜRÜNLER)
         function initCategoryFilters() {
             const container = document.getElementById('vendorCategoryFilter');
-            // 'Tümü' butonu var, yanına kategorileri ekle.
             let html = `<button onclick="window.filterVendorProducts('')" class="px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-800 text-white filter-btn" data-cat="">Tümü</button>`;
             categoriesList.forEach(cat => {
-                html += `<button onclick="window.filterVendorProducts('${cat}')" class="px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-200 text-slate-600 hover:bg-slate-300 filter-btn" data-cat="${cat}">${cat}</button>`;
+                html += `<button onclick="window.filterVendorProducts('${cat}')" class="px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200 filter-btn" data-cat="${cat}">${cat}</button>`;
             });
             container.innerHTML = html;
         }
@@ -756,8 +754,8 @@
         window.filterVendorProducts = (cat) => {
             currentFilterCategory = cat;
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                if(btn.dataset.cat === cat) { btn.classList.add('bg-slate-800', 'text-white'); btn.classList.remove('bg-slate-200', 'text-slate-600'); }
-                else { btn.classList.remove('bg-slate-800', 'text-white'); btn.classList.add('bg-slate-200', 'text-slate-600'); }
+                if(btn.dataset.cat === cat) { btn.classList.add('bg-slate-800', 'text-white'); btn.classList.remove('bg-slate-100', 'text-slate-600'); }
+                else { btn.classList.remove('bg-slate-800', 'text-white'); btn.classList.add('bg-slate-100', 'text-slate-600'); }
             });
             renderProducts();
         };
@@ -848,7 +846,7 @@
 
             document.getElementById('productModalTitle').innerText = "İlanı Düzenle";
             document.getElementById('pEditingId').value = p.id;
-            document.getElementById('pImages').value = ""; // Dosya input güvenlik gereği doldurulamaz
+            document.getElementById('pImages').value = ""; 
             document.getElementById('pTitle').value = p.title;
             document.getElementById('pDesc').value = p.description || "";
             document.getElementById('pCategory').value = p.category;
@@ -911,7 +909,6 @@
                 for (let i = 0; i < files.length; i++) {
                     if (files[i].type.startsWith('video/')) {
                         if(!allowVideo) { window.showMessage("Ücretsiz pakette video yükleyemezsiniz.", "error"); throw new Error("Video engeli"); }
-                        // Video Base64 (Dikkat: Büyük dosyalar sistemi dondurabilir, Firebase Storage kullanılması önerilir. Prototiplik destek.)
                         const reader = new FileReader();
                         videoUrl = await new Promise((res) => { reader.onload = (ev) => res(ev.target.result); reader.readAsDataURL(files[i]); });
                     } else if (files[i].type.startsWith('image/')) {
@@ -921,7 +918,6 @@
                     }
                 }
 
-                // Varyantları topla
                 const variants = [];
                 document.querySelectorAll('.variant-row').forEach(row => {
                     const n = row.querySelector('.var-name').value;
@@ -985,11 +981,10 @@
                     if(action === 'increase') newPrice = oldPrice + (oldPrice * (percent / 100));
                     else newPrice = oldPrice - (oldPrice * (percent / 100));
                     
-                    // Küsurat düzeltme (Örn: 99.99 formatı)
                     newPrice = Math.round(newPrice * 100) / 100;
                     
                     const updates = { price: newPrice };
-                    if(action === 'decrease') updates.originalPrice = oldPrice; // İndirim yapıldıysa eski fiyatı çizik göstermek için kaydet
+                    if(action === 'decrease') updates.originalPrice = oldPrice; 
                     
                     batch.update(pRef, updates);
                 });
@@ -1005,7 +1000,6 @@
         window.requestPackageUpgrade = async (pkgType) => {
             if(!confirm(`Yöneticiden ${pkgType.toUpperCase()} paketine geçiş talep edilsin mi?`)) return;
             try {
-                // Not: Gerçek projede bir 'requests' tablosu olur. Burada adminin görmesi için store içine flag ekliyoruz.
                 await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), { upgradeRequest: pkgType });
                 window.showMessage("Yükseltme talebiniz iletildi. Yöneticiler sizinle iletişime geçecektir.");
             } catch (err) { window.showMessage("Talep iletilemedi.", "error"); }
