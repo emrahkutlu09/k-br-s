@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pazaryeri | Hızlı ve Güvenli Alışveriş</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        /* Özel scrollbar stili */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -21,7 +19,7 @@
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased selection:bg-orange-500 selection:text-white">
 
-    <!-- UYGULAMA KÖKÜ (STATE BURADA YÖNETİLECEK) -->
+    <!-- UYGULAMA KÖKÜ -->
     <div id="app" class="flex flex-col min-h-screen">
         
         <!-- ÜST BİLGİ BARI -->
@@ -42,16 +40,11 @@
                     </span>
                     <span class="hidden sm:inline">| Komisyonsuz Dijital Pazar Yeri</span>
                 </div>
-                <div class="flex items-center gap-3">
-                    <a href="satici.html" class="hover:text-orange-400 transition font-bold text-orange-500 flex items-center gap-1">
-                        <i data-lucide="store" class="w-3.5 h-3.5"></i> Satıcı Girişi
-                    </a>
-                    <a href="admin.html" title="Süper Admin Paneli" class="text-slate-700 hover:text-rose-500 transition ml-1">
+                <div class="flex items-center gap-4">
+                    <!-- GİZLİ SÜPER ADMİN GİRİŞİ -->
+                    <a href="admin.html" class="text-slate-600 hover:text-rose-500 transition cursor-pointer" title="Sistem Kontrol Merkezi">
                         <i data-lucide="shield" class="w-3.5 h-3.5"></i>
                     </a>
-                    <span class="text-slate-600">|</span>
-                    <button class="hover:text-white transition">TR / EN</button>
-                    <button class="hover:text-white transition">Yardım</button>
                 </div>
             </div>
         </div>
@@ -83,33 +76,44 @@
 
                     <!-- Sağ Menü -->
                     <div class="flex items-center gap-5 sm:gap-6">
-                        <!-- Giriş Yap Menüsü -->
+                        
+                        <!-- YENİ: Dinamik Kullanıcı Menüsü (Müşteri Girişi) -->
                         <div class="relative">
                             <button onclick="toggleUserMenu(event)" class="flex flex-col items-center text-slate-600 hover:text-orange-500 transition-colors">
                                 <i data-lucide="user" class="w-5 h-5"></i>
-                                <span class="text-[10px] font-bold mt-1 hidden sm:block">Giriş Yap</span>
+                                <span id="navUserText" class="text-[10px] font-bold mt-1 hidden sm:block">Giriş Yap</span>
                             </button>
                             
                             <!-- Açılır Menü -->
                             <div id="userDropdown" class="absolute right-0 top-10 mt-2 w-48 bg-white border border-slate-100 shadow-xl rounded-2xl hidden z-50 overflow-hidden transform transition-all">
-                                <div class="p-2 space-y-1">
-                                    <button onclick="handleLoginClick(event)" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
-                                        <i data-lucide="user-plus" class="w-4 h-4"></i> Kayıt Ol / Giriş
+                                
+                                <!-- GİRİŞ YAPMAMIŞ KULLANICI SEÇENEKLERİ -->
+                                <div id="unauthMenu" class="p-2 space-y-1">
+                                    <button onclick="mockCustomerLogin(event)" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
+                                        <i data-lucide="user-plus" class="w-4 h-4"></i> Müşteri Girişi (Google)
                                     </button>
                                     <div class="border-t border-slate-100 my-1"></div>
                                     <a href="satici.html" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
-                                        <i data-lucide="store" class="w-4 h-4"></i> Satıcı Paneli
+                                        <i data-lucide="store" class="w-4 h-4"></i> Satıcı / İşletme Ol
                                     </a>
                                 </div>
+                                
+                                <!-- GİRİŞ YAPMIŞ KULLANICI SEÇENEKLERİ -->
+                                <div id="authMenu" class="p-2 space-y-1 hidden">
+                                    <div class="px-3 py-2 text-[10px] text-slate-400 font-bold border-b border-slate-100 mb-1 truncate" id="dropdownEmail">
+                                        user@mail.com
+                                    </div>
+                                    <a href="satici.html" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
+                                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> İşletme Panelim
+                                    </a>
+                                    <button onclick="handleCustomerLogout(event)" class="w-full text-left px-3 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors flex items-center gap-2.5">
+                                        <i data-lucide="log-out" class="w-4 h-4"></i> Çıkış Yap
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
 
-                        <button class="hidden sm:flex flex-col items-center text-slate-600 hover:text-orange-500 transition-colors relative">
-                            <i data-lucide="heart" class="w-5 h-5"></i>
-                            <span class="text-[10px] font-bold mt-1">Favoriler</span>
-                            <span class="absolute -top-1 -right-1 bg-slate-900 text-white text-[9px] font-bold h-3.5 w-3.5 rounded-full flex items-center justify-center">0</span>
-                        </button>
-                        
                         <!-- Sepet Butonu -->
                         <button onclick="toggleCart()" class="flex flex-col items-center text-slate-600 hover:text-orange-500 transition-colors relative">
                             <div class="relative">
@@ -122,11 +126,11 @@
                 </div>
             </div>
             
-            <!-- Kategori Çubuğu (Mobil'de scrollable) -->
+            <!-- Kategori Çubuğu -->
             <div class="border-t border-slate-100 bg-white">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div id="categoryContainer" class="flex items-center gap-6 overflow-x-auto no-scrollbar py-2.5 text-xs font-bold text-slate-600">
-                        <!-- Kategoriler JS ile buraya yüklenecek -->
+                        <!-- Kategoriler JS ile yüklenecek -->
                     </div>
                 </div>
             </div>
@@ -168,7 +172,7 @@
 
                 <!-- Sepet İçeriği -->
                 <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
-                    <!-- Sepet Boş Durumu veya Öğeler JS ile Buraya Eklenecek -->
+                    <!-- Sepet Boş Durumu veya Öğeler JS ile Eklenecek -->
                 </div>
 
                 <!-- Alt Kısım / Ödeme -->
@@ -188,19 +192,44 @@
         // İkonları Başlat
         lucide.createIcons();
 
-        // MERKEZİ VERİ ÇEKME (LOCAL STORAGE'DAN DİNAMİK)
-        let products = [];
-        let categoriesList = [];
-
-        function loadDataFromStorage() {
-            // Kategorileri Admin Panelinden Çek
-            categoriesList = JSON.parse(localStorage.getItem('kc_categories')) || ["Elektronik", "Moda", "Ev & Yaşam", "Süpermarket", "Kozmetik", "Oto & Bahçe"];
-            
-            // Ürünleri Pazaryeri Veritabanından (LocalStorage) Çek
-            products = JSON.parse(localStorage.getItem('kc_marketplace_products')) || [];
-
-            // Eğer sistemde hiç ürün yoksa, boş bir mock data veya varsayılanlar yüklenebilir. 
-            // Biz sistem sıfırlandığında da gerçek verileri görmeniz için boş bırakıyoruz, satıcı panelinden eklenmesini bekliyoruz.
+        // LOCALSTORAGE VERİLERİ (Satıcı paneli ile senkronize)
+        let categoriesList = JSON.parse(localStorage.getItem('kc_categories')) || ["Elektronik", "Moda", "Ev & Yaşam", "Süpermarket", "Kozmetik", "Oto & Bahçe"];
+        
+        function getMarketplaceProducts() {
+            let localProds = JSON.parse(localStorage.getItem('kc_marketplace_products'));
+            if (!localProds || localProds.length === 0) {
+                // Varsayılan Test Verileri
+                localProds = [
+                    {
+                        id: 1,
+                        title: "Oversize Pamuklu T-Shirt - Beyaz (Unisex)",
+                        price: 249.99,
+                        originalPrice: 350.00,
+                        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                        storeName: "Moda Butik",
+                        storeWhatsapp: "905551112233",
+                        rating: 4.5,
+                        reviewCount: 128,
+                        isNew: true,
+                        category: "Moda",
+                        district: "Girne"
+                    },
+                    {
+                        id: 2,
+                        title: "Akdeniz Lüks Köşe Koltuk Takımı",
+                        price: 34500,
+                        image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=500&q=80",
+                        storeName: "Girne Teknoloji & Tasarım",
+                        storeWhatsapp: "905338881234",
+                        rating: 4.9,
+                        reviewCount: 38,
+                        category: "Ev & Yaşam",
+                        district: "Girne"
+                    }
+                ];
+                localStorage.setItem('kc_marketplace_products', JSON.stringify(localProds));
+            }
+            return localProds;
         }
 
         // STATE YÖNETİMİ
@@ -208,11 +237,47 @@
         let isCartOpen = false;
         let isUserMenuOpen = false;
         
-        // FİLTRE VE KATEGORİ STATE
+        // FİLTRE STATE
         let activeCategory = '';
         let activeDistrict = '';
         let minPriceFilter = null;
         let maxPriceFilter = null;
+
+        // --- AUTHENTICATION MANTIĞI (Müşteri için) ---
+        function checkCustomerAuth() {
+            const user = JSON.parse(localStorage.getItem('kc_current_seller_user')); // Ortak auth state
+            
+            if (user) {
+                document.getElementById('navUserText').innerText = "Profilim";
+                document.getElementById('unauthMenu').classList.add('hidden');
+                document.getElementById('authMenu').classList.remove('hidden');
+                document.getElementById('dropdownEmail').innerText = user.email;
+            } else {
+                document.getElementById('navUserText').innerText = "Giriş Yap";
+                document.getElementById('unauthMenu').classList.remove('hidden');
+                document.getElementById('authMenu').classList.add('hidden');
+            }
+        }
+
+        function mockCustomerLogin(e) {
+            e.stopPropagation();
+            // Gerçekte Firebase signInWithPopup() çağrılır.
+            const user = { uid: 'user_' + Date.now(), email: 'musteri@gmail.com' };
+            localStorage.setItem('kc_current_seller_user', JSON.stringify(user));
+            checkCustomerAuth();
+            showMessage("Başarıyla giriş yaptınız!");
+            document.getElementById('userDropdown').classList.add('hidden');
+            isUserMenuOpen = false;
+        }
+
+        function handleCustomerLogout(e) {
+            e.stopPropagation();
+            localStorage.removeItem('kc_current_seller_user');
+            checkCustomerAuth();
+            showMessage("Çıkış yapıldı.");
+            document.getElementById('userDropdown').classList.add('hidden');
+            isUserMenuOpen = false;
+        }
 
         function renderCategories() {
             const container = document.getElementById('categoryContainer');
@@ -276,12 +341,7 @@
             }
         });
 
-        function handleLoginClick(e) {
-            e.stopPropagation();
-            showMessage("Kayıt Ol / Giriş yap modülü yakında aktif edilecek.");
-            toggleUserMenu(e);
-        }
-
+        // --- SEPET İŞLEMLERİ ---
         function updateCartUI() {
             const count = cart.reduce((sum, item) => sum + item.quantity, 0);
             document.getElementById('cartCountBadge').innerText = count;
@@ -311,6 +371,7 @@
         }
 
         function addToCart(productId) {
+            const products = getMarketplaceProducts();
             const product = products.find(p => p.id === productId);
             if (!product) return;
 
@@ -363,7 +424,6 @@
             let html = '';
             let globalTotal = 0;
 
-            // Satıcılara göre grupla
             const groupedCart = {};
             cart.forEach(item => {
                 if (!groupedCart[item.product.storeName]) {
@@ -373,7 +433,6 @@
                 groupedCart[item.product.storeName].total += item.product.price * item.quantity;
             });
 
-            // Her satıcı için ayrı bir sepet bloğu oluştur
             for (const [storeName, data] of Object.entries(groupedCart)) {
                 globalTotal += data.total;
                 
@@ -441,7 +500,7 @@
 
             const storePhone = storeItems[0].product.storeWhatsapp;
 
-            let message = `👋 Merhaba ${storeName}, yeni bir sipariş vermek istiyorum:\n\n`;
+            let message = `👋 Merhaba ${storeName}, Kıbrıs Çarşı üzerinden yeni bir sipariş vermek istiyorum:\n\n`;
             message += `🛍️ *SİPARİŞ DETAYLARI:*\n`;
             
             let storeTotal = 0;
@@ -460,10 +519,8 @@
             const encodedMessage = encodeURIComponent(message);
             window.open(`https://wa.me/${storePhone}?text=${encodedMessage}`, '_blank');
             
-            // Opsiyonel: Sadece siparişi verilen mağazanın ürünlerini sepetten temizle
             cart = cart.filter(item => item.product.storeName !== storeName);
             
-            // Sepet boşaldıysa paneli kapat, doluysa arayüzü güncelle
             if (cart.length === 0) {
                 toggleCart();
             } else {
@@ -473,7 +530,7 @@
 
         function renderHome(searchQuery = '') {
             const mainContent = document.getElementById('mainContent');
-            
+            const products = getMarketplaceProducts();
             let displayProducts = products;
 
             // 1. Arama Filtresi
@@ -510,11 +567,10 @@
                         <span class="bg-white/20 backdrop-blur-md text-white text-[10px] font-black uppercase px-3 py-1 rounded-full mb-3 inline-block tracking-wider border border-white/30">Kıbrıs'a Özel</span>
                         <h1 class="text-3xl sm:text-4xl font-black mb-2 leading-tight">Yerel Esnaftan Hemen Al!</h1>
                         <p class="mb-5 text-orange-100 text-sm font-medium">Kıbrıs'ın tüm ilçelerinden binlerce üründe satıcıyla doğrudan iletişim.</p>
-                        <a href="satici.html" class="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-xl inline-block">
-                            Satıcı Ol, Ürün Ekle
-                        </a>
+                        <button class="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-xl">
+                            Fırsatları İncele
+                        </button>
                     </div>
-                    <!-- Banner Dekorasyon -->
                     <div class="absolute right-0 top-0 w-1/2 h-full opacity-30" style="background: radial-gradient(circle, #fff 10%, transparent 10%); background-size: 20px 20px;"></div>
                 </div>
 
@@ -549,8 +605,7 @@
                 html += `
                     <div class="text-center py-12 bg-white rounded-3xl border border-slate-200">
                         <i data-lucide="search-x" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-                        <p class="text-slate-600 font-bold mb-4">Aradığınız kriterlerde veya sistemde ürün bulunamadı.</p>
-                        <a href="satici.html" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-6 rounded-xl transition text-sm">Satıcı Olarak İlk Ürünü Ekleyin!</a>
+                        <p class="text-slate-600 font-bold">Aradığınız kriterlerde ürün bulunamadı.</p>
                     </div>
                 `;
             } else {
@@ -558,11 +613,10 @@
                 
                 displayProducts.forEach(p => {
                     const discount = p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
-                    const img = p.image || ((p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500');
-                    // Yeni eklenen ürünlerde rating verisi olmayabilir, varsayılan bir yıldız ve review count atıyoruz
                     const rating = p.rating || 5.0;
-                    const reviewCount = p.reviewCount || Math.floor(Math.random() * 50) + 1;
-                    
+                    const reviewCount = p.reviewCount || 1;
+                    const img = p.image || ((p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500');
+
                     html += `
                         <div class="bg-white rounded-2xl p-3 hover:shadow-xl hover:border-orange-200 border border-slate-200 transition-all duration-300 group flex flex-col relative">
                             <!-- Görsel Alanı -->
@@ -627,25 +681,15 @@
             renderHome(val);
         }
 
-        // Enter tuşu ile arama
         document.getElementById('searchInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 handleSearch();
             }
         });
 
-        // Veri Değişikliklerini Dinle (Diğer sekmelerden gelen güncellemeler için)
-        window.addEventListener('storage', function(e) {
-            if(e.key === 'kc_marketplace_products' || e.key === 'kc_categories') {
-                loadDataFromStorage();
-                renderCategories();
-                renderHome();
-            }
-        });
-
         // Sayfa yüklendiğinde çalıştır
         window.onload = () => {
-            loadDataFromStorage();
+            checkCustomerAuth();
             renderCategories();
             renderHome();
         };
