@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gelişmiş İşletme Yönetim Paneli | Kıbrıs Çarşı</title>
+    <title>Satıcı Paneli | Kıbrıs Çarşı</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,15 +11,18 @@
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
 
+    <!-- UYARI EKRANLARI -->
     <div id="fullScreenLoader" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center flex-col gap-4">
         <i data-lucide="loader-2" class="w-12 h-12 text-orange-500 animate-spin"></i>
         <p class="text-white font-bold animate-pulse" id="loaderText">Sistem Başlatılıyor...</p>
     </div>
 
+    <!-- GİRİŞ EKRANI -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[100] hidden flex-col items-center justify-center p-4">
         <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-6 shadow-2xl">
-            <h2 class="text-2xl font-black">Satıcı Paneli</h2>
-            <p class="text-xs text-slate-500">Mağazanızı yönetmek ve ilan eklemek için Google hesabınızla giriş yapın.</p>
+            <div class="w-16 h-16 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-2"><i data-lucide="store" class="w-8 h-8"></i></div>
+            <h2 class="text-2xl font-black">İşletme Paneli</h2>
+            <p class="text-xs text-slate-500">Mağazanızı yönetmek ve satışlara başlamak için Google hesabınızla giriş yapın.</p>
             <button onclick="window.loginUser()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow-lg">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Google ile Giriş Yap
             </button>
@@ -27,20 +30,13 @@
         </div>
     </div>
 
-    <div id="registerScreen" class="fixed inset-0 bg-slate-900 z-[90] hidden flex-col items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-3xl max-w-md w-full space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
+    <!-- KAYIT EKRANI -->
+    <div id="registerScreen" class="fixed inset-0 bg-slate-900 z-[90] hidden flex-col items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white p-8 rounded-3xl max-w-md w-full space-y-4 shadow-2xl my-8">
             <h2 class="text-xl font-black border-b pb-2">İşletme Kaydı</h2>
-            <p class="text-xs text-slate-500">İlk kez giriş yapıyorsunuz. Lütfen mağaza bilgilerinizi, logonuzu ve arka plan görselinizi ekleyin.</p>
+            <p class="text-xs text-slate-500">Aramıza hoş geldiniz! Mağazanızı oluşturmak için temel bilgileri doldurun. Logoyu daha sonra ayarlardan ekleyebilirsiniz.</p>
             <form onsubmit="window.submitRegistration(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">Mağaza Logosu</label>
-                    <input type="file" id="regLogoFile" accept="image/*" class="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-orange-50 file:text-orange-600 font-bold cursor-pointer" />
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">Mağaza Arka Plan / Kapak Görseli</label>
-                    <input type="file" id="regCoverFile" accept="image/*" class="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-orange-50 file:text-orange-600 font-bold cursor-pointer" />
-                </div>
-                <input type="text" id="regName" placeholder="Mağaza Adı" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm focus:ring-2 focus:ring-orange-500 outline-none" />
+                <input type="text" id="regName" placeholder="Mağaza Adı" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none" />
                 <select id="regDistrict" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none">
                     <option value="Girne">Girne</option>
                     <option value="Lefkoşa">Lefkoşa</option>
@@ -49,13 +45,14 @@
                     <option value="Güzelyurt">Güzelyurt</option>
                     <option value="Lefke">Lefke</option>
                 </select>
-                <input type="text" id="regWhatsapp" placeholder="WhatsApp (Örn: 905331112233)" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-mono focus:ring-2 focus:ring-orange-500 outline-none" />
-                <button type="submit" id="regSubmitBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-3.5 rounded-xl transition shadow-lg shadow-orange-500/20">Kayıt Ol ve Onaya Gönder</button>
+                <input type="text" id="regWhatsapp" placeholder="WhatsApp Numarası (Örn: 905331112233)" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-mono focus:ring-2 focus:ring-orange-500 outline-none" />
+                <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-3.5 rounded-xl transition shadow-lg shadow-orange-500/20">Kayıt Ol ve Mağazayı Aç</button>
             </form>
             <button onclick="window.logoutUser()" class="w-full text-xs font-bold text-rose-500 hover:underline pt-2">Farklı Hesapla Giriş Yap</button>
         </div>
     </div>
 
+    <!-- BEKLEME EKRANI -->
     <div id="pendingScreen" class="fixed inset-0 bg-slate-900 z-[80] hidden flex-col items-center justify-center p-4">
         <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-4 shadow-2xl">
             <i data-lucide="clock" class="w-12 h-12 text-amber-500 mx-auto animate-pulse"></i>
@@ -65,226 +62,293 @@
         </div>
     </div>
 
-    <div id="dashboardScreen" class="hidden flex-col min-h-screen">
-        <!-- Kapak ve Logo Destekli Üst Header -->
-        <div id="storeHeaderCover" class="relative text-white shadow-md bg-slate-900 bg-cover bg-center overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/80 to-slate-900/40"></div>
-            <div class="relative z-10 max-w-6xl mx-auto p-6 sm:px-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div class="flex items-center gap-4">
-                    <img id="storeLogoDisplay" src="https://placehold.co/100x100/334155/ffffff?text=Logo" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-4 border-white/20 shadow-xl bg-slate-800 shrink-0">
-                    <div>
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <h1 class="font-black text-xl sm:text-2xl text-white" id="storeNameDisplay">Yükleniyor...</h1>
-                            <span id="storePackageBadge" class="bg-slate-700 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase">Ücretsiz Paket</span>
-                        </div>
-                        <p class="text-xs text-slate-300 font-bold mt-1 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3 inline text-orange-400"></i> <span id="storeDistrictDisplay"></span></p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                    <div class="text-right">
-                        <p class="text-[10px] text-slate-400 uppercase tracking-wider">Abonelik Bitiş</p>
-                        <p class="text-xs font-black text-emerald-400" id="storeExpiryDisplay">-</p>
-                    </div>
-                    <button onclick="window.logoutUser()" class="bg-slate-800/80 hover:bg-slate-700 p-2.5 rounded-xl transition backdrop-blur" title="Çıkış Yap"><i data-lucide="log-out" class="w-5 h-5"></i></button>
-                </div>
+    <!-- ANA DASHBOARD (PANEL) -->
+    <div id="dashboardScreen" class="hidden flex-col md:flex-row min-h-screen">
+        
+        <!-- SIDEBAR -->
+        <aside class="w-full md:w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0">
+            <div class="p-6 flex items-center justify-between md:justify-center border-b border-slate-800">
+                <span class="text-xl font-black text-white tracking-tight">KOBİ<span class="text-orange-500">PANEL</span></span>
+                <button class="md:hidden text-white" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')"><i data-lucide="menu"></i></button>
             </div>
-        </div>
-
-        <div id="expiryWarningBanner" class="bg-rose-500 text-white text-xs font-bold p-3 text-center hidden">
-            <i data-lucide="alert-triangle" class="w-4 h-4 inline mb-0.5"></i> Mağazanızın süresi dolmuştur. Yeni ürün ekleyemezsiniz.
-        </div>
-
-        <main class="flex-1 max-w-6xl mx-auto w-full p-4 sm:p-8 space-y-8">
             
-            <!-- İSTATİSTİK KARTLARI -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Toplam Ciro</p>
-                        <h3 id="statTotalRevenue" class="text-xl sm:text-2xl font-black text-slate-900 mt-1">0 TL</h3>
-                    </div>
-                    <div class="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center"><i data-lucide="wallet" class="w-5 h-5"></i></div>
+            <div id="mobileMenu" class="hidden md:flex flex-col flex-1 p-4 space-y-2">
+                <button onclick="window.switchTab('stats')" id="tabBtn-stats" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-white bg-slate-800 transition"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> İstatistikler</button>
+                <button onclick="window.switchTab('orders')" id="tabBtn-orders" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold hover:text-white hover:bg-slate-800 transition"><i data-lucide="shopping-cart" class="w-4 h-4"></i> Gelen Siparişler</button>
+                <button onclick="window.switchTab('products')" id="tabBtn-products" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold hover:text-white hover:bg-slate-800 transition"><i data-lucide="package" class="w-4 h-4"></i> Ürün Yönetimi</button>
+                <button onclick="window.switchTab('packages')" id="tabBtn-packages" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold hover:text-white hover:bg-slate-800 transition"><i data-lucide="zap" class="w-4 h-4"></i> Paket Yükselt</button>
+                <button onclick="window.switchTab('settings')" id="tabBtn-settings" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold hover:text-white hover:bg-slate-800 transition"><i data-lucide="settings" class="w-4 h-4"></i> Mağaza Ayarları</button>
+                
+                <div class="mt-auto pt-4 border-t border-slate-800">
+                    <button onclick="window.logoutUser()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 transition"><i data-lucide="log-out" class="w-4 h-4"></i> Güvenli Çıkış</button>
                 </div>
-                <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Satılan Ürün</p>
-                        <h3 id="statSoldItems" class="text-xl sm:text-2xl font-black text-blue-600 mt-1">0</h3>
-                    </div>
-                    <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center"><i data-lucide="shopping-bag" class="w-5 h-5"></i></div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 overflow-y-auto bg-slate-50 p-4 sm:p-8 w-full">
+            
+            <!-- HEADER BANNER -->
+            <div class="relative w-full h-48 sm:h-56 rounded-3xl overflow-hidden mb-6 shadow-md bg-slate-800 group">
+                <img id="dashboardCover" src="" class="absolute inset-0 w-full h-full object-cover opacity-60 hidden">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-slate-900/50 to-transparent"></div>
+                
+                <div class="absolute top-4 right-4 bg-slate-900/50 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-bold text-white border border-slate-700/50 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> <span id="storePackageBadge">Ücretsiz Paket</span>
                 </div>
-                <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Teslim Edilen</p>
-                        <h3 id="statDelivered" class="text-xl sm:text-2xl font-black text-emerald-600 mt-1">0</h3>
+
+                <div class="absolute bottom-0 left-0 w-full p-5 sm:p-8 flex items-end gap-4 sm:gap-6">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white shadow-xl border-4 border-slate-900 overflow-hidden shrink-0 flex items-center justify-center relative">
+                        <img id="dashboardLogo" src="" class="w-full h-full object-cover hidden">
+                        <i id="dashboardLogoFallback" data-lucide="store" class="w-10 h-10 text-slate-300"></i>
                     </div>
-                    <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i data-lucide="check-circle-2" class="w-5 h-5"></i></div>
-                </div>
-                <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Aktif İlan</p>
-                        <h3 id="statActiveProducts" class="text-xl sm:text-2xl font-black text-purple-600 mt-1">0</h3>
+                    <div class="flex-1 pb-1">
+                        <h1 class="font-black text-2xl sm:text-3xl text-white flex items-center gap-2">
+                            <span id="storeNameDisplay">Yükleniyor...</span>
+                            <span id="storePremiumBadge" class="hidden"><i data-lucide="award" class="w-6 h-6 text-purple-400"></i></span>
+                        </h1>
+                        <p class="text-xs sm:text-sm text-slate-300 font-medium flex items-center gap-3 mt-1.5">
+                            <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-orange-400"></i> <span id="storeDistrictDisplay"></span></span>
+                            <span class="text-slate-600">|</span>
+                            <span class="flex items-center gap-1"><i data-lucide="phone" class="w-3.5 h-3.5 text-orange-400"></i> <span id="storeWhatsappDisplay"></span></span>
+                        </p>
                     </div>
-                    <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center"><i data-lucide="layers" class="w-5 h-5"></i></div>
                 </div>
             </div>
 
-            <!-- SEKME BAŞLIKLARI -->
-            <div class="flex border-b border-slate-200 gap-4 overflow-x-auto no-scrollbar">
-                <button onclick="window.switchVendorTab('products')" id="vtab-products" class="pb-3 font-black text-sm text-orange-600 border-b-2 border-orange-500 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="package" class="w-4 h-4"></i> İlanlarım & Ürünler</button>
-                <button onclick="window.switchVendorTab('orders')" id="vtab-orders" class="pb-3 font-black text-sm text-slate-400 border-b-2 border-transparent hover:text-slate-600 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="truck" class="w-4 h-4"></i> Siparişler & Satışlar</button>
-                <button onclick="window.switchVendorTab('pricing')" id="vtab-pricing" class="pb-3 font-black text-sm text-slate-400 border-b-2 border-transparent hover:text-slate-600 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="percent" class="w-4 h-4"></i> Toplu Fiyat Güncelle</button>
-                <button onclick="window.switchVendorTab('package')" id="vtab-package" class="pb-3 font-black text-sm text-slate-400 border-b-2 border-transparent hover:text-slate-600 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="award" class="w-4 h-4"></i> Paket Yükselt</button>
-            </div>
-
-            <!-- TAB 1: ÜRÜNLER -->
-            <div id="vendorProductsView" class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h2 class="text-lg font-black">Mağaza İlanları</h2>
-                        <p class="text-xs text-slate-500" id="productLimitInfo">Yüklenen İlan: 0</p>
+            <!-- TABS CONTENT -->
+            <!-- 1. STATS TAB -->
+            <div id="tab-stats" class="space-y-6">
+                <h3 class="text-lg font-black text-slate-800">Genel Bakış</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-start justify-between mb-2">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tahmini Ciro</span>
+                            <i data-lucide="wallet" class="w-5 h-5 text-emerald-500"></i>
+                        </div>
+                        <h4 class="text-2xl font-black text-slate-800" id="statRevenue">0 TL</h4>
                     </div>
-                    <button id="btnAddProduct" onclick="window.openAddProduct()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-2 shadow-lg shadow-orange-500/20">
-                        <i data-lucide="plus-circle" class="w-4 h-4"></i> Yeni İlan Ekle
-                    </button>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-start justify-between mb-2">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Teslim Edilen</span>
+                            <i data-lucide="check-circle" class="w-5 h-5 text-blue-500"></i>
+                        </div>
+                        <h4 class="text-2xl font-black text-slate-800" id="statDelivered">0</h4>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-start justify-between mb-2">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Bekleyen Sip.</span>
+                            <i data-lucide="clock" class="w-5 h-5 text-amber-500"></i>
+                        </div>
+                        <h4 class="text-2xl font-black text-slate-800" id="statPendingOrders">0</h4>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-start justify-between mb-2">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Aktif İlanlar</span>
+                            <i data-lucide="package" class="w-5 h-5 text-purple-500"></i>
+                        </div>
+                        <h4 class="text-2xl font-black text-slate-800"><span id="statActiveProducts">0</span><span class="text-sm text-slate-400 font-medium"> / <span id="statMaxProducts">Limit</span></span></h4>
+                    </div>
                 </div>
-
-                <!-- KATEGORİ FİLTRELEME BUTONLARI -->
-                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-2" id="vendorCategoryFilters">
-                    <!-- JS ile doldurulacak -->
-                </div>
-
-                <div id="vendorProductsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
             </div>
 
-            <!-- TAB 2: SİPARİŞLER -->
-            <div id="vendorOrdersView" class="space-y-4 hidden">
-                <div>
-                    <h2 class="text-lg font-black">Gelen Siparişler</h2>
-                    <p class="text-xs text-slate-500">Müşterilerden gelen siparişlerin durumunu güncelleyerek istatistiklerinize yansıtın.</p>
+            <!-- 2. ORDERS TAB -->
+            <div id="tab-orders" class="hidden space-y-4">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-black text-slate-800">Sipariş Yönetimi</h3>
+                    <button onclick="window.createMockOrder()" class="text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-1 rounded hover:bg-slate-300">Test Siparişi Ekle</button>
                 </div>
-                <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden">
+                <div class="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm whitespace-nowrap">
-                            <thead class="bg-slate-50 text-slate-400 text-[10px] uppercase tracking-wider font-bold border-b border-slate-100">
+                            <thead class="bg-slate-50 text-slate-500 text-[10px] uppercase tracking-wider font-bold border-b border-slate-100">
                                 <tr>
-                                    <th class="px-6 py-4">Sipariş ID & Tarih</th>
-                                    <th class="px-6 py-4">Ürün Detayı</th>
+                                    <th class="px-6 py-4">Sipariş No</th>
+                                    <th class="px-6 py-4">Müşteri & Tarih</th>
+                                    <th class="px-6 py-4">Ürünler</th>
                                     <th class="px-6 py-4">Tutar</th>
                                     <th class="px-6 py-4">Durum</th>
-                                    <th class="px-6 py-4 text-right">İşlem Güncelle</th>
+                                    <th class="px-6 py-4 text-right">İşlem</th>
                                 </tr>
                             </thead>
-                            <tbody id="vendorOrdersTableBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                            <tbody id="ordersTableBody" class="divide-y divide-slate-100 text-slate-700">
+                                <!-- Siparişler JS ile gelecek -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 3: TOPLU FİYAT GÜNCELLEME -->
-            <div id="vendorPricingView" class="space-y-6 hidden max-w-xl mx-auto bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                <div>
-                    <h2 class="text-xl font-black">Toplu Fiyat Güncelleme</h2>
-                    <p class="text-xs text-slate-500 mt-1">Mağazanızdaki tüm ürünlerin fiyatlarını tek tıkla yüzdesel olarak artırın veya indirim yapın.</p>
+            <!-- 3. PRODUCTS TAB -->
+            <div id="tab-products" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h3 class="text-lg font-black text-slate-800">Ürün Yönetimi</h3>
+                        <p class="text-xs font-bold text-slate-500 mt-1">İlanlarınızı ekleyin, düzenleyin ve filtreleyin.</p>
+                    </div>
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <button onclick="window.openBulkPriceModal()" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm">
+                            <i data-lucide="percent" class="w-4 h-4"></i> Toplu Fiyat
+                        </button>
+                        <button onclick="window.openAddProduct()" id="btnAddProduct" class="flex-1 sm:flex-none bg-orange-500 hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Yeni İlan Ekle
+                        </button>
+                    </div>
                 </div>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">İşlem Türü</label>
-                        <select id="bulkActionType" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-bold outline-none focus:ring-2 focus:ring-orange-500">
-                            <option value="increase">Fiyatları Artır (Zam Yap)</option>
-                            <option value="decrease">Fiyatları Azalt (İndirim Yap)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Oran (%)</label>
-                        <input type="number" id="bulkPercentage" min="1" max="100" placeholder="Örn: 15" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-black outline-none focus:ring-2 focus:ring-orange-500" />
-                    </div>
-                    <button onclick="window.applyBulkPriceUpdate()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl transition shadow-lg">
-                        Tüm Ürünlere Uygula
-                    </button>
+
+                <!-- Kategori Filtreleme -->
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 border-b border-slate-200" id="vendorCategoryFilter">
+                    <button onclick="window.filterVendorProducts('')" class="px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-800 text-white filter-btn" data-cat="">Tümü</button>
+                    <!-- Kategoriler JS ile eklenecek -->
+                </div>
+                
+                <div id="vendorProductsContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Ürünler JS ile gelecek -->
                 </div>
             </div>
 
-            <!-- TAB 4: PAKET YÜKSELTME -->
-            <div id="vendorPackageView" class="space-y-6 hidden max-w-3xl mx-auto">
-                <div class="text-center">
-                    <h2 class="text-2xl font-black">İşletmenizi Büyütün</h2>
-                    <p class="text-sm text-slate-500 mt-1">Mağazanıza en uygun paketi seçin, talebiniz doğrudan Süper Admin ekibine iletilsin.</p>
+            <!-- 4. PACKAGES TAB -->
+            <div id="tab-packages" class="hidden space-y-6">
+                <h3 class="text-lg font-black text-slate-800 mb-2">Paket & Abonelik Yönetimi</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative">
+                        <h4 class="font-black text-slate-800 mb-1">Ücretsiz</h4>
+                        <p class="text-xs text-slate-500 mb-4">Başlangıç için temel özellikler.</p>
+                        <ul class="space-y-2 text-sm font-medium text-slate-600 mb-6">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Max 10 İlan</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> İlan Başına 1 Fotoğraf</li>
+                            <li class="flex items-center gap-2 text-slate-400"><i data-lucide="x" class="w-4 h-4"></i> Video Yükleme Yok</li>
+                            <li class="flex items-center gap-2 text-slate-400"><i data-lucide="x" class="w-4 h-4"></i> VIP Rozet Yok</li>
+                        </ul>
+                        <button disabled class="w-full bg-slate-100 text-slate-400 font-bold py-2 rounded-xl text-xs">Mevcut veya Daha Alt Paket</button>
+                    </div>
+
+                    <div class="bg-gradient-to-b from-blue-50 to-white p-6 rounded-3xl border-2 border-blue-200 shadow-md relative">
+                        <h4 class="font-black text-blue-900 mb-1">Standart Paket</h4>
+                        <p class="text-xs text-blue-600 mb-4">Büyüyen işletmeler için.</p>
+                        <ul class="space-y-2 text-sm font-medium text-slate-700 mb-6">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-500"></i> Max 50 İlan</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-500"></i> İlan Başına 3 Fotoğraf</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-500"></i> Video Yükleme Özelliği</li>
+                            <li class="flex items-center gap-2 text-slate-400"><i data-lucide="x" class="w-4 h-4"></i> VIP Rozet Yok</li>
+                        </ul>
+                        <button onclick="window.requestPackageUpgrade('standard')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-xs transition shadow-lg shadow-blue-500/30">Standart Pakete Geçiş İste</button>
+                    </div>
+
+                    <div class="bg-gradient-to-b from-purple-900 to-slate-900 p-6 rounded-3xl border-2 border-purple-500 shadow-xl relative text-white">
+                        <div class="absolute -top-3 right-4 bg-gradient-to-r from-orange-400 to-rose-500 text-[9px] font-black uppercase px-2 py-1 rounded text-white shadow-lg">En Çok Tercih Edilen</div>
+                        <h4 class="font-black text-purple-200 mb-1 flex items-center gap-2"><i data-lucide="award" class="w-5 h-5"></i> Premium VIP</h4>
+                        <p class="text-xs text-purple-300 mb-4">Sınırları ortadan kaldırın.</p>
+                        <ul class="space-y-2 text-sm font-medium text-purple-100 mb-6">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Sınırsız İlan Yükleme</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Sınırsız Görsel & Video</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Ana Sayfa Vitrin Önceliği</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Özel "VIP" Mağaza Rozeti</li>
+                        </ul>
+                        <button onclick="window.requestPackageUpgrade('premium')" class="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-400 hover:to-fuchsia-400 text-white font-bold py-2 rounded-xl text-xs transition shadow-lg shadow-purple-500/40">Premium VIP Talep Et</button>
+                    </div>
                 </div>
+            </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <!-- 5. SETTINGS TAB (YENİ) -->
+            <div id="tab-settings" class="hidden space-y-6">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 max-w-3xl">
+                    <h3 class="text-lg font-black text-slate-800 mb-6 flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-orange-500"></i> Mağaza Profili Ayarları</h3>
+                    <form onsubmit="window.saveStoreSettings(event)" class="space-y-6">
+                        
+                        <!-- Kapak Görseli -->
                         <div>
-                            <span class="text-[10px] font-black bg-slate-100 px-2.5 py-1 rounded-md text-slate-600 uppercase">Başlangıç</span>
-                            <h3 class="text-xl font-black mt-3">Ücretsiz</h3>
-                            <p class="text-2xl font-black text-slate-900 mt-1">0 TL <span class="text-xs font-normal text-slate-400">/ kalıcı</span></p>
-                            <ul class="mt-6 space-y-2.5 text-xs text-slate-600">
-                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Max 10 İlan</li>
-                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Özel Varyant Ekleme</li>
-                            </ul>
+                            <label class="block text-xs font-bold text-slate-500 mb-2">Mağaza Kapak Görseli (Banner)</label>
+                            <div class="relative w-full h-40 rounded-2xl bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden group">
+                                <img id="settingsCoverPreview" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                                <div class="z-10 flex flex-col items-center text-slate-500 group-hover:text-orange-500 bg-white/80 p-3 rounded-xl backdrop-blur-sm pointer-events-none transition-colors">
+                                    <i data-lucide="image" class="w-6 h-6 mb-1"></i>
+                                    <span class="text-xs font-bold">Kapak Fotoğrafı Seç</span>
+                                </div>
+                                <input type="file" id="settingsCoverInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="window.previewImage(this, 'settingsCoverPreview')">
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-1">Yatay ve yüksek çözünürlüklü bir görsel tercih edin.</p>
                         </div>
-                        <button disabled class="w-full mt-6 bg-slate-100 text-slate-400 py-3 rounded-xl font-bold text-xs">Mevcut Paket</button>
-                    </div>
 
-                    <div class="bg-white p-6 rounded-3xl border-2 border-blue-500 shadow-lg flex flex-col justify-between relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-blue-500 text-white text-[9px] font-black px-3 py-1 rounded-bl-xl uppercase">Popüler</div>
+                        <!-- Logo -->
                         <div>
-                            <span class="text-[10px] font-black bg-blue-50 px-2.5 py-1 rounded-md text-blue-600 uppercase">Gelişmiş</span>
-                            <h3 class="text-xl font-black mt-3">Standart</h3>
-                            <p class="text-2xl font-black text-blue-600 mt-1"> ₺ <span class="text-xs font-normal text-slate-400">/ ay</span></p>
-                            <ul class="mt-6 space-y-2.5 text-xs text-slate-600">
-                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> 50 İlan Hakkı</li>
-                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Çoklu Fotoğraf & Video</li>
-                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Öncelikli Sıralama</li>
-                            </ul>
+                            <label class="block text-xs font-bold text-slate-500 mb-2">Mağaza Logosu</label>
+                            <div class="flex items-center gap-4">
+                                <div class="relative w-20 h-20 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
+                                    <img id="settingsLogoPreview" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                                    <i data-lucide="camera" class="w-6 h-6 text-slate-400"></i>
+                                </div>
+                                <div class="flex-1 relative">
+                                    <input type="file" id="settingsLogoInput" accept="image/*" class="text-sm file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100 cursor-pointer" onchange="window.previewImage(this, 'settingsLogoPreview')">
+                                    <p class="text-[10px] text-slate-400 mt-1">Kare (1:1) formatında firma logonuz.</p>
+                                </div>
+                            </div>
                         </div>
-                        <button onclick="window.requestPackageUpgrade('Standart')" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-black text-xs transition shadow-md">Standart Pakete Geç</button>
-                    </div>
 
-                    <div class="bg-white p-6 rounded-3xl border-2 border-purple-500 shadow-lg flex flex-col justify-between relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-purple-500 text-white text-[9px] font-black px-3 py-1 rounded-bl-xl uppercase">VIP</div>
-                        <div>
-                            <span class="text-[10px] font-black bg-purple-50 px-2.5 py-1 rounded-md text-purple-600 uppercase">Kurumsal</span>
-                            <h3 class="text-xl font-black mt-3">Premium VIP</h3>
-                            <p class="text-2xl font-black text-purple-600 mt-1"> ₺ <span class="text-xs font-normal text-slate-400">/ ay</span></p>
-                            <ul class="mt-6 space-y-2.5 text-xs text-slate-600">
-                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Sınırsız İlan</li>
-                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Ana Sayfa Vitrin Rozeti</li>
-                            </ul>
+                        <hr class="border-slate-100">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Mağaza Adı</label>
+                                <input type="text" id="settingsName" required class="w-full p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">WhatsApp Numarası</label>
+                                <input type="text" id="settingsWhatsapp" required class="w-full p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-sm font-mono outline-none focus:ring-2 focus:ring-orange-500">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Bölge / İlçe</label>
+                                <select id="settingsDistrict" class="w-full p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold outline-none focus:ring-2 focus:ring-orange-500">
+                                    <option value="Girne">Girne</option>
+                                    <option value="Lefkoşa">Lefkoşa</option>
+                                    <option value="Gazimağusa">Gazimağusa</option>
+                                    <option value="İskele">İskele</option>
+                                    <option value="Güzelyurt">Güzelyurt</option>
+                                    <option value="Lefke">Lefke</option>
+                                </select>
+                            </div>
                         </div>
-                        <button onclick="window.requestPackageUpgrade('Premium')" class="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-black text-xs transition shadow-md">Premium'a Yükselt</button>
-                    </div>
+
+                        <div class="pt-4">
+                            <button type="submit" id="btnSaveSettings" class="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-black py-3.5 px-8 rounded-xl transition shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2">
+                                <i data-lucide="save" class="w-5 h-5"></i> Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
         </main>
     </div>
 
-    <!-- YENİ / DÜZENLE / ÇOĞALT ÜRÜN MODALI -->
-    <div id="addProductModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
+    <!-- MODALS -->
+    <!-- Ürün Ekle/Düzenle Modal -->
+    <div id="productModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] shadow-2xl">
             <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-black text-lg" id="modalTitle">Yeni İlan Ekle</h3>
-                <button onclick="window.closeAddProduct()" class="text-slate-400 hover:text-slate-600 bg-slate-200 p-1.5 rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
+                <h3 class="font-black text-lg" id="productModalTitle">İlan Ekle</h3>
+                <button onclick="window.closeProductModal()" class="text-slate-400 hover:text-slate-600 bg-slate-200 p-1.5 rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto space-y-4">
-                <form onsubmit="window.saveProduct(event)" class="space-y-4">
-                    <input type="hidden" id="editingProductId" value="">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Ürün Görselleri (Zorunlu)</label>
-                        <input type="file" id="pImages" accept="image/*" multiple class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100 cursor-pointer"/>
+            <div class="p-6 overflow-y-auto">
+                <form onsubmit="window.saveProduct(event)" class="space-y-5">
+                    <input type="hidden" id="pEditingId" value="">
+                    
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <label class="block text-xs font-bold text-slate-500 mb-2">Ürün Medyası (Fotoğraf & Video) <span id="mediaLimitText" class="text-orange-500 font-normal ml-1"></span></label>
+                        <input type="file" id="pImages" accept="image/*,video/mp4" multiple class="w-full text-sm file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-100 file:text-orange-600 hover:file:bg-orange-200 cursor-pointer"/>
+                        <p class="text-[10px] text-slate-400 mt-2" id="mediaWarningText">Paketinize göre limitler uygulanacaktır.</p>
                     </div>
+
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-1">Başlık</label>
-                        <input type="text" id="pTitle" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" placeholder="Örn: Hakiki Deri Cüzdan" />
+                        <input type="text" id="pTitle" required class="w-full p-3.5 bg-white rounded-xl border border-slate-200 text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" placeholder="Örn: Hakiki Deri Cüzdan" />
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Detaylı Açıklama</label>
-                        <textarea id="pDesc" rows="3" class="w-full p-3 bg-slate-50 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-orange-500" placeholder="Ürün özellikleri..."></textarea>
-                    </div>
+                    
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">Kategori</label>
-                            <select id="pCategory" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-bold outline-none focus:ring-2 focus:ring-orange-500">
+                            <select id="pCategory" class="w-full p-3.5 bg-white rounded-xl border border-slate-200 text-sm font-bold outline-none focus:ring-2 focus:ring-orange-500">
                                 <option value="Elektronik">Elektronik</option>
                                 <option value="Moda">Moda</option>
                                 <option value="Ev & Yaşam">Ev & Yaşam</option>
@@ -295,28 +359,28 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">Satış Fiyatı (TL)</label>
-                            <input type="number" id="pPrice" required step="0.01" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-black text-orange-600 outline-none focus:ring-2 focus:ring-orange-500" placeholder="0.00" />
+                            <input type="number" id="pPrice" required step="0.01" class="w-full p-3.5 bg-white rounded-xl border border-slate-200 text-sm font-black text-orange-600 outline-none focus:ring-2 focus:ring-orange-500" placeholder="0.00" />
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Eski Fiyat (İndirim göstermek için)</label>
-                        <input type="number" id="pOldPrice" step="0.01" class="w-full p-3 bg-slate-50 rounded-xl border text-sm text-slate-400 line-through outline-none focus:ring-2 focus:ring-orange-500" placeholder="İsteğe bağlı" />
-                    </div>
 
-                    <!-- VARYANT YÖNETİMİ ALANI -->
-                    <div class="border-t pt-4 space-y-3">
-                        <div class="flex justify-between items-center">
-                            <label class="text-xs font-black text-slate-700 uppercase">Özel Varyantlar (Beden, Renk vb.)</label>
-                            <button type="button" onclick="window.addVariantField()" class="text-xs font-bold bg-orange-50 text-orange-600 hover:bg-orange-100 px-3 py-1.5 rounded-lg transition flex items-center gap-1">
-                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Varyant Ekle
-                            </button>
+                    <!-- Varyant Sistemi -->
+                    <div class="bg-orange-50/50 p-4 rounded-2xl border border-orange-100">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="block text-xs font-bold text-slate-600">Varyantlar (Beden, Renk, Numara vb.)</label>
+                            <button type="button" onclick="window.addVariantRow()" class="text-[10px] font-bold bg-orange-200 text-orange-700 px-2 py-1 rounded hover:bg-orange-300 transition">+ Varyant Ekle</button>
                         </div>
                         <div id="variantsContainer" class="space-y-2">
-                            <!-- JS ile Dinamik Varyant Satırları Eklenecek -->
+                            <!-- JS ile satırlar eklenecek -->
                         </div>
+                        <p class="text-[9px] text-slate-400 mt-2 italic">* Varyant eklemezseniz ürün tekil ürün olarak satılır. Eğer varyant eklerseniz her biri için stok belirtebilirsiniz.</p>
                     </div>
 
-                    <button type="submit" id="btnSaveProduct" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl mt-4 transition flex items-center justify-center gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Detaylı Açıklama</label>
+                        <textarea id="pDesc" rows="3" class="w-full p-3.5 bg-white rounded-xl border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-orange-500" placeholder="Ürün özellikleri, kullanım alanları..."></textarea>
+                    </div>
+
+                    <button type="submit" id="btnSaveProduct" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl mt-4 transition flex items-center justify-center gap-2 shadow-lg">
                         Kaydet ve Yayınla
                     </button>
                 </form>
@@ -324,11 +388,56 @@
         </div>
     </div>
 
-    <!-- FIREBASE & MANTIK -->
+    <!-- Toplu Fiyat Güncelleme Modalı -->
+    <div id="bulkPriceModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden flex flex-col shadow-2xl">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="font-black text-lg text-slate-800"><i data-lucide="percent" class="w-5 h-5 inline text-orange-500 mb-0.5"></i> Toplu Fiyat Güncelle</h3>
+                <button onclick="document.getElementById('bulkPriceModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 bg-slate-200 p-1.5 rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            <div class="p-6">
+                <form onsubmit="window.executeBulkPriceUpdate(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Hangi Ürünlere Uygulansın?</label>
+                        <select id="bulkCategory" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold outline-none focus:ring-2 focus:ring-orange-500">
+                            <option value="ALL">Tüm Ürünlerim</option>
+                            <option value="Elektronik">Sadece Elektronik</option>
+                            <option value="Moda">Sadece Moda</option>
+                            <option value="Ev & Yaşam">Sadece Ev & Yaşam</option>
+                            <option value="Süpermarket">Sadece Süpermarket</option>
+                            <option value="Kozmetik">Sadece Kozmetik</option>
+                            <option value="Oto & Bahçe">Sadece Oto & Bahçe</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">İşlem Yönü</label>
+                            <select id="bulkAction" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold outline-none focus:ring-2 focus:ring-orange-500">
+                                <option value="increase">Zam Yap (+)</option>
+                                <option value="decrease">İndirim Yap (-)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Yüzde (%)</label>
+                            <input type="number" id="bulkPercentage" required min="1" max="100" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-black outline-none focus:ring-2 focus:ring-orange-500" placeholder="Örn: 15" />
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 bg-amber-50 p-3 rounded-lg border border-amber-100 mt-2">
+                        <i data-lucide="info" class="w-4 h-4 inline text-amber-500 mb-0.5"></i> Bu işlem geri alınamaz. İndirim yaparsanız eski fiyat üzeri çizili olarak görünür.
+                    </p>
+                    <button type="submit" id="btnBulkUpdate" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl mt-2 transition flex items-center justify-center gap-2">
+                        Güncellemeyi Başlat
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE & JAVASCRIPT KODLARI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -336,8 +445,7 @@
             projectId: "kibris-6b4f7",
             storageBucket: "kibris-6b4f7.firebasestorage.app",
             messagingSenderId: "141262926171",
-            appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-            measurementId: "G-JL9P6BRZTD"
+            appId: "1:141262926171:web:07226845e51d4bbc0dea7e"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -354,9 +462,23 @@
         let myStore = null;
         let myProducts = [];
         let myOrders = [];
-        let currentProductFilter = 'all'; 
+        let currentTab = 'stats';
+        let currentFilterCategory = '';
 
-        lucide.createIcons();
+        const categoriesList = ["Elektronik", "Moda", "Ev & Yaşam", "Süpermarket", "Kozmetik", "Oto & Bahçe"];
+
+        // Toast Message System
+        window.showMessage = (msg, type = 'success') => {
+            const toast = document.createElement('div');
+            const color = type === 'error' ? 'bg-rose-500' : 'bg-emerald-500';
+            toast.className = `fixed bottom-5 right-5 ${color} text-white px-5 py-3 rounded-2xl text-sm font-bold shadow-2xl z-[300] transition-all transform duration-300 translate-y-10 opacity-0 flex items-center gap-2`;
+            toast.innerHTML = `<i data-lucide="${type === 'error' ? 'alert-circle' : 'check-circle'}" class="w-5 h-5"></i> ${msg}`;
+            document.body.appendChild(toast);
+            lucide.createIcons();
+            
+            setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 10);
+            setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
+        };
 
         function showScreen(id) {
             ['loginScreen', 'registerScreen', 'pendingScreen', 'dashboardScreen', 'fullScreenLoader'].forEach(el => document.getElementById(el).classList.add('hidden'));
@@ -365,16 +487,13 @@
             lucide.createIcons();
         }
 
+        // AUTH & INIT
         onAuthStateChanged(auth, (user) => {
             if (user) { currentUser = user; checkStoreStatus(); } 
             else { currentUser = null; myStore = null; showScreen('loginScreen'); }
         });
 
-        window.loginUser = async () => {
-            try { await signInWithPopup(auth, provider); } 
-            catch (err) { alert("Giriş hatası: " + err.message); }
-        };
-
+        window.loginUser = async () => { try { await signInWithPopup(auth, provider); } catch (err) { window.showMessage("Giriş hatası: " + err.message, "error"); } };
         window.logoutUser = () => { signOut(auth).then(() => { window.location.reload(); }); };
 
         function checkStoreStatus() {
@@ -383,122 +502,84 @@
             
             onSnapshot(storesRef, (snapshot) => {
                 let foundStore = null;
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    if(data.ownerUid === currentUser.uid) foundStore = {id: doc.id, ...data};
-                });
-
+                snapshot.forEach(doc => { if(doc.data().ownerUid === currentUser.uid) foundStore = {id: doc.id, ...doc.data()}; });
                 myStore = foundStore;
+
                 if(!myStore) { showScreen('registerScreen'); return; }
                 if(myStore.status === 'pending') { showScreen('pendingScreen'); return; }
                 if(myStore.status === 'suspended') { alert("Hesabınız askıya alınmıştır."); window.logoutUser(); return; }
                 
                 showScreen('dashboardScreen');
-                updateDashboardUI();
-                listenMyProducts();
-                listenMyOrders();
-            });
-        }
-
-        function compressImage(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        let width = img.width, height = img.height;
-                        const MAX_SIZE = 800;
-                        if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
-                        else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-                        canvas.width = width; canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
-                    };
-                };
+                updateDashboardHeader();
+                listenMyData();
             });
         }
 
         window.submitRegistration = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('regSubmitBtn');
-            btn.innerText = "Görseller İşleniyor..."; btn.disabled = true;
-            
-            try {
-                const logoInput = document.getElementById('regLogoFile').files[0];
-                const coverInput = document.getElementById('regCoverFile').files[0];
-                
-                let logoUrl = "https://placehold.co/150x150/334155/ffffff?text=Logo";
-                let coverUrl = "https://placehold.co/1200x400/1e293b/ffffff?text=Kapak+Gorseli";
-
-                if(logoInput) logoUrl = await compressImage(logoInput);
-                if(coverInput) coverUrl = await compressImage(coverInput);
-
-                const newStore = {
-                    ownerUid: currentUser.uid,
-                    ownerEmail: currentUser.email,
-                    name: document.getElementById('regName').value,
-                    district: document.getElementById('regDistrict').value,
-                    whatsapp: document.getElementById('regWhatsapp').value,
-                    logo: logoUrl,
-                    cover: coverUrl,
-                    status: 'pending',
-                    packageType: 'free',
-                    isPremium: false,
-                    createdAt: Date.now()
-                };
-
-                await setDoc(doc(storesRef), newStore);
-            } catch(err) {
-                alert("Kayıt hatası: " + err.message); 
-                btn.innerText = "Kayıt Ol ve Onaya Gönder"; 
-                btn.disabled = false;
-            }
+            const btn = e.target.querySelector('button'); btn.innerText = "Gönderiliyor..."; btn.disabled = true;
+            const newStore = {
+                ownerUid: currentUser.uid, ownerEmail: currentUser.email,
+                name: document.getElementById('regName').value, district: document.getElementById('regDistrict').value, whatsapp: document.getElementById('regWhatsapp').value,
+                status: 'pending', packageType: 'free', isPremium: false, createdAt: Date.now()
+            };
+            try { await setDoc(doc(storesRef), newStore); } 
+            catch(err) { window.showMessage("Kayıt hatası: " + err.message, "error"); btn.innerText = "Kayıt Ol ve Mağazayı Aç"; btn.disabled = false; }
         };
 
-        function updateDashboardUI() {
+        // DASHBOARD & TABS
+        function updateDashboardHeader() {
             document.getElementById('storeNameDisplay').innerText = myStore.name;
             document.getElementById('storeDistrictDisplay').innerText = myStore.district;
+            document.getElementById('storeWhatsappDisplay').innerText = myStore.whatsapp || '-';
             
-            if(myStore.logo) document.getElementById('storeLogoDisplay').src = myStore.logo;
-            if(myStore.cover) {
-                document.getElementById('storeHeaderCover').style.backgroundImage = `url('${myStore.cover}')`;
-            }
-
-            const pkg = myStore.packageType || 'free';
             const badge = document.getElementById('storePackageBadge');
-            if(pkg === 'premium' || myStore.isPremium) {
-                badge.innerText = "🏆 Premium VIP"; badge.className = "bg-purple-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase";
-            } else if(pkg === 'standard') {
-                badge.innerText = "⭐ Standart Paket"; badge.className = "bg-blue-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase";
-            } else {
-                badge.innerText = "📦 Ücretsiz Paket"; badge.className = "bg-slate-700 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase";
-            }
+            const pkg = myStore.packageType || 'free';
+            if(pkg === 'free') { badge.innerText = "Ücretsiz Paket"; badge.className = "text-slate-400"; }
+            else if(pkg === 'standard') { badge.innerText = "Standart Paket"; badge.className = "text-blue-400"; }
+            else { badge.innerHTML = `<i data-lucide="award" class="w-3 h-3 text-purple-400"></i> Premium VIP`; badge.className = "text-purple-400 font-black"; }
+            
+            if(myStore.isPremium) document.getElementById('storePremiumBadge').classList.remove('hidden');
+            else document.getElementById('storePremiumBadge').classList.add('hidden');
 
-            const now = Date.now();
-            if(myStore.expiryDate) {
-                document.getElementById('storeExpiryDisplay').innerText = new Date(myStore.expiryDate).toLocaleDateString('tr-TR');
-                if (myStore.expiryDate < now) document.getElementById('expiryWarningBanner').classList.remove('hidden');
-                else document.getElementById('expiryWarningBanner').classList.add('hidden');
-            } else {
-                document.getElementById('storeExpiryDisplay').innerText = "Süresiz";
-            }
+            // Logo & Cover Setup
+            const coverEl = document.getElementById('dashboardCover');
+            if(myStore.coverUrl) { coverEl.src = myStore.coverUrl; coverEl.classList.remove('hidden'); }
+            else { coverEl.classList.add('hidden'); }
+
+            const logoEl = document.getElementById('dashboardLogo');
+            const fallbackEl = document.getElementById('dashboardLogoFallback');
+            if(myStore.logoUrl) { logoEl.src = myStore.logoUrl; logoEl.classList.remove('hidden'); fallbackEl.classList.add('hidden'); }
+            else { logoEl.classList.add('hidden'); fallbackEl.classList.remove('hidden'); }
+
+            initCategoryFilters();
         }
 
-        function listenMyProducts() {
+        window.switchTab = (tab) => {
+            currentTab = tab;
+            ['stats', 'orders', 'products', 'packages', 'settings'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`tabBtn-${t}`).classList.remove('text-white', 'bg-slate-800');
+                document.getElementById(`tabBtn-${t}`).classList.add('text-slate-400');
+            });
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`tabBtn-${tab}`).classList.add('text-white', 'bg-slate-800');
+            document.getElementById(`tabBtn-${tab}`).classList.remove('text-slate-400');
+            
+            if(tab === 'settings') populateSettingsForm();
+            if(window.innerWidth < 768) document.getElementById('mobileMenu').classList.add('hidden');
+        };
+
+        function listenMyData() {
+            // İlanları Dinle
             onSnapshot(productsRef, (snapshot) => {
                 myProducts = [];
                 snapshot.forEach(d => { if(d.data().storeId === myStore.id) myProducts.push({id: d.id, ...d.data()}); });
-                renderCategoryFilters(); 
                 renderProducts();
                 calculateStats();
             });
-        }
 
-        function listenMyOrders() {
+            // Siparişleri Dinle
             onSnapshot(ordersRef, (snapshot) => {
                 myOrders = [];
                 snapshot.forEach(d => { if(d.data().storeId === myStore.id) myOrders.push({id: d.id, ...d.data()}); });
@@ -508,81 +589,211 @@
         }
 
         function calculateStats() {
-            let rev = 0; let sold = 0; let delivered = 0;
+            const activeCount = myProducts.length;
+            let maxLimit = 10;
+            if(myStore.packageType === 'standard') maxLimit = 50;
+            if(myStore.packageType === 'premium') maxLimit = 'Sınırsız';
+            
+            document.getElementById('statActiveProducts').innerText = activeCount;
+            document.getElementById('statMaxProducts').innerText = maxLimit;
+
+            let totalRev = 0; let delivered = 0; let pending = 0;
             myOrders.forEach(o => {
-                if(o.status === 'delivered') {
-                    delivered++;
-                    rev += (o.price * o.quantity);
-                    sold += o.quantity;
-                }
+                if(o.status === 'delivered') { delivered++; totalRev += o.totalAmount; }
+                else if(o.status === 'pending' || o.status === 'processing' || o.status === 'shipped') pending++;
             });
-            document.getElementById('statTotalRevenue').innerText = rev.toLocaleString('tr-TR') + ' TL';
-            document.getElementById('statSoldItems').innerText = sold;
+
+            document.getElementById('statRevenue').innerText = totalRev.toLocaleString('tr-TR') + " TL";
             document.getElementById('statDelivered').innerText = delivered;
-            document.getElementById('statActiveProducts').innerText = myProducts.length;
+            document.getElementById('statPendingOrders').innerText = pending;
         }
 
-        function renderCategoryFilters() {
-            const filterContainer = document.getElementById('vendorCategoryFilters');
+        // SETTINGS (AYARLAR) TAB
+        function populateSettingsForm() {
+            document.getElementById('settingsName').value = myStore.name || '';
+            document.getElementById('settingsWhatsapp').value = myStore.whatsapp || '';
+            document.getElementById('settingsDistrict').value = myStore.district || 'Girne';
             
-            // Satıcının ürünlerinde kullanılan benzersiz kategorileri bul
-            const categories = ['all', ...new Set(myProducts.map(p => p.category).filter(Boolean))];
+            if(myStore.coverUrl) {
+                document.getElementById('settingsCoverPreview').src = myStore.coverUrl;
+                document.getElementById('settingsCoverPreview').classList.remove('hidden');
+            }
+            if(myStore.logoUrl) {
+                document.getElementById('settingsLogoPreview').src = myStore.logoUrl;
+                document.getElementById('settingsLogoPreview').classList.remove('hidden');
+            }
+        }
 
+        window.previewImage = (input, previewId) => {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.getElementById(previewId);
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.saveStoreSettings = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveSettings');
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Kaydediliyor...`;
+            btn.disabled = true;
+
+            try {
+                const updates = {
+                    name: document.getElementById('settingsName').value,
+                    whatsapp: document.getElementById('settingsWhatsapp').value,
+                    district: document.getElementById('settingsDistrict').value
+                };
+
+                const coverInput = document.getElementById('settingsCoverInput');
+                if (coverInput.files.length > 0) {
+                    updates.coverUrl = await compressImage(coverInput.files[0], 1200); // Geniş arka plan için yüksek limit
+                }
+
+                const logoInput = document.getElementById('settingsLogoInput');
+                if (logoInput.files.length > 0) {
+                    updates.logoUrl = await compressImage(logoInput.files[0], 400); // Logo için düşük limit
+                }
+
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), updates);
+                window.showMessage("Mağaza ayarlarınız başarıyla güncellendi.");
+                
+                // Güncel isim/bölge ürünlere de yansısın (Toplu güncelleme)
+                if(updates.name !== myStore.name || updates.district !== myStore.district || updates.whatsapp !== myStore.whatsapp) {
+                    const batch = writeBatch(db);
+                    myProducts.forEach(p => {
+                        const pRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id);
+                        batch.update(pRef, { storeName: updates.name, district: updates.district, storeWhatsapp: updates.whatsapp });
+                    });
+                    await batch.commit();
+                }
+
+            } catch (err) {
+                console.error(err);
+                window.showMessage("Ayarlar kaydedilirken hata oluştu.", "error");
+            }
+
+            btn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> Değişiklikleri Kaydet`;
+            btn.disabled = false;
+            lucide.createIcons();
+        };
+
+        // ORDERS (SİPARİŞLER)
+        function renderOrders() {
+            const tbody = document.getElementById('ordersTableBody');
+            if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-slate-400">Sipariş bulunmuyor.</td></tr>'; return; }
+            
+            // Tarihe göre ters sırala
+            const sortedOrders = [...myOrders].sort((a,b) => b.createdAt - a.createdAt);
             let html = '';
-            categories.forEach(cat => {
-                const label = cat === 'all' ? 'Tüm Ürünler' : cat;
-                const isActive = currentProductFilter === cat;
+            
+            sortedOrders.forEach(o => {
+                const date = new Date(o.createdAt).toLocaleDateString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+                let statusHtml = '';
+                if(o.status === 'pending') statusHtml = '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-[10px] font-bold">Yeni</span>';
+                else if(o.status === 'processing') statusHtml = '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold">Hazırlanıyor</span>';
+                else if(o.status === 'shipped') statusHtml = '<span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-[10px] font-bold">Kargoda</span>';
+                else if(o.status === 'delivered') statusHtml = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-bold">Teslim Edildi</span>';
+                else if(o.status === 'cancelled') statusHtml = '<span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[10px] font-bold">İptal</span>';
+
+                let itemsStr = o.items.map(i => `${i.qty}x ${i.title}`).join(', ');
+
                 html += `
-                    <button onclick="window.filterVendorProducts('${cat}')" class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap ${isActive ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}">
-                        ${label}
-                    </button>
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-mono text-xs text-slate-500">#${o.id.substring(0,6).toUpperCase()}</td>
+                        <td class="px-6 py-4"><div class="text-xs font-bold">${o.customerName}</div><div class="text-[10px] text-slate-400">${date}</div></td>
+                        <td class="px-6 py-4 text-xs max-w-[200px] truncate" title="${itemsStr}">${itemsStr}</td>
+                        <td class="px-6 py-4 font-black text-orange-600">${o.totalAmount.toLocaleString('tr-TR')} TL</td>
+                        <td class="px-6 py-4">${statusHtml}</td>
+                        <td class="px-6 py-4 text-right">
+                            <select onchange="window.updateOrderStatus('${o.id}', this.value)" class="text-xs border border-slate-200 rounded p-1 outline-none focus:ring-1 focus:ring-orange-500">
+                                <option value="" disabled selected>Durum Değiştir</option>
+                                <option value="processing">Hazırlanıyor</option>
+                                <option value="shipped">Kargoda</option>
+                                <option value="delivered">Teslim Edildi</option>
+                                <option value="cancelled">İptal Et</option>
+                            </select>
+                        </td>
+                    </tr>
                 `;
             });
-            filterContainer.innerHTML = html;
+            tbody.innerHTML = html;
+        }
+
+        window.updateOrderStatus = async (orderId, newStatus) => {
+            try { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'orders', orderId), { status: newStatus }); window.showMessage("Sipariş durumu güncellendi."); }
+            catch(err) { window.showMessage("Hata oluştu.", "error"); }
+        };
+
+        window.createMockOrder = async () => {
+            if(myProducts.length === 0) { window.showMessage("Önce ürün eklemelisiniz.", "error"); return; }
+            const p = myProducts[0];
+            const mock = {
+                storeId: myStore.id, customerName: "Test Müşteri", customerPhone: "05330000000",
+                items: [{title: p.title, qty: 1, price: p.price}], totalAmount: p.price,
+                status: 'pending', createdAt: Date.now()
+            };
+            await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'orders')), mock);
+            window.showMessage("Test siparişi oluşturuldu.");
+        };
+
+        // PRODUCTS (ÜRÜNLER)
+        function initCategoryFilters() {
+            const container = document.getElementById('vendorCategoryFilter');
+            // 'Tümü' butonu var, yanına kategorileri ekle.
+            let html = `<button onclick="window.filterVendorProducts('')" class="px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-800 text-white filter-btn" data-cat="">Tümü</button>`;
+            categoriesList.forEach(cat => {
+                html += `<button onclick="window.filterVendorProducts('${cat}')" class="px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-200 text-slate-600 hover:bg-slate-300 filter-btn" data-cat="${cat}">${cat}</button>`;
+            });
+            container.innerHTML = html;
         }
 
         window.filterVendorProducts = (cat) => {
-            currentProductFilter = cat;
-            renderCategoryFilters(); 
-            renderProducts(); 
+            currentFilterCategory = cat;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.dataset.cat === cat) { btn.classList.add('bg-slate-800', 'text-white'); btn.classList.remove('bg-slate-200', 'text-slate-600'); }
+                else { btn.classList.remove('bg-slate-800', 'text-white'); btn.classList.add('bg-slate-200', 'text-slate-600'); }
+            });
+            renderProducts();
         };
 
         function renderProducts() {
             const container = document.getElementById('vendorProductsContainer');
-            
-            // Filtreleme işlemi
-            let displayProducts = myProducts;
-            if (currentProductFilter !== 'all') {
-                displayProducts = myProducts.filter(p => p.category === currentProductFilter);
-            }
+            let displayList = myProducts;
+            if(currentFilterCategory) displayList = displayList.filter(p => p.category === currentFilterCategory);
 
-            document.getElementById('productLimitInfo').innerText = `Yüklenen İlan: ${myProducts.length} (Listelenen: ${displayProducts.length})`;
-            
-            if(displayProducts.length === 0) { 
-                container.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400 font-medium">Bu kategoride hiç ilanınız bulunmuyor.</div>'; 
+            if(displayList.length === 0) { 
+                container.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400 font-medium">Bu kategoride veya sistemde henüz ilan bulunmuyor.</div>'; 
                 return; 
             }
             
             let html = '';
-            displayProducts.forEach(p => {
-                const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500';
-                const variantCount = (p.variants && p.variants.length > 0) ? p.variants.length : 0;
+            displayList.forEach(p => {
+                const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500/cbd5e1/475569?text=Gorsel';
+                const hasVariants = p.variants && p.variants.length > 0;
+                
                 html += `
-                    <div class="border border-slate-200 rounded-3xl p-3 relative group bg-white shadow-sm hover:shadow-xl hover:border-orange-200 transition-all flex flex-col">
-                        <div class="relative w-full aspect-[4/5] object-cover rounded-2xl bg-slate-100 mb-3 overflow-hidden">
-                            <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            ${variantCount > 0 ? `<div class="absolute top-2 left-2 bg-slate-900/80 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow">${variantCount} Varyant</div>` : ''}
+                    <div class="border border-slate-200 rounded-2xl p-3 relative group bg-white shadow-sm hover:shadow-md transition flex flex-col">
+                        <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden mb-2">
+                            <img src="${img}" class="w-full h-full object-cover bg-slate-100">
+                            ${p.video ? `<div class="absolute bottom-2 left-2 bg-emerald-500/90 text-white p-1 rounded shadow"><i data-lucide="play" class="w-3 h-3"></i></div>` : ''}
                         </div>
-                        <div class="flex-1 flex flex-col">
-                            <div class="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded w-max mb-1">${p.category}</div>
-                            <h4 class="text-xs font-bold line-clamp-2 mb-2 text-slate-800 leading-tight">${p.title}</h4>
-                            <div class="mt-auto pt-2 border-t border-slate-100">
-                                <span class="text-sm font-black text-orange-600 block mb-2">${p.price.toLocaleString('tr-TR')} TL</span>
-                                <div class="grid grid-cols-3 gap-1">
-                                    <button onclick="window.openEditProduct('${p.id}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 p-2 rounded-xl transition flex items-center justify-center" title="Düzenle"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-                                    <button onclick="window.duplicateProduct('${p.id}')" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 p-2 rounded-xl transition flex items-center justify-center" title="Çoğalt"><i data-lucide="copy" class="w-4 h-4"></i></button>
-                                    <button onclick="window.deleteProduct('${p.id}')" class="bg-rose-50 text-rose-500 hover:bg-rose-100 p-2 rounded-xl transition flex items-center justify-center" title="Sil"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                </div>
+                        <div class="flex-1">
+                            <div class="text-[9px] font-bold text-slate-400 mb-1">${p.category}</div>
+                            <h4 class="text-xs font-bold line-clamp-2 mb-1 text-slate-800">${p.title}</h4>
+                            ${hasVariants ? `<div class="text-[9px] text-orange-500 font-bold mb-1">${p.variants.length} Varyant</div>` : ''}
+                        </div>
+                        <div class="flex justify-between items-end mt-2 pt-2 border-t border-slate-100">
+                            <span class="text-sm font-black text-orange-600">${p.price.toLocaleString('tr-TR')} TL</span>
+                            <div class="flex gap-1">
+                                <button onclick="window.editProduct('${p.id}')" class="bg-blue-50 hover:bg-blue-100 text-blue-500 p-1.5 rounded transition" title="Düzenle"><i data-lucide="edit" class="w-3.5 h-3.5"></i></button>
+                                <button onclick="window.duplicateProduct('${p.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 p-1.5 rounded transition" title="Kopyala Çoğalt"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+                                <button onclick="window.deleteProduct('${p.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-500 p-1.5 rounded transition" title="Sil"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
                             </div>
                         </div>
                     </div>
@@ -592,187 +803,215 @@
             lucide.createIcons();
         }
 
-        function renderOrders() {
-            const tbody = document.getElementById('vendorOrdersTableBody');
-            if(myOrders.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">Henüz gelen sipariş bulunmuyor.</td></tr>`; return; }
-
-            let html = '';
-            myOrders.forEach(o => {
-                let statusBadge = o.status === 'pending' ? `<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-[10px] font-black uppercase">Hazırlanıyor</span>` : o.status === 'shipping' ? `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-black uppercase">Kargoda</span>` : `<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-black uppercase">Teslim Edildi</span>`;
-                html += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="px-6 py-4 font-mono text-xs">#${o.id.slice(-6)}<br><span class="text-[10px] text-slate-400">${new Date(o.createdAt).toLocaleDateString('tr-TR')}</span></td>
-                        <td class="px-6 py-4 font-bold text-xs">${o.productTitle} (${o.quantity} Adet)</td>
-                        <td class="px-6 py-4 font-black text-orange-600 text-sm">${(o.price * o.quantity).toLocaleString('tr-TR')} TL</td>
-                        <td class="px-6 py-4">${statusBadge}</td>
-                        <td class="px-6 py-4 text-right space-x-1">
-                            <button onclick="window.updateOrderStatus('${o.id}', 'shipping')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 p-1.5 rounded-lg text-xs font-bold">Kargo</button>
-                            <button onclick="window.updateOrderStatus('${o.id}', 'delivered')" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 p-1.5 rounded-lg text-xs font-bold">Teslim</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            tbody.innerHTML = html;
-            lucide.createIcons();
-        }
-
-        window.updateOrderStatus = async (orderId, newStatus) => {
-            try { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'orders', orderId), { status: newStatus }); alert("Sipariş durumu güncellendi."); } catch(e) { alert("Hata: " + e.message); }
-        };
-
-        window.switchVendorTab = (tab) => {
-            ['products', 'orders', 'pricing', 'package'].forEach(t => {
-                document.getElementById(`vendor${t.charAt(0).toUpperCase() + t.slice(1)}View`).classList.add('hidden');
-                document.getElementById(`vtab-${t}`).className = "pb-3 font-black text-sm text-slate-400 border-b-2 border-transparent hover:text-slate-600 transition flex items-center gap-2 whitespace-nowrap";
-            });
-            document.getElementById(`vendor${tab.charAt(0).toUpperCase() + tab.slice(1)}View`).classList.remove('hidden');
-            document.getElementById(`vtab-${tab}`).className = "pb-3 font-black text-sm text-orange-600 border-b-2 border-orange-500 transition flex items-center gap-2 whitespace-nowrap";
-            lucide.createIcons();
-        };
-
-        window.applyBulkPriceUpdate = async () => {
-            const action = document.getElementById('bulkActionType').value;
-            const percentage = parseFloat(document.getElementById('bulkPercentage').value);
-            if(!percentage || percentage <= 0) { alert("Lütfen geçerli bir oran girin."); return; }
-            if(!confirm(`Tüm ürünlerin fiyatlarını %${percentage} ${action === 'increase' ? 'artırmak' : 'azaltmak'} istediğinize emin misiniz?`)) return;
-
-            try {
-                for(let p of myProducts) {
-                    let newPrice = action === 'increase' ? p.price * (1 + percentage / 100) : p.price * (1 - percentage / 100);
-                    newPrice = Math.round(newPrice * 100) / 100;
-                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id), { price: newPrice });
-                }
-                alert("Tüm ürün fiyatları başarıyla güncellendi!");
-            } catch(e) { alert("Hata: " + e.message); }
-        };
-
-        window.addVariantField = (name = '', price = '') => {
+        // VARYANT MANTIĞI
+        let variantCount = 0;
+        window.addVariantRow = (name = '', stock = '') => {
             const container = document.getElementById('variantsContainer');
-            const div = document.createElement('div');
-            div.className = "flex items-center gap-2 bg-slate-50 p-2 rounded-xl border";
-            div.innerHTML = `
-                <input type="text" placeholder="Varyant Adı (Örn: Kırmızı / M)" value="${name}" class="vName flex-1 p-2 bg-white rounded-lg border text-xs outline-none" required />
-                <input type="number" placeholder="Farklı Fiyat (İsteğe bağlı)" value="${price}" class="vPrice w-32 p-2 bg-white rounded-lg border text-xs outline-none" step="0.01" />
-                <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:bg-rose-50 p-1.5 rounded-lg"><i data-lucide="trash" class="w-4 h-4"></i></button>
+            const row = document.createElement('div');
+            row.className = 'flex gap-2 items-center variant-row';
+            row.id = `var-${variantCount}`;
+            row.innerHTML = `
+                <input type="text" placeholder="Örn: S Beden veya Kırmızı" class="flex-1 p-2 rounded-lg border border-orange-200 text-xs var-name" value="${name}">
+                <input type="number" placeholder="Stok" class="w-20 p-2 rounded-lg border border-orange-200 text-xs var-stock" value="${stock}">
+                <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 p-2 bg-rose-50 rounded-lg hover:bg-rose-100"><i data-lucide="x" class="w-4 h-4"></i></button>
             `;
-            container.appendChild(div);
+            container.appendChild(row);
+            variantCount++;
             lucide.createIcons();
         };
 
         window.openAddProduct = () => {
-            document.getElementById('modalTitle').innerText = "Yeni İlan Ekle";
-            document.getElementById('editingProductId').value = "";
+            const pkg = myStore.packageType || 'free';
+            const limit = pkg === 'free' ? 10 : (pkg === 'standard' ? 50 : 9999);
+            
+            if(myProducts.length >= limit) { window.showMessage(`Paket limitinize (${limit}) ulaştınız. Yeni ürün eklemek için paketinizi yükseltin.`, "error"); return; }
+            
+            document.getElementById('productModalTitle').innerText = "Yeni İlan Ekle";
+            document.getElementById('pEditingId').value = "";
+            document.getElementById('pImages').value = "";
             document.getElementById('pTitle').value = "";
             document.getElementById('pDesc').value = "";
             document.getElementById('pPrice').value = "";
-            document.getElementById('pOldPrice').value = "";
-            document.getElementById('variantsContainer').innerHTML = "";
-            document.getElementById('addProductModal').classList.remove('hidden');
+            document.getElementById('variantsContainer').innerHTML = ""; // Varyantları sıfırla
+            
+            const mediaLimitStr = pkg === 'free' ? "(1 Görsel, Video Yasak)" : (pkg === 'standard' ? "(3 Görsel, Video Serbest)" : "(Sınırsız Medya)");
+            document.getElementById('mediaLimitText').innerText = mediaLimitStr;
+
+            document.getElementById('productModal').classList.remove('hidden');
         };
 
-        window.openEditProduct = (id) => {
-            const p = myProducts.find(item => item.id === id);
+        window.closeProductModal = () => { document.getElementById('productModal').classList.add('hidden'); };
+
+        window.editProduct = (id) => {
+            const p = myProducts.find(x => x.id === id);
             if(!p) return;
-            document.getElementById('modalTitle').innerText = "İlanı Düzenle";
-            document.getElementById('editingProductId').value = p.id;
+
+            document.getElementById('productModalTitle').innerText = "İlanı Düzenle";
+            document.getElementById('pEditingId').value = p.id;
+            document.getElementById('pImages').value = ""; // Dosya input güvenlik gereği doldurulamaz
             document.getElementById('pTitle').value = p.title;
             document.getElementById('pDesc').value = p.description || "";
             document.getElementById('pCategory').value = p.category;
             document.getElementById('pPrice').value = p.price;
-            document.getElementById('pOldPrice').value = p.originalPrice || "";
             
-            const container = document.getElementById('variantsContainer');
-            container.innerHTML = "";
-            if(p.variants && p.variants.length > 0) {
-                p.variants.forEach(v => window.addVariantField(v.name, v.price));
-            }
-            document.getElementById('addProductModal').classList.remove('hidden');
+            document.getElementById('variantsContainer').innerHTML = "";
+            if(p.variants) p.variants.forEach(v => window.addVariantRow(v.name, v.stock));
+
+            document.getElementById('productModal').classList.remove('hidden');
         };
 
         window.duplicateProduct = async (id) => {
-            const p = myProducts.find(item => item.id === id);
+            const p = myProducts.find(x => x.id === id);
             if(!p) return;
-            try {
-                const copyData = { ...p, title: p.title + " (Kopya)", createdAt: Date.now() };
-                delete copyData.id;
-                await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products')), copyData);
-                alert("Ürün başarıyla çoğaltıldı.");
-            } catch(e) { alert("Hata: " + e.message); }
+            const limit = (myStore.packageType === 'free') ? 10 : (myStore.packageType === 'standard' ? 50 : 9999);
+            if(myProducts.length >= limit) { window.showMessage("Paket limitinize ulaştınız.", "error"); return; }
+
+            let clone = {...p}; delete clone.id; clone.title = clone.title + " (Kopya)"; clone.createdAt = Date.now();
+            try { await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products')), clone); window.showMessage("Ürün başarıyla çoğaltıldı."); }
+            catch(err) { window.showMessage("Çoğaltma hatası.", "error"); }
         };
 
-        window.closeAddProduct = () => document.getElementById('addProductModal').classList.add('hidden');
+        // GÖRSEL SIKIŞTIRMA (Base64)
+        function compressImage(file, max_size = 800) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        let width = img.width; let height = img.height;
+                        if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } } 
+                        else { if (height > max_size) { width *= max_size / height; height = max_size; } }
+                        canvas.width = width; canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7)); 
+                    };
+                };
+            });
+        }
 
         window.saveProduct = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btnSaveProduct');
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin inline"></i> Kaydediliyor...`; btn.disabled = true;
+            const btn = document.getElementById('btnSaveProduct'); btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin inline"></i> Kaydediliyor...`; btn.disabled = true;
+
+            const editId = document.getElementById('pEditingId').value;
+            const pkg = myStore.packageType || 'free';
+            const maxImages = pkg === 'free' ? 1 : (pkg === 'standard' ? 3 : 10);
+            const allowVideo = pkg !== 'free';
 
             try {
                 const files = Array.from(document.getElementById('pImages').files);
-                let compressedImages = [];
-                const editId = document.getElementById('editingProductId').value;
+                const compressedImages = [];
+                let videoUrl = null;
 
-                if (files.length > 0) {
-                    for (let i = 0; i < files.length; i++) {
+                let imgCount = 0;
+                for (let i = 0; i < files.length; i++) {
+                    if (files[i].type.startsWith('video/')) {
+                        if(!allowVideo) { window.showMessage("Ücretsiz pakette video yükleyemezsiniz.", "error"); throw new Error("Video engeli"); }
+                        // Video Base64 (Dikkat: Büyük dosyalar sistemi dondurabilir, Firebase Storage kullanılması önerilir. Prototiplik destek.)
+                        const reader = new FileReader();
+                        videoUrl = await new Promise((res) => { reader.onload = (ev) => res(ev.target.result); reader.readAsDataURL(files[i]); });
+                    } else if (files[i].type.startsWith('image/')) {
+                        if (imgCount >= maxImages) continue;
                         compressedImages.push(await compressImage(files[i]));
+                        imgCount++;
                     }
-                } else if (editId) {
-                    const existing = myProducts.find(p => p.id === editId);
-                    compressedImages = existing.images;
                 }
 
+                // Varyantları topla
                 const variants = [];
-                document.querySelectorAll('#variantsContainer > div').forEach(row => {
-                    const name = row.querySelector('.vName').value;
-                    const price = row.querySelector('.vPrice').value;
-                    if(name) variants.push({ name, price: price ? parseFloat(price) : null });
+                document.querySelectorAll('.variant-row').forEach(row => {
+                    const n = row.querySelector('.var-name').value;
+                    const s = row.querySelector('.var-stock').value;
+                    if(n) variants.push({name: n, stock: s ? parseInt(s) : 0});
                 });
 
+                const price = parseFloat(document.getElementById('pPrice').value);
                 const productData = {
-                    storeId: myStore.id,
-                    storeName: myStore.name,
-                    storeWhatsapp: myStore.whatsapp,
-                    district: myStore.district,
-                    title: document.getElementById('pTitle').value,
-                    description: document.getElementById('pDesc').value,
-                    category: document.getElementById('pCategory').value,
-                    price: parseFloat(document.getElementById('pPrice').value),
-                    originalPrice: document.getElementById('pOldPrice').value ? parseFloat(document.getElementById('pOldPrice').value) : null,
-                    images: compressedImages,
-                    variants: variants,
-                    isFeatured: (myStore.packageType === 'premium' || myStore.isPremium),
-                    createdAt: editId ? myProducts.find(p => p.id === editId).createdAt : Date.now()
+                    storeId: myStore.id, storeName: myStore.name, storeWhatsapp: myStore.whatsapp, district: myStore.district,
+                    title: document.getElementById('pTitle').value, description: document.getElementById('pDesc').value,
+                    category: document.getElementById('pCategory').value, price: price,
+                    variants: variants, updatedAt: Date.now()
                 };
 
-                if(editId) {
+                if(compressedImages.length > 0) productData.images = compressedImages;
+                if(videoUrl) productData.video = videoUrl;
+
+                if (editId) {
                     await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', editId), productData);
-                    alert("İlan güncellendi.");
+                    window.showMessage("İlan güncellendi.");
                 } else {
+                    if(compressedImages.length === 0) { throw new Error("En az 1 görsel eklemelisiniz."); }
+                    productData.createdAt = Date.now();
                     await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products')), productData);
-                    alert("İlan oluşturuldu.");
+                    window.showMessage("Yeni ilan yayınlandı.");
                 }
 
-                window.closeAddProduct();
+                window.closeProductModal();
                 e.target.reset();
-            } catch(err) { alert("Hata: " + err.message); }
+            } catch(err) { if(err.message !== "Video engeli") window.showMessage("Hata: " + err.message, "error"); }
             btn.innerHTML = "Kaydet ve Yayınla"; btn.disabled = false;
         };
 
         window.deleteProduct = async (id) => {
             if(confirm("Bu ilanı silmek istediğinize emin misiniz?")) {
-                try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id)); }
-                catch(err) { alert("Silme hatası: " + err.message); }
+                try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id)); window.showMessage("İlan silindi."); }
+                catch(err) { window.showMessage("Silme hatası.", "error"); }
             }
         };
 
-        window.requestPackageUpgrade = async (pkgName) => {
-            if(confirm(`${pkgName} paketine geçiş talebiniz Süper Admin paneline iletilecektir. Devam edilsin mi?`)) {
-                try {
-                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), { packageRequest: pkgName, requestDate: Date.now() });
-                    alert("Talep başarıyla gönderildi!");
-                } catch(e) { alert("Hata: " + e.message); }
-            }
+        // TOPLU FİYAT GÜNCELLEME
+        window.openBulkPriceModal = () => { document.getElementById('bulkPriceModal').classList.remove('hidden'); };
+        window.executeBulkPriceUpdate = async (e) => {
+            e.preventDefault();
+            const cat = document.getElementById('bulkCategory').value;
+            const action = document.getElementById('bulkAction').value;
+            const percent = parseFloat(document.getElementById('bulkPercentage').value);
+            
+            const btn = document.getElementById('btnBulkUpdate'); btn.innerText = "İşleniyor..."; btn.disabled = true;
+
+            const targets = cat === 'ALL' ? myProducts : myProducts.filter(p => p.category === cat);
+            if(targets.length === 0) { window.showMessage("Etkilenecek ürün bulunamadı.", "error"); btn.innerText = "Güncellemeyi Başlat"; btn.disabled = false; return; }
+
+            try {
+                const batch = writeBatch(db);
+                targets.forEach(p => {
+                    const pRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id);
+                    const oldPrice = p.price;
+                    let newPrice = 0;
+                    if(action === 'increase') newPrice = oldPrice + (oldPrice * (percent / 100));
+                    else newPrice = oldPrice - (oldPrice * (percent / 100));
+                    
+                    // Küsurat düzeltme (Örn: 99.99 formatı)
+                    newPrice = Math.round(newPrice * 100) / 100;
+                    
+                    const updates = { price: newPrice };
+                    if(action === 'decrease') updates.originalPrice = oldPrice; // İndirim yapıldıysa eski fiyatı çizik göstermek için kaydet
+                    
+                    batch.update(pRef, updates);
+                });
+                await batch.commit();
+                window.showMessage(`${targets.length} ürün başarıyla güncellendi.`);
+                document.getElementById('bulkPriceModal').classList.add('hidden');
+            } catch(err) { window.showMessage("Toplu güncelleme hatası.", "error"); }
+            
+            btn.innerText = "Güncellemeyi Başlat"; btn.disabled = false;
         };
+
+        // PAKET TALEBİ
+        window.requestPackageUpgrade = async (pkgType) => {
+            if(!confirm(`Yöneticiden ${pkgType.toUpperCase()} paketine geçiş talep edilsin mi?`)) return;
+            try {
+                // Not: Gerçek projede bir 'requests' tablosu olur. Burada adminin görmesi için store içine flag ekliyoruz.
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), { upgradeRequest: pkgType });
+                window.showMessage("Yükseltme talebiniz iletildi. Yöneticiler sizinle iletişime geçecektir.");
+            } catch (err) { window.showMessage("Talep iletilemedi.", "error"); }
+        };
+
+        lucide.createIcons();
     </script>
 </body>
 </html>
