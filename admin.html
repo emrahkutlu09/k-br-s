@@ -70,13 +70,16 @@
                 </div>
             </div>
 
+            <!-- Sekme Menüsü -->
             <div class="flex items-center gap-2 border-b border-slate-800 pb-px overflow-x-auto no-scrollbar">
                 <button onclick="window.switchTab('stores')" id="tab-stores" class="px-6 py-3 font-bold text-sm border-b-2 border-rose-500 text-rose-400 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="store" class="w-4 h-4"></i> Mağazalar & Paketler</button>
                 <button onclick="window.switchTab('requests')" id="tab-requests" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="bell" class="w-4 h-4"></i> Gelen Talepler <span id="requestBadge" class="hidden bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>
                 <button onclick="window.switchTab('products')" id="tab-products" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="layers" class="w-4 h-4"></i> İlan (Ürün) Denetimi</button>
+                <button onclick="window.switchTab('reviews')" id="tab-reviews" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="message-square" class="w-4 h-4"></i> Müşteri Yorumları</button>
                 <button onclick="window.switchTab('settings')" id="tab-settings" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition flex items-center gap-2 whitespace-nowrap"><i data-lucide="layout-template" class="w-4 h-4"></i> Sistem & Vitrin Ayarları</button>
             </div>
 
+            <!-- 1. MAĞAZALAR -->
             <div id="storesView" class="space-y-4">
                 <div class="bg-slate-800/30 border border-slate-700/50 rounded-3xl overflow-hidden">
                     <div class="overflow-x-auto">
@@ -98,6 +101,7 @@
                 </div>
             </div>
 
+            <!-- 2. TALEPLER -->
             <div id="requestsView" class="space-y-4 hidden">
                 <h3 class="font-bold text-lg text-white mb-2">Paket Yükseltme Talepleri</h3>
                 <div id="requestsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -105,6 +109,7 @@
                 </div>
             </div>
 
+            <!-- 3. ÜRÜN DENETİMİ -->
             <div id="productsView" class="space-y-4 hidden">
                 <div class="bg-slate-800/30 border border-slate-700/50 rounded-3xl overflow-hidden">
                     <div class="overflow-x-auto">
@@ -112,7 +117,7 @@
                             <thead class="bg-slate-800/50 text-slate-400 text-[10px] uppercase tracking-wider font-bold">
                                 <tr>
                                     <th class="px-6 py-4">Görsel, Başlık & Ürün ID</th>
-                                    <th class="px-6 py-4">Satıcı</th>
+                                    <th class="px-6 py-4">Satıcı & Mağaza ID</th>
                                     <th class="px-6 py-4">Fiyat</th>
                                     <th class="px-6 py-4 text-right">İşlem</th>
                                 </tr>
@@ -125,6 +130,23 @@
                 </div>
             </div>
 
+            <!-- 4. YORUM DENETİMİ (YENİ) -->
+            <div id="reviewsView" class="space-y-4 hidden">
+                <div class="bg-slate-800/30 border border-slate-700/50 rounded-3xl overflow-hidden p-4 sm:p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="font-black text-lg text-white flex items-center gap-2"><i data-lucide="message-square" class="w-5 h-5 text-orange-400"></i> Platform Değerlendirmeleri</h3>
+                            <p class="text-xs text-slate-400 mt-1">Müşterilerin yaptığı yorumları buradan inceleyebilir, kural ihlali yapanları silebilir veya düzenleyebilirsiniz.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="reviewsContainer">
+                        <!-- Yorumlar JS ile yüklenecek -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. AYARLAR -->
             <div id="settingsView" class="space-y-6 hidden">
                 <form onsubmit="window.saveSystemSettings(event)" class="space-y-8">
                     
@@ -265,6 +287,35 @@
         </main>
     </div>
 
+    <!-- YORUM DÜZENLEME MODALI -->
+    <div id="reviewEditModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onclick="window.closeReviewModal()"></div>
+        <div class="relative bg-slate-800 border border-slate-700 p-6 rounded-3xl w-full max-w-md shadow-2xl">
+            <h3 class="text-lg font-black text-white mb-4">Yorumu Düzenle</h3>
+            <input type="hidden" id="editReviewId">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Puan</label>
+                    <select id="editReviewRating" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-orange-500 outline-none">
+                        <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                        <option value="4">⭐⭐⭐⭐ (4)</option>
+                        <option value="3">⭐⭐⭐ (3)</option>
+                        <option value="2">⭐⭐ (2)</option>
+                        <option value="1">⭐ (1)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Yorum İçeriği</label>
+                    <textarea id="editReviewComment" rows="4" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-orange-500 outline-none"></textarea>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button onclick="window.closeReviewModal()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-xl font-bold text-sm transition">İptal</button>
+                    <button onclick="window.saveReviewEdit()" class="flex-1 bg-orange-600 hover:bg-orange-500 text-white py-3 rounded-xl font-bold text-sm transition">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -288,9 +339,11 @@
         const storesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'stores');
         const productsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'products');
         const settingsRef = doc(db, 'artifacts', APP_ID, 'public', 'settings');
+        const reviewsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'reviews');
 
         let dbStores = [];
         let dbProducts = [];
+        let dbReviews = [];
         let systemSettings = {};
         let currentTab = 'stores';
 
@@ -298,7 +351,7 @@
         window.showMessage = (msg, type = 'success') => {
             const toast = document.createElement('div');
             const color = type === 'error' ? 'bg-rose-500' : 'bg-emerald-500';
-            toast.className = `fixed bottom-5 right-5 ${color} text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-2xl z-[200] transition-all transform duration-300 translate-y-10 opacity-0 flex items-center gap-2`;
+            toast.className = `fixed bottom-5 right-5 ${color} text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-2xl z-[300] transition-all transform duration-300 translate-y-10 opacity-0 flex items-center gap-2`;
             toast.innerHTML = `<i data-lucide="${type === 'error' ? 'alert-circle' : 'check-circle'}" class="w-5 h-5"></i> ${msg}`;
             document.body.appendChild(toast);
             lucide.createIcons();
@@ -318,7 +371,7 @@
             input.select();
             document.execCommand('copy');
             document.body.removeChild(input);
-            window.showMessage("ID Kopyalandı: " + text);
+            window.showMessage("Kopyalandı: " + text);
         };
 
         // Auth Logic
@@ -345,7 +398,7 @@
 
         window.switchTab = (tab) => {
             currentTab = tab;
-            ['stores', 'requests', 'products', 'settings'].forEach(t => {
+            ['stores', 'requests', 'products', 'reviews', 'settings'].forEach(t => {
                 document.getElementById(`${t}View`).classList.add('hidden');
                 document.getElementById(`tab-${t}`).classList.remove('border-rose-500', 'text-rose-400');
                 document.getElementById(`tab-${t}`).classList.add('border-transparent', 'text-slate-500');
@@ -380,6 +433,14 @@
                 snap.forEach(doc => dbProducts.push({id: doc.id, ...doc.data()}));
                 document.getElementById('statProducts').innerText = dbProducts.length;
                 renderProducts();
+            });
+            
+            // Yorumları Dinle (YENİ)
+            onSnapshot(reviewsRef, (snap) => {
+                dbReviews = [];
+                snap.forEach(doc => dbReviews.push({id: doc.id, ...doc.data()}));
+                dbReviews.sort((a,b) => b.createdAt - a.createdAt); // En yeni en üstte
+                renderReviews();
             });
 
             onSnapshot(settingsRef, (snap) => {
@@ -416,7 +477,9 @@
                 html += `
                     <tr class="hover:bg-slate-800/50 transition">
                         <td class="px-6 py-4">
-                            <div class="font-black text-white text-sm">${s.name}</div>
+                            <a href="index.html" onclick="localStorage.setItem('admin_redirect_store', '${s.id}')" target="_blank" class="font-black text-white text-sm hover:text-rose-400 transition flex items-center gap-1.5" title="Satıcı Profiline Git">
+                                ${s.name} <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-500"></i>
+                            </a>
                             <div class="text-[10px] text-slate-400 font-mono mt-1 flex items-center gap-1.5">
                                 ID: <span class="text-slate-300 font-bold bg-slate-800 px-1.5 py-0.5 rounded">${s.id}</span>
                                 <button onclick="window.copyToClipboard('${s.id}')" class="text-slate-500 hover:text-white transition" title="ID Kopyala"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
@@ -498,13 +561,21 @@
                             <div>
                                 <div class="font-bold text-white text-xs line-clamp-1 max-w-[200px]">${p.title}</div>
                                 <div class="text-[10px] text-slate-400 font-mono mt-1 flex items-center gap-1.5">
-                                    ID: <span class="text-slate-300 font-bold bg-slate-800 px-1.5 py-0.5 rounded">${p.id}</span>
+                                    ÜRÜN ID: <span class="text-slate-300 font-bold bg-slate-800 px-1.5 py-0.5 rounded">${p.id}</span>
                                     <button onclick="window.copyToClipboard('${p.id}')" class="text-slate-500 hover:text-white transition" title="ID Kopyala"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
                                 </div>
                                 <div class="text-[10px] text-slate-500 mt-1">${p.category}</div>
                             </div>
                         </td>
-                        <td class="px-6 py-3 text-xs font-bold text-orange-400">${p.storeName}</td>
+                        <td class="px-6 py-3">
+                            <a href="index.html" onclick="localStorage.setItem('admin_redirect_store', '${p.storeId}')" target="_blank" class="text-xs font-bold text-orange-400 hover:text-orange-300 flex items-center gap-1" title="Satıcıya Git">
+                                ${p.storeName} <i data-lucide="external-link" class="w-3 h-3"></i>
+                            </a>
+                            <div class="text-[9px] text-slate-500 font-mono mt-1 flex items-center gap-1">
+                                MAĞAZA: <span class="text-slate-400">${p.storeId.substring(0,8)}...</span>
+                                <button onclick="window.copyToClipboard('${p.storeId}')" class="text-slate-600 hover:text-slate-400"><i data-lucide="copy" class="w-3 h-3"></i></button>
+                            </div>
+                        </td>
                         <td class="px-6 py-3 text-sm font-black text-emerald-400">${p.price.toLocaleString('tr-TR')} TL</td>
                         <td class="px-6 py-3 text-right">
                             <button onclick="window.deleteProductDirectly('${p.id}')" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 p-2 rounded-xl transition" title="İlanı Yayından Kaldır">
@@ -517,6 +588,89 @@
             tbody.innerHTML = html;
             lucide.createIcons();
         }
+        
+        // YENİ: Yorumları Listeleme Fonksiyonu
+        function renderReviews() {
+            const container = document.getElementById('reviewsContainer');
+            if(dbReviews.length === 0) { 
+                container.innerHTML = `<div class="col-span-full py-8 text-center text-slate-500 border border-slate-700 border-dashed rounded-2xl">Henüz platformda yapılmış bir yorum bulunmuyor.</div>`; 
+                return; 
+            }
+
+            let html = '';
+            dbReviews.forEach(r => {
+                const date = new Date(r.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+                const stars = '⭐'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                
+                // İlgili ürünü bulup adını yazalım (yoksa silinmiş olabilir)
+                const product = dbProducts.find(p => p.id === r.productId);
+                const pName = product ? product.title : 'Bilinmeyen/Silinmiş Ürün';
+
+                html += `
+                    <div class="bg-slate-800/80 border border-slate-700 p-5 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h4 class="font-black text-white text-sm">${r.userName}</h4>
+                                    <span class="text-[9px] text-slate-400">${date}</span>
+                                </div>
+                                <div class="text-[10px] tracking-widest">${stars}</div>
+                            </div>
+                            <div class="text-[9px] font-bold text-orange-400 mb-3 bg-orange-500/10 inline-block px-2 py-1 rounded truncate max-w-full" title="${pName}">
+                                📦 ${pName}
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed italic border-l-2 border-slate-600 pl-3 mb-4">"${r.comment}"</p>
+                        </div>
+                        
+                        <div class="flex gap-2 border-t border-slate-700/50 pt-3 mt-auto">
+                            <button onclick="window.openEditReview('${r.id}', ${r.rating}, \`${r.comment.replace(/`/g, '')}\`)" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white text-[10px] font-bold py-2 rounded-lg transition flex items-center justify-center gap-1"><i data-lucide="edit-2" class="w-3 h-3"></i> Düzenle</button>
+                            <button onclick="window.deleteReview('${r.id}')" class="flex-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 text-[10px] font-bold py-2 rounded-lg transition flex items-center justify-center gap-1"><i data-lucide="trash" class="w-3 h-3"></i> Sil</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // YENİ: Yorum Düzenleme İşlemleri
+        window.openEditReview = (id, currentRating, currentComment) => {
+            document.getElementById('editReviewId').value = id;
+            document.getElementById('editReviewRating').value = currentRating;
+            document.getElementById('editReviewComment').value = currentComment;
+            document.getElementById('reviewEditModal').classList.remove('hidden');
+        };
+
+        window.closeReviewModal = () => {
+            document.getElementById('reviewEditModal').classList.add('hidden');
+        };
+
+        window.saveReviewEdit = async () => {
+            const id = document.getElementById('editReviewId').value;
+            const newRating = parseInt(document.getElementById('editReviewRating').value);
+            const newComment = document.getElementById('editReviewComment').value;
+
+            try {
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', id), {
+                    rating: newRating,
+                    comment: newComment
+                });
+                window.showMessage("Yorum başarıyla güncellendi.");
+                window.closeReviewModal();
+            } catch(e) {
+                window.showMessage("Yorum güncellenemedi.", "error");
+            }
+        };
+
+        window.deleteReview = async (id) => {
+            if(!confirm("Bu yorumu tamamen silmek istediğinize emin misiniz?")) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', id));
+                window.showMessage("Yorum sistemden kalıcı olarak silindi.");
+            } catch(e) {
+                window.showMessage("Silme işlemi başarısız.", "error");
+            }
+        };
 
         window.updateStoreStatus = async (id, status) => {
             try {
@@ -564,6 +718,7 @@
         };
 
         window.deleteProductDirectly = async (id) => {
+            if(!confirm("Bu ilanı yayından kaldırmak istediğinize emin misiniz?")) return;
             try {
                 await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id));
                 window.showMessage("Ürün başarıyla silindi.");
