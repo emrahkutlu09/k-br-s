@@ -232,9 +232,18 @@
                         <span id="detailReviewCount" class="text-xs font-bold text-slate-400"></span>
                     </div>
 
-                    <div class="mb-8 p-5 bg-orange-50/50 rounded-2xl border border-orange-100">
-                        <div id="detailOriginalPrice" class="text-sm text-slate-400 line-through font-bold mb-1 hidden"></div>
-                        <div id="detailPrice" class="text-4xl font-black text-orange-600"></div>
+                    <!-- YENİ: Açıklama Alanı -->
+                    <div class="mb-6">
+                        <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Ürün Açıklaması</h4>
+                        <p id="detailDescription" class="text-sm text-slate-600 leading-relaxed max-h-32 overflow-y-auto pr-2 whitespace-pre-wrap no-scrollbar"></p>
+                    </div>
+
+                    <div class="mb-8 p-5 bg-orange-50/50 rounded-2xl border border-orange-100 flex items-center justify-between">
+                        <div>
+                            <div id="detailOriginalPrice" class="text-sm text-slate-400 line-through font-bold mb-1 hidden"></div>
+                            <div id="detailPrice" class="text-4xl font-black text-orange-600"></div>
+                        </div>
+                        <div id="detailDiscountBadge" class="hidden bg-rose-500 text-white font-black text-lg px-4 py-2 rounded-xl shadow-sm"></div>
                     </div>
 
                     <!-- Satıcı Bilgisi -->
@@ -291,6 +300,7 @@
                         images: ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"],
                         storeName: "Moda Butik",
                         storeWhatsapp: "905551112233",
+                        description: "Yüzde yüz pamuklu, terletmeyen, günlük kullanıma uygun rahat ve şık oversize unisex tasarım tişört. Makinada 30 derecede yıkanabilir.",
                         rating: 4.5,
                         reviewCount: 128,
                         isNew: true,
@@ -305,6 +315,7 @@
                         images: ["https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=500&q=80"],
                         storeName: "Girne Teknoloji & Tasarım",
                         storeWhatsapp: "905338881234",
+                        description: "Modern tasarımlı, silinebilir ithal kumaştan üretilmiş lüks L köşe koltuk. Sağ ve sol yön seçenekleri mevcuttur. Kıbrıs içi ücretsiz teslimat.",
                         rating: 4.9,
                         reviewCount: 38,
                         category: "Ev & Yaşam",
@@ -462,18 +473,27 @@
 
             // Metin Bilgileri
             document.getElementById('detailTitle').innerText = product.title;
+            document.getElementById('detailDescription').innerText = product.description || "Bu ürün için henüz bir açıklama girilmemiştir.";
             document.getElementById('detailRating').innerText = (product.rating || 5.0).toFixed(1);
             document.getElementById('detailReviewCount').innerText = `(${product.reviewCount || 1} Değerlendirme)`;
             
             const priceEl = document.getElementById('detailPrice');
             const originalPriceEl = document.getElementById('detailOriginalPrice');
+            const discountBadgeEl = document.getElementById('detailDiscountBadge');
+            
             priceEl.innerText = product.price.toLocaleString('tr-TR', {minimumFractionDigits: 2}) + ' TL';
             
             if(product.originalPrice && product.originalPrice > product.price) {
                 originalPriceEl.innerText = product.originalPrice.toLocaleString('tr-TR', {minimumFractionDigits: 2}) + ' TL';
                 originalPriceEl.classList.remove('hidden');
+                
+                // İndirim yüzdesini hesapla ve rozeti göster
+                const discountRate = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+                discountBadgeEl.innerText = `-%${discountRate}`;
+                discountBadgeEl.classList.remove('hidden');
             } else {
                 originalPriceEl.classList.add('hidden');
+                discountBadgeEl.classList.add('hidden');
             }
 
             document.getElementById('detailStoreName').innerText = product.storeName;
