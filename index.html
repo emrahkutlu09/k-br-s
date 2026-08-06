@@ -84,6 +84,10 @@
                                 </div>
                                 <div id="authMenu" class="p-2 space-y-1 hidden">
                                     <div class="px-3 py-2 text-[10px] text-slate-400 font-bold border-b border-slate-100 mb-1 truncate" id="dropdownEmail"></div>
+                                    <!-- YENİ: SİPARİŞLERİM MENÜSÜ -->
+                                    <button onclick="window.openMyOrders()" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
+                                        <i data-lucide="package" class="w-4 h-4"></i> Siparişlerim
+                                    </button>
                                     <a href="satici.html" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
                                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i> İşletme Panelim
                                     </a>
@@ -129,6 +133,20 @@
             </div>
         </footer>
 
+        <!-- MÜŞTERİ SİPARİŞLERİM MODALI (YENİ) -->
+        <div id="myOrdersModal" class="fixed inset-0 z-[80] hidden flex items-center justify-center p-4 sm:p-6">
+            <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="window.closeMyOrders()"></div>
+            <div class="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh]" id="myOrdersPanel">
+                <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 sticky top-0 z-10">
+                    <h2 class="text-xl font-black text-slate-900 flex items-center gap-2"><i data-lucide="package" class="w-6 h-6 text-orange-500"></i> Siparişlerim</h2>
+                    <button onclick="window.closeMyOrders()" class="bg-white p-2 rounded-full text-slate-400 hover:bg-slate-200 transition shadow-sm border border-slate-100"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-6 overflow-y-auto bg-slate-50 flex-1 space-y-4 no-scrollbar" id="myOrdersContainer">
+                    <!-- JS ile doldurulacak -->
+                </div>
+            </div>
+        </div>
+
         <!-- MAĞAZALARA GÖRE GRUPLANMIŞ SEPET ÇEKMECESİ -->
         <div id="cartDrawer" class="fixed inset-0 z-[70] hidden">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="window.toggleCart()"></div>
@@ -152,7 +170,7 @@
             </div>
         </div>
 
-        <!-- ÜRÜN DETAY MODALI (Varyant, Satıcı & Yorumlar) -->
+        <!-- ÜRÜN DETAY MODALI (Varyant & Mağaza Profil Yönlendirmeli) -->
         <div id="productDetailModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 sm:p-6">
             <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="window.closeProductDetail()"></div>
             <div class="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh]" id="productDetailPanel">
@@ -167,7 +185,7 @@
                     <div id="detailThumbnails" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar"></div>
                 </div>
 
-                <!-- Sağ Taraf (Detaylar & Yorumlar) -->
+                <!-- Sağ Taraf (Detaylar) -->
                 <div class="w-full md:w-1/2 p-6 sm:p-8 flex flex-col overflow-y-auto no-scrollbar bg-white relative">
                     <h2 id="detailTitle" class="text-2xl sm:text-3xl font-black text-slate-900 mb-3"></h2>
                     
@@ -205,32 +223,31 @@
                         <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 group-hover:text-orange-500 transition-colors"></i>
                     </div>
 
-                    <!-- SEPETE EKLE BUTONU (Normal akışa alındı) -->
+                    <input type="hidden" id="detailStoreIdHidden">
+                    <input type="hidden" id="detailProductId">
+
+                    <!-- SEPETE EKLE BUTONU (Akışa eklendi) -->
                     <div class="mb-8">
-                        <input type="hidden" id="detailStoreIdHidden">
-                        <input type="hidden" id="detailProductId">
                         <button id="detailAddToCartBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-xl font-black text-sm transition-all shadow-lg flex items-center justify-center gap-2">
                             <i data-lucide="shopping-cart" class="w-5 h-5"></i> Sepete Ekle
                         </button>
                     </div>
 
-                    <!-- MÜŞTERİ YORUMLARI BÖLÜMÜ (Butonun altına taşındı) -->
+                    <!-- MÜŞTERİ YORUMLARI BÖLÜMÜ -->
                     <div class="border-t border-slate-200 pt-8 mb-4">
                         <h3 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2"><i data-lucide="star" class="w-5 h-5 text-yellow-500 fill-yellow-500"></i> Müşteri Değerlendirmeleri</h3>
                         
-                        <!-- Listeleme Alanı -->
-                        <div id="detailReviewsContainer" class="space-y-4 mb-6">
-                            <!-- Yorumlar buraya gelecek -->
-                        </div>
+                        <div id="detailReviewsContainer" class="space-y-4 mb-6"></div>
 
-                        <!-- Yorum Yapma / Kilit Alanı -->
+                        <!-- 3. YÖNTEM GÜVENLİK BİLDİRİMİ (Sadece siparişi 'Teslim Aldım' olarak işaretleyenler yorum yapabilir) -->
                         <div id="reviewLockedMsg" class="bg-blue-50 text-blue-700 p-4 rounded-xl text-xs font-bold flex items-center gap-3 border border-blue-100">
                             <i data-lucide="lock" class="w-5 h-5 shrink-0"></i> 
-                            Sadece bu ürün için sipariş işlemi başlatan müşterilerimiz yorum yapabilir.
+                            Yorum yapabilmek için sipariş vermeli ve "Siparişlerim" menüsünden ürünü "Teslim Aldım" olarak işaretlemelisiniz.
                         </div>
 
+                        <!-- YORUM FORMU -->
                         <div id="reviewFormContainer" class="hidden bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                            <h4 class="font-bold text-slate-800 mb-3 text-sm">Ürünü Değerlendir</h4>
+                            <h4 class="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> Ürünü Değerlendir</h4>
                             <form onsubmit="window.submitReview(event)" class="space-y-3">
                                 <div>
                                     <label class="block text-[10px] font-bold text-slate-500 mb-1">Puanınız</label>
@@ -250,6 +267,7 @@
                             </form>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -299,7 +317,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // GÜNCELLEME: Yorum ve Sipariş durumlarını güncellemek için gerekli kütüphaneler eklendi (updateDoc vs.)
+        import { getFirestore, collection, onSnapshot, doc, addDoc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -318,9 +337,9 @@
         const APP_ID = 'kibris-pazar'; 
         const productsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'products');
         const storesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'stores');
+        const settingsRef = doc(db, 'artifacts', APP_ID, 'public', 'settings');
         const ordersRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'orders');
         const reviewsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'reviews');
-        const settingsRef = doc(db, 'artifacts', APP_ID, 'public', 'settings');
 
         let dbProducts = [];
         let dbStores = [];
@@ -337,10 +356,10 @@
         
         let isCartOpen = false;
         let isUserMenuOpen = false;
+        
         let activeCategory = '';
         let activeDistrict = '';
 
-        // Toast Message UI
         window.showMessage = (msg, type = 'success') => {
             const toast = document.createElement('div');
             const color = type === 'error' ? 'bg-rose-500' : 'bg-slate-900';
@@ -447,7 +466,10 @@
 
         window.scrollFeatured = (direction) => {
             const container = document.getElementById('featuredContainer');
-            if(container) { const scrollAmount = direction * (window.innerWidth > 640 ? 600 : 300); container.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+            if(container) {
+                const scrollAmount = direction * (window.innerWidth > 640 ? 600 : 300);
+                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
         };
 
         window.handleBannerClick = (type, value) => {
@@ -477,7 +499,7 @@
                         <div class="text-[10px] text-slate-500 font-bold mb-1 truncate">${p.storeName} | ${p.district}</div>
                         <h3 class="text-xs font-bold text-slate-800 mb-1 line-clamp-2">${p.title}</h3>
                         ${hasVariants ? `<span class="text-[9px] font-bold text-orange-500 mb-1">Seçenekler Mevcut</span>` : '<span class="text-[9px] mb-1 opacity-0">.</span>'}
-                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between mt-auto">
+                        <div class="pt-2 border-t border-slate-100 flex items-end justify-between mt-auto">
                             <div>
                                 ${p.originalPrice > p.price ? `<span class="block text-[10px] text-slate-400 line-through mb-0.5">${p.originalPrice.toLocaleString('tr-TR')} TL</span>` : ''}
                                 <span class="text-sm font-black text-orange-600 block">${p.price.toLocaleString('tr-TR')} TL</span>
@@ -493,6 +515,7 @@
 
         window.renderHome = (searchQuery = '') => {
             const mainContent = document.getElementById('mainContent');
+            
             const activeStoreIds = dbStores.filter(s => s.status === 'active' && (!s.expiryDate || s.expiryDate > Date.now())).map(s => s.id);
             let displayProducts = dbProducts.filter(p => activeStoreIds.includes(p.storeId));
             
@@ -500,12 +523,13 @@
             displayProducts.sort((a, b) => {
                 const aPrem = premiumStoreIds.includes(a.storeId) ? 1 : 0;
                 const bPrem = premiumStoreIds.includes(b.storeId) ? 1 : 0;
-                return bPrem - aPrem;
+                return bPrem - aPrem; 
             });
 
             let html = '';
 
             if (!searchQuery && !activeCategory && !activeDistrict) {
+                
                 const mainBgContent = appSettings.mainBanner.image ? `<img src="${appSettings.mainBanner.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 z-0"></div>`;
                 const side1BgContent = appSettings.sideBanner1.image ? `<img src="${appSettings.sideBanner1.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-rose-400 z-0"></div>`;
                 const side2BgContent = appSettings.sideBanner2.image ? `<img src="${appSettings.sideBanner2.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 z-0"></div>`;
@@ -514,39 +538,45 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
                         <div class="md:col-span-2 rounded-3xl h-[280px] sm:h-[320px] relative overflow-hidden flex flex-col justify-center p-8 sm:p-12 text-white shadow-xl group">
                             ${mainBgContent}
-                            <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/30 to-transparent z-0"></div> 
+                            <div class="absolute left-0 top-0 w-full md:w-3/4 h-full bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-0"></div> 
+                            
                             <div class="z-10 max-w-sm relative">
                                 <span class="bg-orange-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full mb-4 inline-block tracking-wider shadow-lg shadow-orange-500/30">${appSettings.mainBanner.tag}</span>
                                 <h1 class="text-3xl sm:text-4xl font-black mb-3 leading-tight transform transition-transform duration-700 group-hover:translate-x-2">${appSettings.mainBanner.title}</h1>
                                 <p class="text-slate-300 text-sm font-medium mb-6 line-clamp-2">${appSettings.mainBanner.subtitle}</p>
                                 <button onclick="window.handleBannerClick('${appSettings.mainBanner.linkType}', '${appSettings.mainBanner.linkValue}')" class="bg-white text-slate-900 px-6 py-3 rounded-xl font-black text-sm hover:bg-orange-50 hover:text-orange-600 transition-all flex items-center gap-2 w-max shadow-lg shadow-white/10 group-hover:shadow-white/30 relative z-20">${appSettings.mainBanner.btnText} <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
                             </div>
+                            ${!appSettings.mainBanner.image ? `<div class="absolute -right-20 -bottom-20 w-80 h-80 border-[40px] border-white/5 rounded-full blur-md z-0 pointer-events-none"></div><i data-lucide="shopping-bag" class="absolute -right-6 top-10 w-48 h-48 text-white/5 -rotate-12 z-0 pointer-events-none"></i>` : ''}
                         </div>
                         
                         <div class="flex flex-col gap-4">
                             <div class="flex-1 rounded-3xl p-6 text-white relative overflow-hidden shadow-lg cursor-pointer hover:shadow-xl transition-all hover:-translate-y-1 group" onclick="window.handleBannerClick('${appSettings.sideBanner1.linkType}', '${appSettings.sideBanner1.linkValue}')">
                                 ${side1BgContent}
-                                ${appSettings.sideBanner1.image ? '<div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent z-0"></div>' : ''}
-                                <div class="z-10 relative flex flex-col justify-end h-full">
+                                ${appSettings.sideBanner1.image ? '<div class="absolute inset-0 bg-gradient-to-r from-slate-900/80 to-transparent z-0"></div>' : ''}
+                                <div class="z-10 relative">
                                     <h3 class="font-black text-xl mb-1">${appSettings.sideBanner1.title}</h3>
                                     <p class="text-xs text-orange-50 font-medium line-clamp-1">${appSettings.sideBanner1.subtitle}</p>
                                 </div>
-                                <i data-lucide="${appSettings.sideBanner1.icon}" class="absolute -right-4 -top-4 w-24 h-24 text-white/20 rotate-12 group-hover:scale-110 transition-transform duration-500 z-0 pointer-events-none"></i>
+                                <i data-lucide="${appSettings.sideBanner1.icon}" class="absolute -right-4 -bottom-4 w-28 h-28 text-white/20 -rotate-12 group-hover:scale-110 transition-transform duration-500 z-0 pointer-events-none"></i>
                             </div>
                             <div class="flex-1 rounded-3xl p-6 text-white relative overflow-hidden shadow-lg cursor-pointer hover:shadow-xl transition-all hover:-translate-y-1 group" onclick="window.handleBannerClick('${appSettings.sideBanner2.linkType}', '${appSettings.sideBanner2.linkValue}')">
                                 ${side2BgContent}
-                                ${appSettings.sideBanner2.image ? '<div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent z-0"></div>' : ''}
-                                <div class="z-10 relative flex flex-col justify-end h-full">
+                                ${appSettings.sideBanner2.image ? '<div class="absolute inset-0 bg-gradient-to-r from-slate-900/80 to-transparent z-0"></div>' : ''}
+                                <div class="z-10 relative">
                                     <h3 class="font-black text-xl mb-1">${appSettings.sideBanner2.title}</h3>
                                     <p class="text-xs text-teal-50 font-medium line-clamp-1">${appSettings.sideBanner2.subtitle}</p>
                                 </div>
-                                <i data-lucide="${appSettings.sideBanner2.icon}" class="absolute -right-4 -top-4 w-24 h-24 text-white/20 rotate-12 group-hover:scale-110 transition-transform duration-500 z-0 pointer-events-none"></i>
+                                <i data-lucide="${appSettings.sideBanner2.icon}" class="absolute -right-4 -bottom-4 w-28 h-28 text-white/20 -rotate-12 group-hover:scale-110 transition-transform duration-500 z-0 pointer-events-none"></i>
                             </div>
                         </div>
                     </div>
                 `;
 
-                html += `<div class="mb-10"><h2 class="text-xl font-black text-slate-900 mb-5">Kategorilere Göz At</h2><div class="grid grid-cols-3 sm:grid-cols-6 gap-4">`;
+                html += `
+                    <div class="mb-10">
+                        <h2 class="text-xl font-black text-slate-900 mb-5">Kategorilere Göz At</h2>
+                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-4">
+                `;
                 categoriesList.forEach(cat => {
                     const iconName = categoryIcons[cat] || 'box';
                     html += `
@@ -569,6 +599,13 @@
                             <div id="featuredContainer" class="flex gap-4 sm:gap-5 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth snap-x">
                     `;
                     featuredProducts.forEach(p => { html += `<div class="snap-start shrink-0">` + window.createProductCard(p) + `</div>`; });
+                    html += `</div></div>`;
+                }
+
+                const favProducts = displayProducts.filter(p => favorites.includes(p.id));
+                if (favProducts.length > 0) {
+                    html += `<div class="mb-12 bg-rose-50 rounded-3xl p-6 border border-rose-100"><h2 class="text-xl font-black text-rose-900 mb-5">Favorileriniz</h2><div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">`;
+                    favProducts.forEach(p => { html += window.createProductCard(p); });
                     html += `</div></div>`;
                 }
 
@@ -666,13 +703,13 @@
             }
             
             document.getElementById('detailAddToCartBtn').onclick = () => { window.addToCart(id); };
-            
-            // --- YORUMLARI ÇEKME VE KONTROL ---
+
+            // YORUMLARI ÇEKME VE 3. YÖNTEM KONTROLÜ
             document.getElementById('detailReviewsContainer').innerHTML = `<div class="text-center text-slate-400 text-xs py-4"><i data-lucide="loader-2" class="w-4 h-4 animate-spin mx-auto mb-1"></i> Yorumlar yükleniyor...</div>`;
             lucide.createIcons();
             
             try {
-                // Yorumları getir
+                // 1. Ürünün yorumlarını listele
                 const rq = query(reviewsRef, where("productId", "==", id));
                 const rSnap = await getDocs(rq);
                 let reviewsHtml = '';
@@ -700,7 +737,7 @@
                 document.getElementById('detailReviewsContainer').innerHTML = reviewsHtml;
                 lucide.createIcons();
 
-                // Kullanıcının yorum yapma hakkı var mı kontrol et (Sadece giriş yapmış ve ürünü satın/teslim almışsa)
+                // 2. Müşterinin "Yorum Yapma" yetkisini kontrol et (3. YÖNTEM)
                 let canReview = false;
                 if (auth.currentUser && !auth.currentUser.isAnonymous) {
                     const uid = auth.currentUser.uid;
@@ -709,8 +746,8 @@
                     
                     oSnap.forEach(orderDoc => {
                         const order = orderDoc.data();
-                        // KURAL DEĞİŞTİ: Teslim edildi şartı kalktı. Ürün sipariş edildiyse yorum açılır.
-                        if (order.productIds && order.productIds.includes(id)) {
+                        // ŞART: Ürünü satın almış olmalı VE Siparişin durumu 'delivered' (Teslim Edildi) olmalı!
+                        if (order.productIds && order.productIds.includes(id) && order.status === 'delivered') {
                             canReview = true;
                         }
                     });
@@ -728,7 +765,7 @@
                 console.error("Yorumlar yüklenirken hata:", err);
                 document.getElementById('detailReviewsContainer').innerHTML = `<p class="text-xs text-rose-500">Yorumlar yüklenemedi.</p>`;
             }
-
+            
             // Modal'ı Aç
             document.getElementById('productDetailModal').classList.remove('hidden');
             setTimeout(() => { document.getElementById('productDetailPanel').classList.remove('scale-95', 'opacity-0'); }, 10);
@@ -748,18 +785,17 @@
                 const reviewData = {
                     productId: pId,
                     userId: auth.currentUser.uid,
-                    userName: auth.currentUser.email.split('@')[0], // Gizlilik için sadece ismin başı
+                    userName: auth.currentUser.email.split('@')[0],
                     rating: rating,
                     comment: comment,
                     createdAt: Date.now()
                 };
                 
                 await addDoc(reviewsRef, reviewData);
-                window.showMessage("Yorumunuz başarıyla eklendi! Teşekkür ederiz.");
+                window.showMessage("Yorumunuz başarıyla eklendi! Müşteri güvenine katkınız için teşekkürler.");
                 
-                // Formu gizle ve yorumları tekrar yükle
                 document.getElementById('reviewFormContainer').classList.add('hidden');
-                window.openProductDetail(pId); // Sayfayı yenilemek için fonksiyonu tekrar çağır
+                window.openProductDetail(pId); // Yenile
 
             } catch (err) {
                 window.showMessage("Yorum gönderilirken bir hata oluştu.", "error");
@@ -767,6 +803,104 @@
             
             btn.innerHTML = "Yorumu Gönder";
             btn.disabled = false;
+        };
+
+        // YENİ: SİPARİŞLERİM (MÜŞTERİ PANELİ) FONKSİYONLARI
+        window.openMyOrders = async () => {
+            document.getElementById('userDropdown').classList.add('hidden');
+            isUserMenuOpen = false;
+
+            if(!auth.currentUser || auth.currentUser.isAnonymous) {
+                window.showMessage("Siparişlerinizi görmek için giriş yapmalısınız.", "error");
+                return;
+            }
+
+            document.getElementById('myOrdersModal').classList.remove('hidden');
+            setTimeout(() => { document.getElementById('myOrdersPanel').classList.remove('scale-95', 'opacity-0'); }, 10);
+            
+            document.getElementById('myOrdersContainer').innerHTML = `<div class="text-center py-10"><i data-lucide="loader-2" class="w-8 h-8 animate-spin mx-auto text-orange-500 mb-3"></i><p class="text-slate-500 font-bold text-sm">Siparişleriniz yükleniyor...</p></div>`;
+            lucide.createIcons();
+
+            try {
+                const uid = auth.currentUser.uid;
+                const oq = query(ordersRef, where("buyerUid", "==", uid));
+                const oSnap = await getDocs(oq);
+                
+                if (oSnap.empty) {
+                    document.getElementById('myOrdersContainer').innerHTML = `<div class="text-center py-10 bg-white rounded-2xl border border-slate-200 shadow-sm"><i data-lucide="package-x" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i><p class="text-slate-500 font-bold">Henüz bir siparişiniz bulunmuyor.</p></div>`;
+                    lucide.createIcons();
+                    return;
+                }
+
+                let ordersHtml = '';
+                const ordersList = [];
+                oSnap.forEach(doc => ordersList.push({id: doc.id, ...doc.data()}));
+                ordersList.sort((a,b) => b.createdAt - a.createdAt);
+
+                ordersList.forEach(order => {
+                    const date = new Date(order.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+                    let statusBadge = '';
+                    let actionBtn = '';
+
+                    if(order.status === 'pending' || order.status === 'processing' || order.status === 'shipped') {
+                        statusBadge = '<span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-black">Teslimat Bekleniyor</span>';
+                        actionBtn = `<button onclick="window.markAsReceived('${order.id}')" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black px-4 py-2.5 rounded-xl transition shadow-lg shadow-emerald-500/30 flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4"></i> Ürünü Teslim Aldım</button>`;
+                    } else if(order.status === 'delivered') {
+                        statusBadge = '<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-black">Teslim Edildi</span>';
+                        actionBtn = `<span class="text-xs text-slate-400 font-bold flex items-center gap-1.5 bg-slate-100 px-3 py-2 rounded-lg"><i data-lucide="star" class="w-4 h-4 text-yellow-500"></i> Yorum Yapabilirsiniz</span>`;
+                    } else if(order.status === 'cancelled') {
+                        statusBadge = '<span class="bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs font-black">İptal Edildi</span>';
+                        actionBtn = `<span class="text-xs text-slate-400 font-bold">İşlem Kapalı</span>`;
+                    }
+
+                    let itemsHtml = order.items.map(i => `<li class="text-sm text-slate-600 border-b border-slate-100 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0">${i.qty}x ${i.title} <span class="font-black text-slate-800 ml-2 float-right">${i.price} TL</span></li>`).join('');
+
+                    ordersHtml += `
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-6 justify-between items-start">
+                            <div class="flex-1 w-full">
+                                <div class="flex flex-wrap items-center gap-3 mb-3">
+                                    <h3 class="font-black text-slate-800 text-lg">Sipariş #${order.id.substring(0,6).toUpperCase()}</h3>
+                                    ${statusBadge}
+                                </div>
+                                <p class="text-xs text-slate-400 font-medium mb-4"><i data-lucide="calendar" class="w-3.5 h-3.5 inline mb-0.5"></i> ${date}</p>
+                                <ul class="mb-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    ${itemsHtml}
+                                </ul>
+                                <div class="text-sm font-bold text-slate-700">Toplam Tutar: <span class="text-orange-600 font-black text-xl ml-2">${order.totalAmount.toLocaleString('tr-TR')} TL</span></div>
+                            </div>
+                            <div class="w-full sm:w-auto sm:max-w-[200px] bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col gap-3 items-center text-center shrink-0">
+                                ${order.status !== 'delivered' && order.status !== 'cancelled' ? '<p class="text-[10px] text-slate-500 font-bold">Ürünü teslim aldığınızı onaylayarak satıcıya destek olun ve yorum hakkı kazanın.</p>' : ''}
+                                ${actionBtn}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('myOrdersContainer').innerHTML = ordersHtml;
+                lucide.createIcons();
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('myOrdersContainer').innerHTML = `<div class="text-center py-10"><p class="text-rose-500 font-bold">Siparişler yüklenirken hata oluştu.</p></div>`;
+            }
+        };
+
+        window.closeMyOrders = () => {
+            document.getElementById('myOrdersPanel').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { document.getElementById('myOrdersModal').classList.add('hidden'); }, 300);
+        };
+
+        window.markAsReceived = async (orderId) => {
+            if(!confirm("Ürünü sorunsuz bir şekilde teslim aldığınızı onaylıyor musunuz?")) return;
+            
+            try {
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'orders', orderId), { status: 'delivered' });
+                window.showMessage("Teşekkürler! Siparişiniz teslim edildi olarak işaretlendi. Artık aldığınız ürünlere yorum yapabilirsiniz.");
+                window.openMyOrders(); 
+            } catch (err) {
+                console.error(err);
+                window.showMessage("İşlem başarısız oldu.", "error");
+            }
         };
 
         window.selectVariant = (idx) => {
@@ -946,7 +1080,7 @@
                 let html = '';
                 for (const [storeId, orderData] of Object.entries(ordersByStore)) {
                     html += `
-                        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm mb-4">
+                        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
                             <div class="bg-slate-50 px-4 py-3 border-b border-slate-100 flex items-center gap-2 font-black text-slate-800"><i data-lucide="store" class="w-4 h-4 text-orange-500"></i> ${orderData.storeName}</div>
                             <div class="p-4 space-y-4">
                     `;
@@ -1015,7 +1149,7 @@
             const orderData = ordersByStore[storeId];
             if (!orderData) return;
 
-            // --- YENİ: SİPARİŞİ VERİTABANINA KAYDETME (Yorum Kilidini Açmak İçin) ---
+            // 3. YÖNTEM İÇİN SİPARİŞİ VERİTABANINA KAYDETME
             try {
                 const buyerUid = auth.currentUser ? auth.currentUser.uid : 'misafir';
                 const buyerName = (auth.currentUser && !auth.currentUser.isAnonymous && auth.currentUser.email) ? auth.currentUser.email : 'WhatsApp Müşterisi';
@@ -1023,10 +1157,10 @@
                 const dbOrder = {
                     storeId: storeId,
                     buyerUid: buyerUid,
-                    customerName: buyerName, // Satıcı panelinde görünecek isim
+                    customerName: buyerName, 
                     customerPhone: 'WhatsApp üzerinden', 
                     items: orderData.items.map(i => ({ title: i.product.title + (i.variant ? ` (${i.variant})` : ''), qty: i.quantity, price: i.product.price })),
-                    productIds: orderData.items.map(i => i.product.id), // Hangi ürünleri aldığı (Yorum kontrolü için)
+                    productIds: orderData.items.map(i => i.product.id), 
                     totalAmount: orderData.total,
                     status: 'pending',
                     createdAt: Date.now()
@@ -1036,7 +1170,6 @@
             } catch (err) {
                 console.error("Sipariş veritabanına kaydedilemedi:", err);
             }
-            // ---------------------------------------------------------------------
 
             let phone = orderData.storePhone.replace(/\D/g,'');
             if(!phone) {
