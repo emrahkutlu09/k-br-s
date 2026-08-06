@@ -65,8 +65,11 @@
     <div id="dashboardScreen" class="hidden flex-col min-h-screen">
         <div class="bg-slate-900 text-white p-4 sm:px-8 flex justify-between items-center shadow-md">
             <div>
-                <h1 class="font-black text-lg" id="storeNameDisplay">Yükleniyor...</h1>
-                <p class="text-xs text-slate-400 font-bold"><i data-lucide="map-pin" class="w-3 h-3 inline"></i> <span id="storeDistrictDisplay"></span></p>
+                <div class="flex items-center gap-2">
+                    <h1 class="font-black text-lg" id="storeNameDisplay">Yükleniyor...</h1>
+                    <span id="storePackageBadge" class="bg-orange-500 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase">Ücretsiz Paket</span>
+                </div>
+                <p class="text-xs text-slate-400 font-bold mt-0.5"><i data-lucide="map-pin" class="w-3 h-3 inline"></i> <span id="storeDistrictDisplay"></span></p>
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
@@ -83,7 +86,10 @@
 
         <main class="flex-1 max-w-5xl mx-auto w-full p-4 sm:p-8">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-black">İlanlarım</h2>
+                <div>
+                    <h2 class="text-xl font-black">İlanlarım</h2>
+                    <p class="text-xs text-slate-500 font-medium" id="productCountInfo">Aktif İlan: 0</p>
+                </div>
                 <button id="btnAddProduct" onclick="window.openAddProduct()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition flex items-center gap-2 shadow-lg shadow-orange-500/20">
                     <i data-lucide="plus-circle" class="w-4 h-4"></i> Yeni İlan Ekle
                 </button>
@@ -107,7 +113,14 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-1">Ürün Görselleri (Zorunlu)</label>
                         <input type="file" id="pImages" accept="image/*" multiple required class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100 cursor-pointer"/>
+                        <p class="text-[10px] text-slate-400 mt-1" id="imageLimitHint">Ücretsiz pakette en fazla 3 fotoğraf yükleyebilirsiniz.</p>
                     </div>
+                    
+                    <div id="videoUploadContainer" class="hidden">
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Ürün Tanıtım Videosu (İsteğe Bağlı)</label>
+                        <input type="file" id="pVideo" accept="video/*" class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-600 hover:file:bg-emerald-100 cursor-pointer"/>
+                    </div>
+
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-1">Başlık</label>
                         <input type="text" id="pTitle" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" placeholder="Örn: Hakiki Deri Cüzdan" />
@@ -183,7 +196,6 @@
             lucide.createIcons();
         }
 
-        // Oturum Kontrolü
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
@@ -196,17 +208,11 @@
         });
 
         window.loginUser = async () => {
-            try {
-                await signInWithPopup(auth, provider);
-            } catch (err) {
-                console.error("Giriş hatası:", err);
-                alert("Giriş yaparken bir hata oluştu: " + err.message);
-            }
+            try { await signInWithPopup(auth, provider); } 
+            catch (err) { alert("Giriş hatası: " + err.message); }
         };
 
-        window.logoutUser = () => { 
-            signOut(auth).then(() => { window.location.reload(); }); 
-        };
+        window.logoutUser = () => { signOut(auth).then(() => { window.location.reload(); }); };
 
         function checkStoreStatus() {
             showScreen('fullScreenLoader');
@@ -234,8 +240,7 @@
         window.submitRegistration = async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button'); 
-            btn.innerText = "Gönderiliyor..."; 
-            btn.disabled = true;
+            btn.innerText = "Gönderiliyor..."; btn.disabled = true;
             
             const newStore = {
                 ownerUid: currentUser.uid,
@@ -244,6 +249,7 @@
                 district: document.getElementById('regDistrict').value,
                 whatsapp: document.getElementById('regWhatsapp').value,
                 status: 'pending',
+                packageType: 'free', // Varsayılan ücretsiz paket
                 createdAt: Date.now()
             };
 
@@ -259,6 +265,24 @@
             document.getElementById('storeNameDisplay').innerText = myStore.name;
             document.getElementById('storeDistrictDisplay').innerText = myStore.district;
             
+            const pkg = myStore.packageType || 'free';
+            const badge = document.getElementById('storePackageBadge');
+            const videoContainer = document.getElementById('videoUploadContainer');
+
+            if(pkg === 'premium') {
+                badge.innerText = "🏆 Premium Mağaza";
+                badge.className = "bg-purple-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase";
+                videoContainer.classList.remove('hidden');
+            } else if(pkg === 'standard') {
+                badge.innerText = "⭐ Standart Paket";
+                badge.className = "bg-blue-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase";
+                videoContainer.classList.remove('hidden');
+            } else {
+                badge.innerText = "📦 Ücretsiz Paket";
+                badge.className = "bg-slate-700 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase";
+                videoContainer.classList.add('hidden');
+            }
+
             const now = Date.now();
             const btnAdd = document.getElementById('btnAddProduct');
             
@@ -269,10 +293,10 @@
                     btnAdd.disabled = true; btnAdd.classList.add('opacity-50', 'cursor-not-allowed'); btnAdd.innerText = "Süre Doldu (Kilitli)";
                 } else {
                     document.getElementById('expiryWarningBanner').classList.add('hidden');
-                    btnAdd.disabled = false; btnAdd.classList.remove('opacity-50', 'cursor-not-allowed'); btnAdd.innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Yeni İlan Ekle`;
+                    btnAdd.disabled = false; btnAdd.classList.remove('opacity-50', 'cursor-not-allowed');
                 }
             } else {
-                document.getElementById('storeExpiryDisplay').innerText = "Süresiz / Belirtilmedi";
+                document.getElementById('storeExpiryDisplay').innerText = "Süresiz";
             }
         }
 
@@ -286,6 +310,21 @@
 
         function renderProducts() {
             const container = document.getElementById('vendorProductsContainer');
+            document.getElementById('productCountInfo').innerText = `Aktif İlan: ${myProducts.length}`;
+
+            // Paket sınırları kontrolü
+            const pkg = myStore.packageType || 'free';
+            let limit = 10; // Ücretsiz sınır
+            if(pkg === 'standard') limit = 50;
+            if(pkg === 'premium') limit = 99999;
+
+            const btnAdd = document.getElementById('btnAddProduct');
+            if(myProducts.length >= limit) {
+                btnAdd.disabled = true;
+                btnAdd.classList.add('opacity-50', 'cursor-not-allowed');
+                btnAdd.innerText = `İlan Sınırı Doldu (${myProducts.length}/${limit})`;
+            }
+
             if(myProducts.length === 0) { 
                 container.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400 font-medium">Henüz hiç ilan eklemediniz.</div>'; 
                 return; 
@@ -317,7 +356,6 @@
         };
         window.closeAddProduct = () => document.getElementById('addProductModal').classList.add('hidden');
 
-        // RESİMLERİ SIKIŞTIRIP BASE64'E ÇEVİREN FONKSİYON (CORS ve Storage Hatası Kesin Çözümü)
         function compressImage(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -328,19 +366,15 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        
                         let width = img.width;
                         let height = img.height;
-                        const MAX_SIZE = 800; // Maksimum piksel sınırı
-
+                        const MAX_SIZE = 800;
                         if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
                         else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-
                         canvas.width = width;
                         canvas.height = height;
                         ctx.drawImage(img, 0, 0, width, height);
-                        
-                        resolve(canvas.toDataURL('image/jpeg', 0.7)); // %70 kalite
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
                     };
                 };
             });
@@ -354,11 +388,31 @@
 
             try {
                 const files = Array.from(document.getElementById('pImages').files);
-                const compressedImages = [];
+                const pkg = myStore.packageType || 'free';
                 
+                // Paket bazlı görsel sayısı kısıtlaması
+                let maxImg = 3;
+                if(pkg === 'standard') maxImg = 5;
+                if(pkg === 'premium') maxImg = 15;
+
+                if(files.length > maxImg) {
+                    alert(`Paketiniz nedeniyle en fazla ${maxImg} görsel yükleyebilirsiniz.`);
+                    btn.innerHTML = "Kaydet ve Yayınla"; btn.disabled = false;
+                    return;
+                }
+
+                const compressedImages = [];
                 for (let i = 0; i < files.length; i++) {
                     const base64Str = await compressImage(files[i]);
                     compressedImages.push(base64Str);
+                }
+
+                let videoUrl = null;
+                if(pkg !== 'free') {
+                    const videoFile = document.getElementById('pVideo').files[0];
+                    if(videoFile) {
+                        videoUrl = await compressImage(videoFile); // Basitçe base64 video/görsel simülasyonu
+                    }
                 }
 
                 const price = parseFloat(document.getElementById('pPrice').value);
@@ -375,6 +429,8 @@
                     price: price,
                     originalPrice: oldPriceInput ? parseFloat(oldPriceInput) : null,
                     images: compressedImages,
+                    video: videoUrl,
+                    isPremiumStore: pkg === 'premium',
                     createdAt: Date.now()
                 };
 
@@ -390,12 +446,9 @@
         };
 
         window.deleteProduct = async (id) => {
-            if(confirm("Bu ilanı tamamen silmek istediğinize emin misiniz?")) {
-                try {
-                    await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id));
-                } catch(err) {
-                    alert("Silme hatası: " + err.message);
-                }
+            if(confirm("Bu ilanı silmek istediğinize emin misiniz?")) {
+                try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id)); }
+                catch(err) { alert("Silme hatası: " + err.message); }
             }
         };
     </script>
