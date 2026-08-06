@@ -150,7 +150,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
         // Firebase Yapılandırması
         const firebaseConfig = {
@@ -163,11 +162,9 @@
             measurementId: "G-JL9P6BRZTD"
         };
 
-        // Firebase Başlatma (Sadece BIR kere)
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
         const APP_ID = 'kibris-pazar'; 
@@ -187,12 +184,10 @@
             lucide.createIcons();
         }
 
-        // Popup hatasını engellemek için Redirect akışını dinleme
+        // Redirect kontrolü (Popup engellemesini aşmak için)
         getRedirectResult(auth).then((result) => {
             if (result && result.user) console.log("Giriş başarılı.");
-        }).catch((error) => {
-            console.error("Giriş hatası:", error);
-        });
+        }).catch((error) => console.error("Giriş hatası:", error));
 
         // Oturum Kontrolü
         onAuthStateChanged(auth, (user) => {
@@ -206,14 +201,8 @@
             }
         });
 
-        window.loginUser = () => { 
-            // Popup hatasını çözmek için Redirect kullanıyoruz
-            signInWithRedirect(auth, provider); 
-        };
-
-        window.logoutUser = () => { 
-            signOut(auth).then(() => { window.location.reload(); }); 
-        };
+        window.loginUser = () => { signInWithRedirect(auth, provider); };
+        window.logoutUser = () => { signOut(auth).then(() => { window.location.reload(); }); };
 
         function checkStoreStatus() {
             showScreen('fullScreenLoader');
@@ -255,7 +244,7 @@
             };
 
             try {
-                await setDoc(doc(storesRef), newStore); // Otomatik ID oluşturur
+                await setDoc(doc(storesRef), newStore);
             } catch(err) {
                 alert("Kayıt hatası: " + err.message);
                 btn.innerText = "Kayıt Ol"; btn.disabled = false;
@@ -319,10 +308,40 @@
         }
 
         window.openAddProduct = () => {
-            if(myStore.expiryDate && myStore.expiryDate < Date.now()) return; // Süresi bitmişse açma
+            if(myStore.expiryDate && myStore.expiryDate < Date.now()) return; 
             document.getElementById('addProductModal').classList.remove('hidden');
         };
         window.closeAddProduct = () => document.getElementById('addProductModal').classList.add('hidden');
+
+        // RESİMLERİ SIKIŞTIRIP BASE64'E ÇEVİREN FONKSİYON (CORS HATASI VERMEZ)
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        let width = img.width;
+                        let height = img.height;
+                        const MAX_SIZE = 800; // Maksimum genişlik/yükseklik (Firestore'u yormamak için)
+
+                        if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                        else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // %70 Kaliteyle JPEG'e çevir
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    };
+                };
+            });
+        }
 
         window.saveProduct = async (e) => {
             e.preventDefault();
@@ -332,15 +351,12 @@
 
             try {
                 const files = Array.from(document.getElementById('pImages').files);
-                const uploadedUrls = [];
+                const compressedImages = [];
                 
-                // Resimleri Firebase Storage'a yükleme
+                // Resimleri Firebase Storage YERİNE sıkıştırıp Base64 olarak Firestore'a ekliyoruz (CORS çözüm)
                 for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    const sRef = ref(storage, `products/${myStore.id}_${Date.now()}_${i}`);
-                    await uploadBytes(sRef, file); // Storage Upload
-                    const url = await getDownloadURL(sRef);
-                    uploadedUrls.push(url);
+                    const base64Str = await compressImage(files[i]);
+                    compressedImages.push(base64Str);
                 }
 
                 const price = parseFloat(document.getElementById('pPrice').value);
@@ -356,16 +372,16 @@
                     category: document.getElementById('pCategory').value,
                     price: price,
                     originalPrice: oldPriceInput ? parseFloat(oldPriceInput) : null,
-                    images: uploadedUrls,
+                    images: compressedImages,
                     createdAt: Date.now()
                 };
 
-                await setDoc(doc(productsRef), newProduct); // Firestore'a kaydet (Oto ID)
+                await setDoc(doc(productsRef), newProduct); // Firestore'a kaydet (Storage gerekmez)
                 window.closeAddProduct();
                 e.target.reset();
                 alert("İlan başarıyla oluşturuldu.");
             } catch(err) {
-                alert("Yükleme Hatası. Lütfen Storage CORS ayarlarını kontrol edin. " + err.message);
+                alert("Yükleme Hatası. Lütfen tekrar deneyin. " + err.message);
             }
             btn.innerHTML = "Kaydet ve Yayınla"; 
             btn.disabled = false;
