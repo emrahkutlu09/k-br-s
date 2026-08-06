@@ -79,7 +79,7 @@
                                 <!-- GİRİŞ YAPMAMIŞ KULLANICI -->
                                 <div id="unauthMenu" class="p-2 space-y-1">
                                     <button onclick="window.loginWithGoogle(event)" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
-                                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-4 h-4"> Google ile Giriş
+                                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-4 h-4" alt="Google"> Google ile Giriş
                                     </button>
                                 </div>
                                 
@@ -150,10 +150,13 @@
                 </div>
                 <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
                 <div id="cartFooter" class="p-5 border-t border-slate-200 bg-white hidden">
-                    <div class="flex justify-between items-center">
+                    <div class="flex justify-between items-center mb-4">
                         <span class="text-sm font-bold text-slate-600">Genel Toplam</span>
                         <span id="cartTotalPrice" class="text-xl font-black text-orange-600">0 TL</span>
                     </div>
+                    <button onclick="window.checkout()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-green-500/30 flex items-center justify-center gap-2">
+                        <i data-lucide="message-circle" class="w-5 h-5"></i> WhatsApp ile Sipariş Ver
+                    </button>
                 </div>
             </div>
         </div>
@@ -165,7 +168,7 @@
                 <button onclick="window.closeProductDetail()" class="absolute top-4 right-4 z-10 bg-white/50 backdrop-blur-md p-2 rounded-full shadow-sm"><i data-lucide="x" class="w-5 h-5"></i></button>
                 <div class="w-full md:w-1/2 bg-slate-50 border-r border-slate-100 p-4 sm:p-6 flex flex-col gap-4 overflow-y-auto no-scrollbar">
                     <div class="w-full aspect-square bg-white rounded-2xl border border-slate-200 overflow-hidden relative flex items-center justify-center">
-                        <img id="detailMainImage" src="" class="w-full h-full object-contain" />
+                        <img id="detailMainImage" src="" class="w-full h-full object-contain" alt="Main Product Image"/>
                         <video id="detailMainVideo" controls class="w-full h-full bg-black hidden"></video>
                     </div>
                     <div id="detailThumbnails" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar"></div>
@@ -311,14 +314,18 @@
 
             // Sadece okuma yapabilmek için gizli giriş (Güvenlik kuralları gereği)
             if(!auth.currentUser) {
-                await signInAnonymously(auth);
+                try {
+                    await signInAnonymously(auth);
+                } catch (error) {
+                    console.warn("Anonim giriş yapılamadı (Firebase konsolundan aktif edilmemiş olabilir). Hata:", error.message);
+                }
             }
 
             // Realtime Sync - Mağazalar
             onSnapshot(storesRef, (snapshot) => {
                 dbStores = [];
                 snapshot.forEach(doc => { dbStores.push({id: doc.id, ...doc.data()}); });
-                window.renderHome();
+                window.renderHome(document.getElementById('searchInput').value);
             }, (err) => console.error(err));
 
             // Realtime Sync - Ürünler
@@ -394,12 +401,12 @@
                 html += `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">`;
                 displayProducts.forEach(p => {
                     const discount = p.originalPrice > p.price ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
-                    const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500';
+                    const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500/cbd5e1/475569?text=Gorsel+Yok';
                     
                     html += `
                         <div class="bg-white rounded-2xl p-3 hover:shadow-xl hover:border-orange-200 border border-slate-200 transition-all group flex flex-col cursor-pointer" onclick="window.openProductDetail('${p.id}')">
                             <div class="relative w-full aspect-[4/5] mb-3 overflow-hidden rounded-xl bg-slate-100">
-                                <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                                <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.title}"/>
                                 ${discount > 0 ? `<div class="absolute top-2 left-2 bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded shadow">-%${discount}</div>` : ''}
                                 ${p.video ? `<div class="absolute bottom-2 left-2 bg-emerald-500/80 text-white p-1 rounded shadow"><i data-lucide="play" class="w-3 h-3"></i></div>` : ''}
                             </div>
@@ -431,14 +438,14 @@
             const product = dbProducts.find(p => p.id === id);
             if(!product) return;
             
-            const images = (product.images && product.images.length > 0) ? product.images : ['https://placehold.co/400x400'];
+            const images = (product.images && product.images.length > 0) ? product.images : ['https://placehold.co/400x400/cbd5e1/475569?text=Gorsel+Yok'];
             document.getElementById('detailMainImage').src = images[0];
             document.getElementById('detailMainImage').classList.remove('hidden');
             document.getElementById('detailMainVideo').classList.add('hidden');
             
             let thumbHtml = '';
             images.forEach(imgUrl => {
-                thumbHtml += `<div onclick="window.changeDetailMedia('image', '${imgUrl}')" class="w-16 h-16 rounded-xl overflow-hidden cursor-pointer border-2 border-slate-200"><img src="${imgUrl}" class="w-full h-full object-cover"/></div>`;
+                thumbHtml += `<div onclick="window.changeDetailMedia('image', '${imgUrl}')" class="w-16 h-16 rounded-xl overflow-hidden cursor-pointer border-2 border-slate-200"><img src="${imgUrl}" class="w-full h-full object-cover" alt="Thumb"/></div>`;
             });
             if(product.video) {
                 thumbHtml += `<div onclick="window.changeDetailMedia('video', '${product.video}')" class="w-16 h-16 rounded-xl cursor-pointer bg-slate-200 flex items-center justify-center"><i data-lucide="play-circle" class="w-6 h-6 text-slate-600"></i></div>`;
@@ -502,72 +509,131 @@
             if(!isCartOpen) window.toggleCart();
         };
 
-        window.removeFromCart = (id) => { cart = cart.filter(i => i.product.id !== id); saveCart(); updateCartUI(); };
-        window.updateQuantity = (id, delta) => { const item = cart.find(i => i.product.id === id); if(item) { item.quantity += delta; if(item.quantity <= 0) window.removeFromCart(id); else { saveCart(); updateCartUI(); } } };
+        window.removeFromCart = (id) => { 
+            cart = cart.filter(i => i.product.id !== id);
+            saveCart();
+            updateCartUI();
+        };
+
+        window.updateCartQuantity = (id, delta) => {
+            const item = cart.find(i => i.product.id === id);
+            if(!item) return;
+            item.quantity += delta;
+            if(item.quantity <= 0) window.removeFromCart(id);
+            else { saveCart(); updateCartUI(); }
+        }
 
         function updateCartUI() {
-            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.getElementById('cartCountBadge').innerText = count;
-            document.getElementById('cartHeaderCount').innerText = count;
             const container = document.getElementById('cartItemsContainer');
+            const headerCount = document.getElementById('cartHeaderCount');
+            const badgeCount = document.getElementById('cartCountBadge');
             const footer = document.getElementById('cartFooter');
-            
-            if(cart.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-slate-400">Sepetiniz boş.</div>`;
-                footer.classList.add('hidden');
-                return;
-            }
-            
-            footer.classList.remove('hidden');
-            let html = ''; let globalTotal = 0; const grouped = {};
-            cart.forEach(item => {
-                if(!grouped[item.product.storeName]) grouped[item.product.storeName] = {items: [], total:0, phone: item.product.storeWhatsapp};
-                grouped[item.product.storeName].items.push(item);
-                grouped[item.product.storeName].total += item.product.price * item.quantity;
-                globalTotal += item.product.price * item.quantity;
-            });
+            const totalPriceEl = document.getElementById('cartTotalPrice');
 
-            for(const [store, data] of Object.entries(grouped)) {
-                html += `<div class="mb-4 bg-slate-50 p-3 rounded-xl border border-slate-200"><h3 class="font-bold text-sm mb-2 text-slate-700">${store}</h3><div class="space-y-2">`;
-                data.items.forEach(item => {
+            let totalQty = 0;
+            let totalPrice = 0;
+
+            if(cart.length === 0) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-400 space-y-4 py-12"><i data-lucide="shopping-cart" class="w-16 h-16 opacity-20"></i><p class="font-bold">Sepetiniz boş.</p></div>`;
+                footer.classList.add('hidden');
+            } else {
+                let html = '';
+                cart.forEach(item => {
+                    totalQty += item.quantity;
+                    totalPrice += item.product.price * item.quantity;
+                    const img = (item.product.images && item.product.images.length > 0) ? item.product.images[0] : 'https://placehold.co/100x100/cbd5e1/475569?text=Resim';
                     html += `
-                        <div class="flex gap-2 bg-white p-2 rounded-lg border border-slate-100 relative">
-                            <img src="${(item.product.images && item.product.images.length > 0) ? item.product.images[0] : ''}" class="w-12 h-12 object-cover rounded">
-                            <div class="flex-1">
-                                <h4 class="text-xs font-bold line-clamp-1 pr-6">${item.product.title}</h4>
-                                <div class="flex justify-between items-center mt-1">
-                                    <div class="flex items-center gap-2 text-xs font-bold"><button onclick="window.updateQuantity('${item.product.id}', -1)" class="px-2 bg-slate-100 rounded">-</button>${item.quantity}<button onclick="window.updateQuantity('${item.product.id}', 1)" class="px-2 bg-slate-100 rounded">+</button></div>
-                                    <span class="text-sm font-black text-orange-600">${(item.product.price * item.quantity).toLocaleString('tr-TR')} TL</span>
+                        <div class="flex gap-4 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm relative">
+                            <button onclick="window.removeFromCart('${item.product.id}')" class="absolute top-2 right-2 p-1 text-slate-300 hover:text-rose-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <img src="${img}" class="w-20 h-20 object-cover rounded-xl bg-slate-50 shrink-0" alt="Item"/>
+                            <div class="flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800 line-clamp-2 pr-6">${item.product.title}</h4>
+                                    <p class="text-[10px] font-bold text-slate-400 mt-1">${item.product.storeName}</p>
+                                </div>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="font-black text-orange-600">${item.product.price.toLocaleString('tr-TR')} TL</span>
+                                    <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-lg p-1">
+                                        <button onclick="window.updateCartQuantity('${item.product.id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-600 hover:bg-slate-200 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                                        <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
+                                        <button onclick="window.updateCartQuantity('${item.product.id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-600 hover:bg-slate-200 rounded"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                                    </div>
                                 </div>
                             </div>
-                            <button onclick="window.removeFromCart('${item.product.id}')" class="absolute top-1 right-1 text-slate-300 hover:text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button>
                         </div>
                     `;
                 });
-                html += `</div><div class="mt-3"><button onclick="window.checkoutWhatsApp('${store}')" class="w-full bg-[#25D366] text-white py-2 rounded-lg text-xs font-bold"><i data-lucide="message-circle" class="w-4 h-4 inline mr-1"></i> WhatsApp Sipariş (${data.total.toLocaleString('tr-TR')} TL)</button></div></div>`;
+                container.innerHTML = html;
+                footer.classList.remove('hidden');
+                totalPriceEl.innerText = totalPrice.toLocaleString('tr-TR') + ' TL';
             }
-            container.innerHTML = html;
-            document.getElementById('cartTotalPrice').innerText = globalTotal.toLocaleString('tr-TR') + ' TL';
+
+            headerCount.innerText = totalQty;
+            badgeCount.innerText = totalQty;
+            if(totalQty > 0) badgeCount.classList.remove('hidden'); else badgeCount.classList.add('hidden');
             lucide.createIcons();
         }
 
-        window.checkoutWhatsApp = (storeName) => {
-            const items = cart.filter(i => i.product.storeName === storeName);
-            if(items.length === 0) return;
-            const phone = items[0].product.storeWhatsapp;
-            let msg = `👋 Merhaba ${storeName}, yeni bir sipariş vermek istiyorum:\n\n`;
-            let t = 0;
-            items.forEach((item, idx) => {
-                const itemTotal = item.product.price * item.quantity; t += itemTotal;
-                msg += `${idx+1}. ${item.product.title}\n   Adet: ${item.quantity} | Fiyat: ${itemTotal} TL\n\n`;
+        window.checkout = async () => {
+            if(cart.length === 0) return;
+            
+            // Siparişleri satıcılara göre grupla
+            const ordersByStore = {};
+            
+            cart.forEach(item => {
+                const sId = item.product.storeId;
+                if(!ordersByStore[sId]) {
+                    ordersByStore[sId] = {
+                        storeName: item.product.storeName,
+                        storePhone: item.product.storePhone || '',
+                        items: [],
+                        total: 0
+                    };
+                }
+                ordersByStore[sId].items.push(item);
+                ordersByStore[sId].total += (item.product.price * item.quantity);
             });
-            msg += `💰 TOPLAM: ${t} TL`;
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-            cart = cart.filter(i => i.product.storeName !== storeName);
-            saveCart(); updateCartUI(); if(cart.length === 0) window.toggleCart();
+
+            // Birden fazla mağaza varsa uyar (Şimdilik ilk mağazaya yönlendiriyoruz)
+            const storeIds = Object.keys(ordersByStore);
+            if(storeIds.length > 1) {
+                window.showMessage("Sepetinizde birden fazla mağazanın ürünü var. Siparişler mağaza bazlı ayrı ayrı iletilir.");
+                // Burada gelişmiş bir çoklu mağaza sipariş yönetimi yapılabilir.
+                // Basitlik adına sadece ilk mağazanın WhatsApp'ına yönlendirme yapıyoruz.
+            }
+
+            const firstStoreId = storeIds[0];
+            const orderData = ordersByStore[firstStoreId];
+            
+            let phone = orderData.storePhone.replace(/\D/g,'');
+            if(!phone) {
+                // Eğer ürünün içinde storePhone yoksa, stores koleksiyonundan çekmeyi dene
+                const storeObj = dbStores.find(s => s.id === firstStoreId);
+                if(storeObj && storeObj.whatsapp) {
+                    phone = storeObj.whatsapp.replace(/\D/g,'');
+                } else {
+                    window.showMessage("Satıcının iletişim numarası bulunamadı.");
+                    return;
+                }
+            }
+
+            if(phone.length === 10 && !phone.startsWith('90')) phone = '90' + phone; // Türkiye/Kıbrıs kodunu ekle varsayılan
+
+            let message = `Merhaba *${orderData.storeName}*, Pazaryeri uygulamasından sipariş vermek istiyorum:\n\n`;
+            orderData.items.forEach((item, index) => {
+                message += `${index+1}. ${item.product.title} - ${item.quantity} Adet x ${item.product.price} TL\n`;
+            });
+            message += `\n*Genel Toplam: ${orderData.total.toLocaleString('tr-TR')} TL*`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
+            
+            window.open(whatsappUrl, '_blank');
         };
 
-        initApp();
+        // Initialize
+        document.addEventListener('DOMContentLoaded', initApp);
+
     </script>
 </body>
 </html>
