@@ -19,9 +19,10 @@
 
     <!-- GİRİŞ EKRANI -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[100] hidden flex-col items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-6">
+        <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-6 shadow-2xl">
             <h2 class="text-2xl font-black">Satıcı Paneli</h2>
-            <button onclick="window.loginUser()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition">
+            <p class="text-xs text-slate-500">Mağazanızı yönetmek ve ilan eklemek için Google hesabınızla giriş yapın.</p>
+            <button onclick="window.loginUser()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow-lg">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Google ile Giriş Yap
             </button>
             <a href="index.html" class="block text-xs font-bold text-slate-400 hover:text-slate-600">Pazaryerine Dön</a>
@@ -30,11 +31,12 @@
 
     <!-- KAYIT EKRANI -->
     <div id="registerScreen" class="fixed inset-0 bg-slate-900 z-[90] hidden flex-col items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-3xl max-w-md w-full space-y-4">
+        <div class="bg-white p-8 rounded-3xl max-w-md w-full space-y-4 shadow-2xl">
             <h2 class="text-xl font-black border-b pb-2">İşletme Kaydı</h2>
+            <p class="text-xs text-slate-500">İlk kez giriş yapıyorsunuz. Lütfen mağaza bilgilerinizi doldurun.</p>
             <form onsubmit="window.submitRegistration(event)" class="space-y-4">
-                <input type="text" id="regName" placeholder="Mağaza Adı" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm" />
-                <select id="regDistrict" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-bold">
+                <input type="text" id="regName" placeholder="Mağaza Adı" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm focus:ring-2 focus:ring-orange-500 outline-none" />
+                <select id="regDistrict" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none">
                     <option value="Girne">Girne</option>
                     <option value="Lefkoşa">Lefkoşa</option>
                     <option value="Gazimağusa">Gazimağusa</option>
@@ -42,26 +44,26 @@
                     <option value="Güzelyurt">Güzelyurt</option>
                     <option value="Lefke">Lefke</option>
                 </select>
-                <input type="text" id="regWhatsapp" placeholder="WhatsApp (Örn: 905331112233)" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-mono" />
-                <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-3.5 rounded-xl transition">Kayıt Ol ve Onaya Gönder</button>
+                <input type="text" id="regWhatsapp" placeholder="WhatsApp (Örn: 905331112233)" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-mono focus:ring-2 focus:ring-orange-500 outline-none" />
+                <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-3.5 rounded-xl transition shadow-lg shadow-orange-500/20">Kayıt Ol ve Onaya Gönder</button>
             </form>
+            <button onclick="window.logoutUser()" class="w-full text-xs font-bold text-rose-500 hover:underline pt-2">Farklı Hesapla Giriş Yap</button>
         </div>
     </div>
 
     <!-- BEKLEME EKRANI -->
     <div id="pendingScreen" class="fixed inset-0 bg-slate-900 z-[80] hidden flex-col items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-4">
+        <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-4 shadow-2xl">
             <i data-lucide="clock" class="w-12 h-12 text-amber-500 mx-auto animate-pulse"></i>
             <h2 class="text-xl font-black">Onay Bekleniyor</h2>
             <p class="text-sm text-slate-500">Mağaza başvurunuz alındı. Yöneticiler onayladıktan sonra ürün yüklemeye başlayabilirsiniz.</p>
-            <button onclick="window.logoutUser()" class="text-xs font-bold text-rose-500 mt-2 hover:underline">Farklı Hesapla Gir</button>
+            <button onclick="window.logoutUser()" class="text-xs font-bold text-rose-500 mt-2 hover:underline block mx-auto">Farklı Hesapla Giriş Yap</button>
         </div>
     </div>
 
     <!-- ANA DASHBOARD (PANEL) -->
     <div id="dashboardScreen" class="hidden flex-col min-h-screen">
-        <!-- Header -->
-        <div class="bg-slate-900 text-white p-4 sm:px-8 flex justify-between items-center">
+        <div class="bg-slate-900 text-white p-4 sm:px-8 flex justify-between items-center shadow-md">
             <div>
                 <h1 class="font-black text-lg" id="storeNameDisplay">Yükleniyor...</h1>
                 <p class="text-xs text-slate-400 font-bold"><i data-lucide="map-pin" class="w-3 h-3 inline"></i> <span id="storeDistrictDisplay"></span></p>
@@ -75,16 +77,14 @@
             </div>
         </div>
 
-        <!-- Süre Sonu Uyarısı -->
         <div id="expiryWarningBanner" class="bg-rose-500 text-white text-xs font-bold p-3 text-center hidden">
             <i data-lucide="alert-triangle" class="w-4 h-4 inline mb-0.5"></i> Mağazanızın süresi dolmuştur veya askıya alınmıştır. Yeni ürün ekleyemezsiniz.
         </div>
 
-        <!-- Ürünler Alanı -->
         <main class="flex-1 max-w-5xl mx-auto w-full p-4 sm:p-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-black">İlanlarım</h2>
-                <button id="btnAddProduct" onclick="window.openAddProduct()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition flex items-center gap-2">
+                <button id="btnAddProduct" onclick="window.openAddProduct()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition flex items-center gap-2 shadow-lg shadow-orange-500/20">
                     <i data-lucide="plus-circle" class="w-4 h-4"></i> Yeni İlan Ekle
                 </button>
             </div>
@@ -105,21 +105,21 @@
             <div class="p-6 overflow-y-auto">
                 <form onsubmit="window.saveProduct(event)" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Ürün Görseli (Zorunlu)</label>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Ürün Görselleri (Zorunlu)</label>
                         <input type="file" id="pImages" accept="image/*" multiple required class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100 cursor-pointer"/>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-1">Başlık</label>
-                        <input type="text" id="pTitle" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-semibold" placeholder="Örn: Hakiki Deri Cüzdan" />
+                        <input type="text" id="pTitle" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" placeholder="Örn: Hakiki Deri Cüzdan" />
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-1">Detaylı Açıklama</label>
-                        <textarea id="pDesc" rows="3" class="w-full p-3 bg-slate-50 rounded-xl border text-sm" placeholder="Ürün özellikleri, kullanım alanları..."></textarea>
+                        <textarea id="pDesc" rows="3" class="w-full p-3 bg-slate-50 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-orange-500" placeholder="Ürün özellikleri, kullanım alanları..."></textarea>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">Kategori</label>
-                            <select id="pCategory" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-bold">
+                            <select id="pCategory" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-bold outline-none focus:ring-2 focus:ring-orange-500">
                                 <option value="Elektronik">Elektronik</option>
                                 <option value="Moda">Moda</option>
                                 <option value="Ev & Yaşam">Ev & Yaşam</option>
@@ -130,12 +130,12 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">Satış Fiyatı (TL)</label>
-                            <input type="number" id="pPrice" required step="0.01" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-black text-orange-600" placeholder="0.00" />
+                            <input type="number" id="pPrice" required step="0.01" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-black text-orange-600 outline-none focus:ring-2 focus:ring-orange-500" placeholder="0.00" />
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-1">Eski Fiyat (İndirim göstermek için)</label>
-                        <input type="number" id="pOldPrice" step="0.01" class="w-full p-3 bg-slate-50 rounded-xl border text-sm text-slate-400 line-through" placeholder="İsteğe bağlı" />
+                        <input type="number" id="pOldPrice" step="0.01" class="w-full p-3 bg-slate-50 rounded-xl border text-sm text-slate-400 line-through outline-none focus:ring-2 focus:ring-orange-500" placeholder="İsteğe bağlı" />
                     </div>
                     <button type="submit" id="btnSaveProduct" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl mt-4 transition flex items-center justify-center gap-2">
                         Kaydet ve Yayınla
@@ -148,10 +148,9 @@
     <!-- FIREBASE & JAVASCRIPT KODLARI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Yapılandırması
         const firebaseConfig = {
             apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
             authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -184,11 +183,6 @@
             lucide.createIcons();
         }
 
-        // Redirect kontrolü (Popup engellemesini aşmak için)
-        getRedirectResult(auth).then((result) => {
-            if (result && result.user) console.log("Giriş başarılı.");
-        }).catch((error) => console.error("Giriş hatası:", error));
-
         // Oturum Kontrolü
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -201,8 +195,18 @@
             }
         });
 
-        window.loginUser = () => { signInWithRedirect(auth, provider); };
-        window.logoutUser = () => { signOut(auth).then(() => { window.location.reload(); }); };
+        window.loginUser = async () => {
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (err) {
+                console.error("Giriş hatası:", err);
+                alert("Giriş yaparken bir hata oluştu: " + err.message);
+            }
+        };
+
+        window.logoutUser = () => { 
+            signOut(auth).then(() => { window.location.reload(); }); 
+        };
 
         function checkStoreStatus() {
             showScreen('fullScreenLoader');
@@ -247,7 +251,7 @@
                 await setDoc(doc(storesRef), newStore);
             } catch(err) {
                 alert("Kayıt hatası: " + err.message);
-                btn.innerText = "Kayıt Ol"; btn.disabled = false;
+                btn.innerText = "Kayıt Ol ve Onaya Gönder"; btn.disabled = false;
             }
         };
 
@@ -268,7 +272,7 @@
                     btnAdd.disabled = false; btnAdd.classList.remove('opacity-50', 'cursor-not-allowed'); btnAdd.innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Yeni İlan Ekle`;
                 }
             } else {
-                document.getElementById('storeExpiryDisplay').innerText = "Belirtilmedi";
+                document.getElementById('storeExpiryDisplay').innerText = "Süresiz / Belirtilmedi";
             }
         }
 
@@ -283,7 +287,7 @@
         function renderProducts() {
             const container = document.getElementById('vendorProductsContainer');
             if(myProducts.length === 0) { 
-                container.innerHTML = '<div class="col-span-full py-8 text-center text-slate-400">Henüz hiç ilan eklemediniz.</div>'; 
+                container.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400 font-medium">Henüz hiç ilan eklemediniz.</div>'; 
                 return; 
             }
             
@@ -313,7 +317,7 @@
         };
         window.closeAddProduct = () => document.getElementById('addProductModal').classList.add('hidden');
 
-        // RESİMLERİ SIKIŞTIRIP BASE64'E ÇEVİREN FONKSİYON (CORS HATASI VERMEZ)
+        // RESİMLERİ SIKIŞTIRIP BASE64'E ÇEVİREN FONKSİYON (CORS ve Storage Hatası Kesin Çözümü)
         function compressImage(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -327,7 +331,7 @@
                         
                         let width = img.width;
                         let height = img.height;
-                        const MAX_SIZE = 800; // Maksimum genişlik/yükseklik (Firestore'u yormamak için)
+                        const MAX_SIZE = 800; // Maksimum piksel sınırı
 
                         if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
                         else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
@@ -336,8 +340,7 @@
                         canvas.height = height;
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        // %70 Kaliteyle JPEG'e çevir
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                        resolve(canvas.toDataURL('image/jpeg', 0.7)); // %70 kalite
                     };
                 };
             });
@@ -346,14 +349,13 @@
         window.saveProduct = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSaveProduct');
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Buluta Yükleniyor...`; 
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin inline"></i> Buluta Yükleniyor...`; 
             btn.disabled = true;
 
             try {
                 const files = Array.from(document.getElementById('pImages').files);
                 const compressedImages = [];
                 
-                // Resimleri Firebase Storage YERİNE sıkıştırıp Base64 olarak Firestore'a ekliyoruz (CORS çözüm)
                 for (let i = 0; i < files.length; i++) {
                     const base64Str = await compressImage(files[i]);
                     compressedImages.push(base64Str);
@@ -376,12 +378,12 @@
                     createdAt: Date.now()
                 };
 
-                await setDoc(doc(productsRef), newProduct); // Firestore'a kaydet (Storage gerekmez)
+                await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products')), newProduct);
                 window.closeAddProduct();
                 e.target.reset();
                 alert("İlan başarıyla oluşturuldu.");
             } catch(err) {
-                alert("Yükleme Hatası. Lütfen tekrar deneyin. " + err.message);
+                alert("Yükleme Hatası: " + err.message);
             }
             btn.innerHTML = "Kaydet ve Yayınla"; 
             btn.disabled = false;
