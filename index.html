@@ -199,13 +199,11 @@
                 <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-5 space-y-5 bg-slate-50"></div>
                 
                 <div id="cartFooter" class="p-5 border-t border-slate-100 bg-white shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] hidden">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex justify-between items-center">
                         <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Genel Toplam</span>
                         <span id="cartTotalPrice" class="text-2xl font-black text-slate-900">0 TL</span>
                     </div>
-                    <button onclick="window.checkout()" class="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-black py-4 rounded-xl transition-all shadow-lg shadow-green-500/20 flex items-center justify-center gap-2">
-                        <i data-lucide="smartphone" class="w-5 h-5"></i> WhatsApp Üzerinden Sipariş Ver
-                    </button>
+                    <p class="text-[10px] text-slate-400 mt-2 text-center font-bold">Lütfen siparişleri mağazalara ait yukarıdaki butonlardan verin.</p>
                 </div>
             </div>
         </div>
@@ -840,33 +838,64 @@
                 navTotal.innerText = "0.00 TL";
             } else {
                 let html = '';
+                const grouped = {};
+                
                 cart.forEach(item => {
                     totalQty += item.quantity;
                     totalPrice += item.product.price * item.quantity;
-                    const img = (item.product.images && item.product.images.length > 0) ? item.product.images[0] : 'https://placehold.co/100';
                     
+                    // Ürünleri Satıcılara Göre Grupluyoruz
+                    const sId = item.product.storeId;
+                    if(!grouped[sId]) {
+                        grouped[sId] = { storeName: item.product.storeName, items: [], total: 0 };
+                    }
+                    grouped[sId].items.push(item);
+                    grouped[sId].total += (item.product.price * item.quantity);
+                });
+
+                for(const [sId, data] of Object.entries(grouped)) {
                     html += `
-                        <div class="flex gap-4 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm relative group">
-                            <button onclick="window.removeFromCart('${item.cartId}')" class="absolute top-3 right-3 p-1.5 text-slate-300 hover:text-rose-500 bg-slate-50 rounded-lg opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                            <img src="${img}" class="w-20 h-24 object-cover rounded-xl bg-slate-50 shrink-0" alt="Item"/>
-                            <div class="flex-1 flex flex-col">
-                                <div>
-                                    <h4 class="text-sm font-bold text-slate-800 line-clamp-2 pr-8 leading-tight">${item.product.title}</h4>
-                                    ${item.variant ? `<div class="text-[10px] font-black text-orange-600 bg-orange-50 inline-block px-2 py-0.5 rounded mt-1">${item.variant.name}</div>` : ''}
-                                    <p class="text-[10px] font-bold text-slate-400 mt-1 flex items-center gap-1"><i data-lucide="store" class="w-3 h-3"></i> ${item.product.storeName}</p>
-                                </div>
-                                <div class="flex items-center justify-between mt-auto pt-2">
-                                    <span class="font-black text-slate-900">${item.product.price.toLocaleString('tr-TR')} TL</span>
-                                    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-1">
-                                        <button onclick="window.updateCartQuantity('${item.cartId}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-600 hover:bg-slate-200 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button>
-                                        <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
-                                        <button onclick="window.updateCartQuantity('${item.cartId}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-600 hover:bg-slate-200 rounded"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative">
+                            <div class="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
+                                <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center"><i data-lucide="store" class="w-3 h-3 text-slate-500"></i></div>
+                                <h3 class="font-bold text-sm text-slate-800">${data.storeName}</h3>
+                            </div>
+                            <div class="space-y-3">
+                    `;
+                    
+                    data.items.forEach(item => {
+                        const img = (item.product.images && item.product.images.length > 0) ? item.product.images[0] : 'https://placehold.co/100';
+                        html += `
+                            <div class="flex gap-3 relative group">
+                                <button onclick="window.removeFromCart('${item.cartId}')" class="absolute top-0 right-0 p-1 text-slate-300 hover:text-rose-500 bg-white rounded-md opacity-0 group-hover:opacity-100 transition shadow-sm z-10"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <img src="${img}" class="w-16 h-20 object-cover rounded-xl bg-slate-50 shrink-0 border border-slate-100" alt="Item"/>
+                                <div class="flex-1 flex flex-col py-0.5">
+                                    <h4 class="text-xs font-bold text-slate-800 line-clamp-2 pr-6 leading-tight">${item.product.title}</h4>
+                                    ${item.variant ? `<div class="text-[9px] font-black text-orange-600 bg-orange-50 inline-block px-1.5 py-0.5 rounded mt-1 w-max">${item.variant.name}</div>` : ''}
+                                    <div class="flex items-center justify-between mt-auto pt-1">
+                                        <span class="font-black text-slate-900 text-sm">${item.product.price.toLocaleString('tr-TR')} TL</span>
+                                        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-1">
+                                            <button onclick="window.updateCartQuantity('${item.cartId}', -1)" class="w-5 h-5 flex items-center justify-center text-slate-600 hover:bg-slate-200 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                                            <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
+                                            <button onclick="window.updateCartQuantity('${item.cartId}', 1)" class="w-5 h-5 flex items-center justify-center text-slate-600 hover:bg-slate-200 rounded"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        `;
+                    });
+
+                    html += `
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-100">
+                                <button onclick="window.checkoutStore('${sId}')" class="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white py-3 rounded-xl text-xs font-black transition-all shadow-md shadow-green-500/20 flex items-center justify-center gap-2">
+                                    <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp Siparişi (${data.total.toLocaleString('tr-TR')} TL)
+                                </button>
+                            </div>
                         </div>
                     `;
-                });
+                }
+
                 container.innerHTML = html;
                 footer.classList.remove('hidden');
                 
@@ -887,30 +916,20 @@
             lucide.createIcons();
         }
 
-        window.checkout = async () => {
-            if(cart.length === 0) return;
-            
-            const ordersByStore = {};
-            cart.forEach(item => {
-                const sId = item.product.storeId;
-                if(!ordersByStore[sId]) {
-                    ordersByStore[sId] = { storeName: item.product.storeName, storePhone: item.product.storeWhatsapp || '', items: [], total: 0 };
-                }
-                ordersByStore[sId].items.push(item);
-                ordersByStore[sId].total += (item.product.price * item.quantity);
-            });
+        window.checkoutStore = (storeId) => {
+            const storeItems = cart.filter(item => item.product.storeId === storeId);
+            if(storeItems.length === 0) return;
 
-            const storeIds = Object.keys(ordersByStore);
-            if(storeIds.length > 1) {
-                window.showMessage("Sepetinizde farklı mağazalardan ürünler var. Sistem sizi sırayla yönlendirecektir.", "error");
-            }
-
-            const firstStoreId = storeIds[0];
-            const orderData = ordersByStore[firstStoreId];
+            const orderData = {
+                storeName: storeItems[0].product.storeName,
+                storePhone: storeItems[0].product.storeWhatsapp || '',
+                items: storeItems,
+                total: storeItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
+            };
             
             let phone = orderData.storePhone.replace(/\D/g,'');
             if(!phone) {
-                const storeObj = dbStores.find(s => s.id === firstStoreId);
+                const storeObj = dbStores.find(s => s.id === storeId);
                 if(storeObj && storeObj.whatsapp) phone = storeObj.whatsapp.replace(/\D/g,'');
                 else { window.showMessage("Satıcının iletişim numarası eksik.", "error"); return; }
             }
@@ -922,9 +941,14 @@
                 const varTxt = item.variant ? ` (${item.variant.name})` : '';
                 message += `▪️ ${item.product.title}${varTxt}\n   Adet: ${item.quantity} | ${item.product.price} TL\n\n`;
             });
-            message += `💰 *Genel Toplam: ${orderData.total.toLocaleString('tr-TR')} TL*`;
+            message += `💰 *Sipariş Toplamı: ${orderData.total.toLocaleString('tr-TR')} TL*`;
 
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+            
+            // Satıcıyla iletişime geçildiğinde bu mağazanın ürünlerini sepetten kaldırır
+            cart = cart.filter(item => item.product.storeId !== storeId);
+            saveCart();
+            updateCartUI();
         };
 
         document.addEventListener('DOMContentLoaded', initApp);
