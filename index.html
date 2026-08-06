@@ -78,19 +78,12 @@
                             
                             <div id="userDropdown" class="absolute right-0 top-10 mt-2 w-48 bg-white border border-slate-100 shadow-xl rounded-2xl hidden z-50 overflow-hidden transform transition-all">
                                 <div id="unauthMenu" class="p-2 space-y-1">
-                                    <button onclick="window.openMyOrders()" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
-                                        <i data-lucide="package" class="w-4 h-4"></i> Siparişlerim (Misafir)
-                                    </button>
                                     <button onclick="window.loginWithGoogle(event)" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
                                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-4 h-4" alt="Google"> Google ile Giriş
                                     </button>
                                 </div>
                                 <div id="authMenu" class="p-2 space-y-1 hidden">
                                     <div class="px-3 py-2 text-[10px] text-slate-400 font-bold border-b border-slate-100 mb-1 truncate" id="dropdownEmail"></div>
-                                    <!-- YENİ: SİPARİŞLERİM MENÜSÜ -->
-                                    <button onclick="window.openMyOrders()" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
-                                        <i data-lucide="package" class="w-4 h-4"></i> Siparişlerim
-                                    </button>
                                     <a href="satici.html" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors flex items-center gap-2.5">
                                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i> İşletme Panelim
                                     </a>
@@ -108,6 +101,12 @@
                                 <span id="cartCountBadge" class="absolute -top-1.5 -right-2 bg-orange-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center shadow-sm">0</span>
                             </div>
                             <span class="text-[10px] font-bold mt-1 hidden sm:block">Sepetim</span>
+                        </button>
+
+                        <!-- Siparişlerim (Menüden Dışarı Çıkarıldı) -->
+                        <button onclick="window.openMyOrders()" class="flex flex-col items-center text-slate-600 hover:text-orange-500 transition-colors">
+                            <i data-lucide="package" class="w-5 h-5"></i>
+                            <span class="text-[10px] font-bold mt-1 hidden sm:block">Siparişlerim</span>
                         </button>
                     </div>
                 </div>
