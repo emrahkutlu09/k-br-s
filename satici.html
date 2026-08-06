@@ -11,13 +11,11 @@
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
 
-    <!-- FULL SCREEN LOADER -->
     <div id="fullScreenLoader" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center flex-col gap-4">
         <i data-lucide="loader-2" class="w-12 h-12 text-orange-500 animate-spin"></i>
         <p class="text-white font-bold animate-pulse" id="loaderText">Sistem Başlatılıyor...</p>
     </div>
 
-    <!-- GİRİŞ EKRANI -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[100] hidden flex-col items-center justify-center p-4">
         <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-6 shadow-2xl">
             <h2 class="text-2xl font-black">Satıcı Paneli</h2>
@@ -29,12 +27,19 @@
         </div>
     </div>
 
-    <!-- KAYIT EKRANI -->
     <div id="registerScreen" class="fixed inset-0 bg-slate-900 z-[90] hidden flex-col items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-3xl max-w-md w-full space-y-4 shadow-2xl">
+        <div class="bg-white p-8 rounded-3xl max-w-md w-full space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <h2 class="text-xl font-black border-b pb-2">İşletme Kaydı</h2>
-            <p class="text-xs text-slate-500">İlk kez giriş yapıyorsunuz. Lütfen mağaza bilgilerinizi doldurun.</p>
+            <p class="text-xs text-slate-500">İlk kez giriş yapıyorsunuz. Lütfen mağaza bilgilerinizi, logonuzu ve arka plan görselinizi ekleyin.</p>
             <form onsubmit="window.submitRegistration(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Mağaza Logosu</label>
+                    <input type="file" id="regLogoFile" accept="image/*" class="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-orange-50 file:text-orange-600 font-bold cursor-pointer" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Mağaza Arka Plan / Kapak Görseli</label>
+                    <input type="file" id="regCoverFile" accept="image/*" class="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-orange-50 file:text-orange-600 font-bold cursor-pointer" />
+                </div>
                 <input type="text" id="regName" placeholder="Mağaza Adı" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm focus:ring-2 focus:ring-orange-500 outline-none" />
                 <select id="regDistrict" class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none">
                     <option value="Girne">Girne</option>
@@ -45,13 +50,12 @@
                     <option value="Lefke">Lefke</option>
                 </select>
                 <input type="text" id="regWhatsapp" placeholder="WhatsApp (Örn: 905331112233)" required class="w-full p-3 bg-slate-50 rounded-xl border text-sm font-mono focus:ring-2 focus:ring-orange-500 outline-none" />
-                <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-3.5 rounded-xl transition shadow-lg shadow-orange-500/20">Kayıt Ol ve Onaya Gönder</button>
+                <button type="submit" id="regSubmitBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-3.5 rounded-xl transition shadow-lg shadow-orange-500/20">Kayıt Ol ve Onaya Gönder</button>
             </form>
             <button onclick="window.logoutUser()" class="w-full text-xs font-bold text-rose-500 hover:underline pt-2">Farklı Hesapla Giriş Yap</button>
         </div>
     </div>
 
-    <!-- BEKLEME EKRANI -->
     <div id="pendingScreen" class="fixed inset-0 bg-slate-900 z-[80] hidden flex-col items-center justify-center p-4">
         <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-4 shadow-2xl">
             <i data-lucide="clock" class="w-12 h-12 text-amber-500 mx-auto animate-pulse"></i>
@@ -61,23 +65,28 @@
         </div>
     </div>
 
-    <!-- ANA DASHBOARD -->
     <div id="dashboardScreen" class="hidden flex-col min-h-screen">
-        <!-- Üst Header -->
-        <div class="bg-slate-900 text-white p-4 sm:px-8 flex justify-between items-center shadow-md">
-            <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="font-black text-lg sm:text-xl" id="storeNameDisplay">Yükleniyor...</h1>
-                    <span id="storePackageBadge" class="bg-slate-700 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase">Ücretsiz Paket</span>
+        <!-- Kapak ve Logo Destekli Üst Header -->
+        <div id="storeHeaderCover" class="relative text-white shadow-md bg-slate-900 bg-cover bg-center overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/80 to-slate-900/40"></div>
+            <div class="relative z-10 max-w-6xl mx-auto p-6 sm:px-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <img id="storeLogoDisplay" src="https://placehold.co/100x100/334155/ffffff?text=Logo" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-4 border-white/20 shadow-xl bg-slate-800 shrink-0">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h1 class="font-black text-xl sm:text-2xl text-white" id="storeNameDisplay">Yükleniyor...</h1>
+                            <span id="storePackageBadge" class="bg-slate-700 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase">Ücretsiz Paket</span>
+                        </div>
+                        <p class="text-xs text-slate-300 font-bold mt-1 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3 inline text-orange-400"></i> <span id="storeDistrictDisplay"></span></p>
+                    </div>
                 </div>
-                <p class="text-xs text-slate-400 font-bold mt-0.5"><i data-lucide="map-pin" class="w-3 h-3 inline"></i> <span id="storeDistrictDisplay"></span></p>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p class="text-[10px] text-slate-400">Abonelik Bitiş</p>
-                    <p class="text-xs font-bold text-emerald-400" id="storeExpiryDisplay">-</p>
+                <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                    <div class="text-right">
+                        <p class="text-[10px] text-slate-400 uppercase tracking-wider">Abonelik Bitiş</p>
+                        <p class="text-xs font-black text-emerald-400" id="storeExpiryDisplay">-</p>
+                    </div>
+                    <button onclick="window.logoutUser()" class="bg-slate-800/80 hover:bg-slate-700 p-2.5 rounded-xl transition backdrop-blur" title="Çıkış Yap"><i data-lucide="log-out" class="w-5 h-5"></i></button>
                 </div>
-                <button onclick="window.logoutUser()" class="bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition" title="Çıkış Yap"><i data-lucide="log-out" class="w-5 h-5"></i></button>
             </div>
         </div>
 
@@ -85,7 +94,6 @@
             <i data-lucide="alert-triangle" class="w-4 h-4 inline mb-0.5"></i> Mağazanızın süresi dolmuştur. Yeni ürün ekleyemezsiniz.
         </div>
 
-        <!-- Ana İçerik Gövdesi -->
         <main class="flex-1 max-w-6xl mx-auto w-full p-4 sm:p-8 space-y-8">
             
             <!-- İSTATİSTİK KARTLARI -->
@@ -385,31 +393,74 @@
             });
         }
 
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        let width = img.width, height = img.height;
+                        const MAX_SIZE = 800;
+                        if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                        else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                        canvas.width = width; canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    };
+                };
+            });
+        }
+
         window.submitRegistration = async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button'); 
-            btn.innerText = "Gönderiliyor..."; btn.disabled = true;
+            const btn = document.getElementById('regSubmitBtn');
+            btn.innerText = "Görseller İşleniyor..."; btn.disabled = true;
             
-            const newStore = {
-                ownerUid: currentUser.uid,
-                ownerEmail: currentUser.email,
-                name: document.getElementById('regName').value,
-                district: document.getElementById('regDistrict').value,
-                whatsapp: document.getElementById('regWhatsapp').value,
-                status: 'pending',
-                packageType: 'free',
-                isPremium: false,
-                createdAt: Date.now()
-            };
+            try {
+                const logoInput = document.getElementById('regLogoFile').files[0];
+                const coverInput = document.getElementById('regCoverFile').files[0];
+                
+                let logoUrl = "https://placehold.co/150x150/334155/ffffff?text=Logo";
+                let coverUrl = "https://placehold.co/1200x400/1e293b/ffffff?text=Kapak+Gorseli";
 
-            try { await setDoc(doc(storesRef), newStore); } 
-            catch(err) { alert("Kayıt hatası: " + err.message); btn.innerText = "Kayıt Ol"; btn.disabled = false; }
+                if(logoInput) logoUrl = await compressImage(logoInput);
+                if(coverInput) coverUrl = await compressImage(coverInput);
+
+                const newStore = {
+                    ownerUid: currentUser.uid,
+                    ownerEmail: currentUser.email,
+                    name: document.getElementById('regName').value,
+                    district: document.getElementById('regDistrict').value,
+                    whatsapp: document.getElementById('regWhatsapp').value,
+                    logo: logoUrl,
+                    cover: coverUrl,
+                    status: 'pending',
+                    packageType: 'free',
+                    isPremium: false,
+                    createdAt: Date.now()
+                };
+
+                await setDoc(doc(storesRef), newStore);
+            } catch(err) {
+                alert("Kayıt hatası: " + err.message); 
+                btn.innerText = "Kayıt Ol ve Onaya Gönder"; 
+                btn.disabled = false;
+            }
         };
 
         function updateDashboardUI() {
             document.getElementById('storeNameDisplay').innerText = myStore.name;
             document.getElementById('storeDistrictDisplay').innerText = myStore.district;
             
+            if(myStore.logo) document.getElementById('storeLogoDisplay').src = myStore.logo;
+            if(myStore.cover) {
+                document.getElementById('storeHeaderCover').style.backgroundImage = `url('${myStore.cover}')`;
+            }
+
             const pkg = myStore.packageType || 'free';
             const badge = document.getElementById('storePackageBadge');
             if(pkg === 'premium' || myStore.isPremium) {
@@ -525,7 +576,6 @@
             lucide.createIcons();
         };
 
-        // TOPLU FİYAT GÜNCELLEME
         window.applyBulkPriceUpdate = async () => {
             const action = document.getElementById('bulkActionType').value;
             const percentage = parseFloat(document.getElementById('bulkPercentage').value);
@@ -542,7 +592,6 @@
             } catch(e) { alert("Hata: " + e.message); }
         };
 
-        // VARYANT EKLEME SİSTEMİ
         window.addVariantField = (name = '', price = '') => {
             const container = document.getElementById('variantsContainer');
             const div = document.createElement('div');
@@ -599,28 +648,6 @@
 
         window.closeAddProduct = () => document.getElementById('addProductModal').classList.add('hidden');
 
-        function compressImage(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        let width = img.width, height = img.height;
-                        const MAX_SIZE = 800;
-                        if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
-                        else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-                        canvas.width = width; canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
-                    };
-                };
-            });
-        }
-
         window.saveProduct = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSaveProduct');
@@ -640,7 +667,6 @@
                     compressedImages = existing.images;
                 }
 
-                // Varyantları topla
                 const variants = [];
                 document.querySelectorAll('#variantsContainer > div').forEach(row => {
                     const name = row.querySelector('.vName').value;
