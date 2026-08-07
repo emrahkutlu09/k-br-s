@@ -1101,19 +1101,32 @@
                         if(data.length === 0) { window.showMessage("Dosya boş veya format hatalı.", "error"); return; }
                         
                         // 3. Esnek Sütun Eşleştirme (Büyük/Küçük harf duyarlılığını veya Türkçe karakter bozuluşunu tolere etmek için)
-                        const firstRowKeys = Object.keys(data[0]);
-                        const baslikKey = firstRowKeys.find(k => k.toLowerCase().includes('baslik') || k.toLowerCase().includes('başlık'));
-                        const fiyatKey = firstRowKeys.find(k => k.toLowerCase().includes('fiyat'));
-                        const kategoriKey = firstRowKeys.find(k => k.toLowerCase().includes('kategori'));
-                        const aciklamaKey = firstRowKeys.find(k => k.toLowerCase().includes('aciklama') || k.toLowerCase().includes('açıklama'));
-                        const gorsellerKey = firstRowKeys.find(k => k.toLowerCase().includes('gorseller') || k.toLowerCase().includes('görseller'));
-                        const varyantlarKey = firstRowKeys.find(k => k.toLowerCase().includes('varyantlar'));
+                        // Önemli: Trim ve replace ile ekstra boşlukları veya gizli tırnakları siliyoruz.
+                        const rawHeaders = Object.keys(data[0]);
+                        const headers = rawHeaders.map(h => h.trim().replace(/['"]/g, '').toLowerCase());
+                        
+                        // Sütunların dosyadaki indexlerini bul (Eşleştirme)
+                        const baslikIndex = headers.findIndex(k => k.includes('baslik') || k.includes('başlık'));
+                        const fiyatIndex = headers.findIndex(k => k.includes('fiyat'));
+                        const kategoriIndex = headers.findIndex(k => k.includes('kategori'));
+                        const aciklamaIndex = headers.findIndex(k => k.includes('aciklama') || k.includes('açıklama'));
+                        const gorsellerIndex = headers.findIndex(k => k.includes('gorseller') || k.includes('görseller'));
+                        const varyantlarIndex = headers.findIndex(k => k.includes('varyantlar'));
 
-                        if (!baslikKey || !fiyatKey) {
-                            window.showMessage("Format hatası: 'Baslik' ve 'Fiyat' sütunları bulunamadı.", "error");
+                        if (baslikIndex === -1 || fiyatIndex === -1) {
+                            window.showMessage("Format hatası: 'Baslik' ve 'Fiyat' sütunları bulunamadı. Lütfen dışa aktardığınız şablonu bozmadan kullanın.", "error");
+                            console.error("Bulunan Sütunlar:", headers); // Sorun olursa F12 konsolunda görelim
                             event.target.value = "";
                             return;
                         }
+
+                        // Orijinal anahtarları (key) alalım
+                        const baslikKey = rawHeaders[baslikIndex];
+                        const fiyatKey = rawHeaders[fiyatIndex];
+                        const kategoriKey = kategoriIndex !== -1 ? rawHeaders[kategoriIndex] : null;
+                        const aciklamaKey = aciklamaIndex !== -1 ? rawHeaders[aciklamaIndex] : null;
+                        const gorsellerKey = gorsellerIndex !== -1 ? rawHeaders[gorsellerIndex] : null;
+                        const varyantlarKey = varyantlarIndex !== -1 ? rawHeaders[varyantlarIndex] : null;
 
                         const pkg = myStore.packageType || 'free';
                         const limit = pkg === 'free' ? 10 : (pkg === 'standard' ? 50 : 9999);
@@ -1151,15 +1164,20 @@
 
                                 const images = (gorsellerKey && row[gorsellerKey]) ? row[gorsellerKey].split('|').filter(u => u.trim() !== '' && u !== 'BASE64_Gorsel_Dısa_Aktarilamadi') : [];
 
+                                // Fiyatı temizle (boşlukları veya yabancı karakterleri at)
+                                let cleanPrice = row[fiyatKey].toString().replace(/[^0-9.,]/g, '');
+                                // Eğer hem virgül hem nokta varsa (binlik ayraç), virgülü noktaya çevir
+                                cleanPrice = cleanPrice.replace(',', '.');
+
                                 const productData = {
                                     storeId: myStore.id,
                                     storeName: myStore.name,
                                     storeWhatsapp: myStore.whatsapp,
                                     district: myStore.district,
-                                    title: row[baslikKey],
-                                    description: (aciklamaKey && row[aciklamaKey]) ? row[aciklamaKey] : '',
-                                    category: (kategoriKey && row[kategoriKey]) ? row[kategoriKey] : 'Diğer',
-                                    price: parseFloat(row[fiyatKey]) || 0,
+                                    title: row[baslikKey].trim(),
+                                    description: (aciklamaKey && row[aciklamaKey]) ? row[aciklamaKey].trim() : '',
+                                    category: (kategoriKey && row[kategoriKey]) ? row[kategoriKey].trim() : 'Diğer',
+                                    price: parseFloat(cleanPrice) || 0,
                                     images: images,
                                     variants: variants,
                                     createdAt: Date.now()
@@ -1193,7 +1211,8 @@
                         showScreen('dashboardScreen');
                         event.target.value = ""; // Inputu sıfırla
                     },
-                    error: function() {
+                    error: function(err) {
+                        console.error("PapaParse Hatası:", err);
                         window.showMessage("Dosya okuma hatası oluştu.", "error");
                         event.target.value = "";
                         showScreen('dashboardScreen');
