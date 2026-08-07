@@ -11,6 +11,12 @@
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-orange-500 selection:text-white">
 
+    <!-- ADMIN DESTEK MODU UYARI BANDI -->
+    <div id="adminBypassBanner" class="bg-rose-600 text-white text-xs font-bold py-2.5 px-4 flex justify-between items-center hidden z-[300] sticky top-0 shadow-md">
+        <span class="flex items-center gap-2"><i data-lucide="shield-alert" class="w-4 h-4 animate-pulse"></i> DİKKAT: Destek Modundasınız! Şu an başka bir satıcının mağazasına müdahale ediyorsunuz.</span>
+        <button onclick="window.exitAdminSupportMode()" class="bg-white text-rose-600 hover:bg-rose-50 px-3 py-1.5 rounded-lg shadow-sm text-[10px] transition font-black">Moddan Çık</button>
+    </div>
+
     <!-- UYARI EKRANLARI -->
     <div id="fullScreenLoader" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center flex-col gap-4">
         <i data-lucide="loader-2" class="w-12 h-12 text-orange-500 animate-spin"></i>
@@ -496,18 +502,39 @@
         window.loginUser = async () => { try { await signInWithPopup(auth, provider); } catch (err) { window.showMessage("Giriş hatası: " + err.message, "error"); } };
         window.logoutUser = () => { signOut(auth).then(() => { window.location.reload(); }); };
 
+        window.exitAdminSupportMode = () => {
+            localStorage.removeItem('admin_support_mode_store_id');
+            window.location.reload();
+        };
+
         function checkStoreStatus() {
             showScreen('fullScreenLoader');
             document.getElementById('loaderText').innerText = "Mağaza Bilgileri Kontrol Ediliyor...";
             
             onSnapshot(storesRef, (snapshot) => {
                 let foundStore = null;
-                snapshot.forEach(doc => { if(doc.data().ownerUid === currentUser.uid) foundStore = {id: doc.id, ...doc.data()}; });
+                const supportModeStoreId = localStorage.getItem('admin_support_mode_store_id');
+
+                if (supportModeStoreId) {
+                    // ADMİN DESTEK MODU: Kendi hesabımızı yok sayıp, adminin istediği mağazayı açıyoruz.
+                    snapshot.forEach(doc => { if(doc.id === supportModeStoreId) foundStore = {id: doc.id, ...doc.data()}; });
+                    if(foundStore) {
+                        document.getElementById('adminBypassBanner').classList.remove('hidden');
+                        document.getElementById('adminBypassBanner').classList.add('flex');
+                    }
+                } else {
+                    // NORMAL MOD: Giriş yapan kişinin kendi mağazası
+                    snapshot.forEach(doc => { if(doc.data().ownerUid === currentUser.uid) foundStore = {id: doc.id, ...doc.data()}; });
+                }
+
                 myStore = foundStore;
 
-                if(!myStore) { showScreen('registerScreen'); return; }
-                if(myStore.status === 'pending') { showScreen('pendingScreen'); return; }
-                if(myStore.status === 'suspended') { alert("Hesabınız askıya alınmıştır."); window.logoutUser(); return; }
+                if(!myStore) { 
+                    if(supportModeStoreId) { window.showMessage("Destek olunacak mağaza bulunamadı!", "error"); window.exitAdminSupportMode(); return; }
+                    showScreen('registerScreen'); return; 
+                }
+                if(myStore.status === 'pending' && !supportModeStoreId) { showScreen('pendingScreen'); return; }
+                if(myStore.status === 'suspended' && !supportModeStoreId) { alert("Hesabınız askıya alınmıştır."); window.logoutUser(); return; }
                 
                 showScreen('dashboardScreen');
                 updateDashboardHeader();
