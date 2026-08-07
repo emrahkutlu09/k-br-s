@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">Pazaryeri | Hızlı ve Güvenli Alışveriş</title>
+    <title id="pageTitle">Kıbrıs Çarşı | Hızlı ve Güvenli Alışveriş</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
     <!-- TAM EKRAN AÇILIŞ YÜKLEME EKRANI (VERİLER İNENE KADAR BEKLER) -->
     <div id="initialLoader" class="fixed inset-0 z-[999] bg-slate-50 flex flex-col items-center justify-center transition-opacity duration-500">
         <i data-lucide="loader-2" class="w-12 h-12 text-orange-500 animate-spin mb-4"></i>
-        <h2 id="loaderBrandName" class="text-2xl font-black text-slate-900 tracking-tighter animate-pulse">PAZAR<span class="text-orange-500">YERİ</span></h2>
+        <h2 id="loaderBrandName" class="text-2xl font-black text-slate-900 tracking-tighter animate-pulse">KIBRIS<span class="text-orange-500">ÇARŞI</span></h2>
         <p class="text-xs font-bold text-slate-400 mt-2">Vitrin Hazırlanıyor...</p>
     </div>
 
@@ -98,7 +98,7 @@
                     
                     <div class="flex-shrink-0 flex items-center cursor-pointer gap-2" onclick="window.renderHome()">
                         <img id="navLogo" src="" class="h-8 object-contain hidden" alt="Logo">
-                        <span id="navBrandName" class="text-2xl font-black tracking-tighter text-slate-900">PAZAR<span class="text-orange-500">YERİ</span></span>
+                        <span id="navBrandName" class="text-2xl font-black tracking-tighter text-slate-900">KIBRIS<span class="text-orange-500">ÇARŞI</span></span>
                     </div>
 
                     <div class="flex-1 max-w-2xl hidden md:flex items-center">
@@ -179,9 +179,27 @@
             </div>
         </main>
 
+        <!-- SATICI OLMA ÇAĞRISI (CTA BANNER) -->
+        <section class="bg-gradient-to-br from-slate-900 to-slate-800 py-10 sm:py-14 border-y border-slate-700 relative overflow-hidden">
+            <!-- Arka Plan Süslemeleri -->
+            <div class="absolute -right-20 -top-20 w-64 h-64 bg-orange-500 opacity-20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-rose-500 opacity-20 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="text-center md:text-left text-white max-w-2xl">
+                    <h2 class="text-2xl sm:text-3xl font-black mb-3" data-i18n="seller_cta_title">Hemen Ücretsiz Mağazanızı Açın!</h2>
+                    <p class="text-slate-300 font-medium text-sm sm:text-base leading-relaxed" data-i18n="seller_cta_desc">Kıbrıs Çarşı'nın binlerce müşterisine komisyonsuz ulaşın. Kendi işinizi dijitale taşıyın ve satışlarınızı anında artırın.</p>
+                </div>
+                <a href="satici.html" class="bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 text-white font-black px-8 py-4 rounded-2xl shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1 flex items-center justify-center gap-3 whitespace-nowrap w-full md:w-auto">
+                    <i data-lucide="store" class="w-6 h-6"></i>
+                    <span data-i18n="seller_cta_btn">Ücretsiz Satıcı Ol</span>
+                </a>
+            </div>
+        </section>
+
         <footer class="bg-white border-t border-slate-200 mt-auto">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-sm font-medium text-slate-500">
-                <p data-i18n="footer_text">&copy; 2026 Pazaryeri. Tüm Hakları Saklıdır.</p>
+                <p data-i18n="footer_text">&copy; 2026 Kıbrıs Çarşı. Tüm Hakları Saklıdır.</p>
             </div>
         </footer>
 
@@ -395,7 +413,7 @@
                 store_total: "Mağaza Toplamı:",
                 contact_no: "İletişim Numarası:",
                 order_from_store: "Bu Mağazadan Sipariş Ver",
-                footer_text: "&copy; 2026 Pazaryeri. Tüm Hakları Saklıdır.",
+                footer_text: "&copy; 2026 Kıbrıs Çarşı. Tüm Hakları Saklıdır.",
                 product_desc_title: "Ürün Açıklaması",
                 variants_label: "Seçenekler (Varyant)",
                 out_of_stock: "(Tükendi)",
@@ -434,7 +452,7 @@
                 order_no: "Sipariş",
                 total_amount: "Toplam Tutar:",
                 homeTitle: "Hızlı ve Güvenli Alışveriş",
-                homeDesc: "Pazaryeri'nde binlerce ürün. Hemen sipariş verin.",
+                homeDesc: "Kıbrıs Çarşı'nda binlerce ürün. Hemen sipariş verin.",
                 categories: {
                     "Elektronik": "Elektronik", "Moda": "Moda", "Ev & Yaşam": "Ev & Yaşam",
                     "Süpermarket": "Süpermarket", "Kozmetik": "Kozmetik", "Oto & Bahçe": "Oto & Bahçe"
@@ -458,7 +476,7 @@
                 store_total: "Store Total:",
                 contact_no: "Contact Number:",
                 order_from_store: "Order from this Store",
-                footer_text: "&copy; 2026 Marketplace. All Rights Reserved.",
+                footer_text: "&copy; 2026 Kıbrıs Çarşı. All Rights Reserved.",
                 product_desc_title: "Product Description",
                 variants_label: "Options (Variant)",
                 out_of_stock: "(Out of Stock)",
@@ -497,7 +515,7 @@
                 order_no: "Order",
                 total_amount: "Total Amount:",
                 homeTitle: "Fast and Secure Shopping",
-                homeDesc: "Thousands of products on Marketplace. Order now.",
+                homeDesc: "Thousands of products on Kıbrıs Çarşı. Order now.",
                 categories: {
                     "Elektronik": "Electronics", "Moda": "Fashion", "Ev & Yaşam": "Home & Living",
                     "Süpermarket": "Supermarket", "Kozmetik": "Cosmetics", "Oto & Bahçe": "Auto & Garden"
@@ -521,7 +539,7 @@
                 store_total: "Σύνολο Καταστήματος:",
                 contact_no: "Τηλέφωνο Επικοινωνίας:",
                 order_from_store: "Παραγγελία από αυτό το Κατάστημα",
-                footer_text: "&copy; 2026 Αγορά. Με την επιφύλαξη παντός δικαιώματος.",
+                footer_text: "&copy; 2026 Kıbrıs Çarşı. Με την επιφύλαξη παντός δικαιώματος.",
                 product_desc_title: "Περιγραφή Προϊόντος",
                 variants_label: "Επιλογές (Παραλλαγή)",
                 out_of_stock: "(Εξαντλήθηκε)",
@@ -560,7 +578,7 @@
                 order_no: "Παραγγελία",
                 total_amount: "Συνολικό Ποσό:",
                 homeTitle: "Γρήγορες και Ασφαλείς Αγορές",
-                homeDesc: "Χιλιάδες προϊόντα στο Marketplace. Παραγγείλτε τώρα.",
+                homeDesc: "Χιλιάδες προϊόντα στο Kıbrıs Çarşı. Παραγγείλτε τώρα.",
                 categories: {
                     "Elektronik": "Ηλεκτρονικά", "Moda": "Μόδα", "Ev & Yaşam": "Σπίτι & Διαβίωση",
                     "Süpermarket": "Σούπερ Μάρκετ", "Kozmetik": "Καλλυντικά", "Oto & Bahçe": "Αυτοκίνητο & Κήπος"
@@ -584,7 +602,7 @@
                 store_total: "Итого по магазину:",
                 contact_no: "Контактный номер:",
                 order_from_store: "Заказать в этом магазине",
-                footer_text: "&copy; 2026 Торговая площадка. Все права защищены.",
+                footer_text: "&copy; 2026 Kıbrıs Çarşı. Все права защищены.",
                 product_desc_title: "Описание товара",
                 variants_label: "Параметры (Вариант)",
                 out_of_stock: "(Нет в наличии)",
@@ -623,7 +641,7 @@
                 order_no: "Заказ",
                 total_amount: "Итоговая сумма:",
                 homeTitle: "Быстрые и безопасные покупки",
-                homeDesc: "Тысячи товаров на Marketplace. Закажите сейчас.",
+                homeDesc: "Тысячи товаров на Kıbrıs Çarşı. Закажите сейчас.",
                 categories: {
                     "Elektronik": "Электроника", "Moda": "Мода", "Ev & Yaşam": "Дом и быт",
                     "Süpermarket": "Супермаркет", "Kozmetik": "Косметика", "Oto & Bahçe": "Авто и сад"
@@ -647,7 +665,7 @@
                 store_total: "مجموع المتجر:",
                 contact_no: "رقم الاتصال:",
                 order_from_store: "اطلب من هذا المتجر",
-                footer_text: "&copy; 2026 السوق. جميع الحقوق محفوظة.",
+                footer_text: "&copy; 2026 Kıbrıs Çarşı. جميع الحقوق محفوظة.",
                 product_desc_title: "وصف المنتج",
                 variants_label: "خيارات (متغير)",
                 out_of_stock: "(نفد من المخزون)",
@@ -686,7 +704,7 @@
                 order_no: "طلب",
                 total_amount: "المبلغ الإجمالي:",
                 homeTitle: "تسوق سريع وآمن",
-                homeDesc: "آلاف المنتجات في السوق. اطلب الان.",
+                homeDesc: "آلاف المنتجات في Kıbrıs Çarşı. اطلب الان.",
                 categories: {
                     "Elektronik": "إلكترونيات", "Moda": "موضة", "Ev & Yaşam": "المنزل والمعيشة",
                     "Süpermarket": "سوبر ماركت", "Kozmetik": "مستحضرات تجميل", "Oto & Bahçe": "السيارات والحدائق"
@@ -761,7 +779,7 @@
             });
 
             // Meta SEO Başlıkları
-            const pName = window.appSettings?.platformName || 'Pazaryeri';
+            const pName = window.appSettings?.platformName || 'Kıbrıs Çarşı';
             if(!document.getElementById('productDetailModal').classList.contains('hidden') || !document.getElementById('storeProfileModal').classList.contains('hidden')) {
                 // Modal açıksa SEO başlığını ellemeyelim (Ürün/Mağaza adı kalmalı)
             } else {
@@ -1172,7 +1190,7 @@
             url.searchParams.delete('magaza');
             window.history.pushState({}, '', url);
 
-            const pName = window.appSettings?.platformName || 'Pazaryeri';
+            const pName = window.appSettings?.platformName || 'Kıbrıs Çarşı';
             document.title = `${product.title} - ${product.storeName} | ${pName}`;
             
             const images = (product.images && product.images.length > 0) ? product.images : ['https://placehold.co/400x400/cbd5e1/475569?text=Gorsel+Yok'];
@@ -1333,7 +1351,7 @@
             url.searchParams.delete('urun');
             window.history.pushState({}, '', url);
 
-            const pName = window.appSettings?.platformName || 'Pazaryeri';
+            const pName = window.appSettings?.platformName || 'Kıbrıs Çarşı';
             document.title = `${store.name} | ${pName}`;
 
             spActiveCategory = '';
@@ -1618,7 +1636,7 @@
             }
             if(phone.length === 10 && !phone.startsWith('90')) phone = '90' + phone;
 
-            let message = `Merhaba *${orderData.storeName}*, Pazaryeri üzerinden sipariş vermek istiyorum:\n\n`;
+            let message = `Merhaba *${orderData.storeName}*, Kıbrıs Çarşı üzerinden sipariş vermek istiyorum:\n\n`;
             orderData.items.forEach((item, index) => {
                 message += `${index+1}. ${item.product.title} ${item.variant ? `(Seçim: ${item.variant})` : ''} - ${item.quantity} Adet x ${item.product.price} TL\n`;
             });
