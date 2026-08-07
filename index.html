@@ -381,6 +381,31 @@
             }
         });
 
+        
+        // ADMIN YÖNLENDİRME KONTROLÜ (LOCALSTORAGE İLE)
+        window.checkAdminRedirects = () => {
+            const redirectProductId = localStorage.getItem('admin_redirect_product');
+            const redirectStoreId = localStorage.getItem('admin_redirect_store');
+
+            // Ürün yönlendirmesi
+            if (redirectProductId && dbProducts.length > 0) {
+                const productExists = dbProducts.find(p => p.id === redirectProductId);
+                if (productExists) {
+                    localStorage.removeItem('admin_redirect_product'); // Hafızayı temizle
+                    setTimeout(() => window.openProductDetail(redirectProductId), 200); 
+                }
+            }
+
+            // Mağaza yönlendirmesi
+            if (redirectStoreId && dbStores.length > 0 && dbProducts.length > 0) {
+                const storeExists = dbStores.find(s => s.id === redirectStoreId);
+                if (storeExists) {
+                    localStorage.removeItem('admin_redirect_store'); // Hafızayı temizle
+                    setTimeout(() => window.openStoreProfile(redirectStoreId), 200);
+                }
+            }
+        };
+
         // INIT & REALTIME LISTENERS
         async function initApp() {
             lucide.createIcons();
@@ -416,6 +441,7 @@
                 dbStores = [];
                 snapshot.forEach(doc => { dbStores.push({id: doc.id, ...doc.data()}); });
                 window.renderHome(document.getElementById('searchInput').value);
+                window.checkAdminRedirects(); // Yönlendirme Kontrolü
             });
 
             // Ürünleri Dinle
@@ -424,6 +450,7 @@
                 snapshot.forEach(doc => { dbProducts.push({id: doc.id, ...doc.data()}); });
                 window.renderCategories();
                 window.renderHome(document.getElementById('searchInput').value);
+                window.checkAdminRedirects(); // Yönlendirme Kontrolü
             });
         }
 
