@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">Pazaryeri | Hızlı ve Güvenli Alışveriş</title>
+    <title id="pageTitle">Kıbrıs Çarşı | Hızlı ve Güvenli Alışveriş</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
     <!-- TAM EKRAN AÇILIŞ YÜKLEME EKRANI (VERİLER İNENE KADAR BEKLER) -->
     <div id="initialLoader" class="fixed inset-0 z-[999] bg-slate-50 flex flex-col items-center justify-center transition-opacity duration-500">
         <i data-lucide="loader-2" class="w-12 h-12 text-orange-500 animate-spin mb-4"></i>
-        <h2 id="loaderBrandName" class="text-2xl font-black text-slate-900 tracking-tighter animate-pulse">PAZAR<span class="text-orange-500">YERİ</span></h2>
+        <h2 id="loaderBrandName" class="text-2xl font-black text-slate-900 tracking-tighter animate-pulse">Kıbrıs<span class="text-orange-500">Çarşı</span></h2>
         <p class="text-xs font-bold text-slate-400 mt-2">Vitrin Hazırlanıyor...</p>
     </div>
 
@@ -98,7 +98,7 @@
                     
                     <div class="flex-shrink-0 flex items-center cursor-pointer gap-2" onclick="window.renderHome()">
                         <img id="navLogo" src="" class="h-8 object-contain hidden" alt="Logo">
-                        <span id="navBrandName" class="text-2xl font-black tracking-tighter text-slate-900">PAZAR<span class="text-orange-500">YERİ</span></span>
+                        <span id="navBrandName" class="text-2xl font-black tracking-tighter text-slate-900">Kıbrıs<span class="text-orange-500">Çarşı</span></span>
                     </div>
 
                     <div class="flex-1 max-w-2xl hidden md:flex items-center">
@@ -181,7 +181,7 @@
 
         <footer class="bg-white border-t border-slate-200 mt-auto">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-sm font-medium text-slate-500">
-                <p data-i18n="footer_text">&copy; 2026 Pazaryeri. Tüm Hakları Saklıdır.</p>
+                <p data-i18n="footer_text">&copy; 2026 Kıbrıs Çarşı. Tüm Hakları Saklıdır.</p>
             </div>
         </footer>
 
@@ -348,7 +348,7 @@
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
 
-        const APP_ID = 'kibris-pazar'; 
+        const APP_ID = 'kibris-carsi'; 
         const productsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'products');
         const storesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'stores');
         const settingsRef = doc(db, 'artifacts', APP_ID, 'public', 'settings');
@@ -395,7 +395,7 @@
                 store_total: "Mağaza Toplamı:",
                 contact_no: "İletişim Numarası:",
                 order_from_store: "Bu Mağazadan Sipariş Ver",
-                footer_text: "&copy; 2026 Pazaryeri. Tüm Hakları Saklıdır.",
+                footer_text: "&copy; 2026 Kıbrıs Çarşı. Tüm Hakları Saklıdır.",
                 product_desc_title: "Ürün Açıklaması",
                 variants_label: "Seçenekler (Varyant)",
                 out_of_stock: "(Tükendi)",
@@ -434,7 +434,7 @@
                 order_no: "Sipariş",
                 total_amount: "Toplam Tutar:",
                 homeTitle: "Hızlı ve Güvenli Alışveriş",
-                homeDesc: "Pazaryeri'nde binlerce ürün. Hemen sipariş verin.",
+                homeDesc: "Kıbrıs Çarşı da binlerce ürün. Hemen sipariş verin.",
                 categories: {
                     "Elektronik": "Elektronik", "Moda": "Moda", "Ev & Yaşam": "Ev & Yaşam",
                     "Süpermarket": "Süpermarket", "Kozmetik": "Kozmetik", "Oto & Bahçe": "Oto & Bahçe"
@@ -761,7 +761,7 @@
             });
 
             // Meta SEO Başlıkları
-            const pName = window.appSettings?.platformName || 'Pazaryeri';
+            const pName = window.appSettings?.platformName || 'Kıbrıs Çarşı';
             if(!document.getElementById('productDetailModal').classList.contains('hidden') || !document.getElementById('storeProfileModal').classList.contains('hidden')) {
                 // Modal açıksa SEO başlığını ellemeyelim (Ürün/Mağaza adı kalmalı)
             } else {
@@ -1172,7 +1172,7 @@
             url.searchParams.delete('magaza');
             window.history.pushState({}, '', url);
 
-            const pName = window.appSettings?.platformName || 'Pazaryeri';
+            const pName = window.appSettings?.platformName || 'Kıbrıs Çarşı';
             document.title = `${product.title} - ${product.storeName} | ${pName}`;
             
             const images = (product.images && product.images.length > 0) ? product.images : ['https://placehold.co/400x400/cbd5e1/475569?text=Gorsel+Yok'];
@@ -1333,7 +1333,7 @@
             url.searchParams.delete('urun');
             window.history.pushState({}, '', url);
 
-            const pName = window.appSettings?.platformName || 'Pazaryeri';
+            const pName = window.appSettings?.platformName || 'Kıbrıs Çarşı';
             document.title = `${store.name} | ${pName}`;
 
             spActiveCategory = '';
@@ -1618,7 +1618,7 @@
             }
             if(phone.length === 10 && !phone.startsWith('90')) phone = '90' + phone;
 
-            let message = `Merhaba *${orderData.storeName}*, Pazaryeri üzerinden sipariş vermek istiyorum:\n\n`;
+            let message = `Merhaba *${orderData.storeName}*, Kıbrıs Çarşı üzerinden sipariş vermek istiyorum:\n\n`;
             orderData.items.forEach((item, index) => {
                 message += `${index+1}. ${item.product.title} ${item.variant ? `(Seçim: ${item.variant})` : ''} - ${item.quantity} Adet x ${item.product.price} TL\n`;
             });
