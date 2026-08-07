@@ -39,9 +39,19 @@
                     <span class="hidden sm:inline">| Komisyonsuz Dijital Pazar Yeri</span>
                 </div>
                 <div class="flex items-center gap-4">
-                    <a href="satici.html" class="text-orange-400 hover:text-orange-300 font-bold transition flex items-center gap-1">
+                    <a href="satici.html" id="txtLogin" class="text-orange-400 hover:text-orange-300 font-bold transition flex items-center gap-1">
                         <i data-lucide="store" class="w-3.5 h-3.5"></i> Satıcı Paneli
                     </a>
+                    
+                    <!-- ÇOK DİLLİ SEO BAYRAKLARI -->
+                    <div class="flex items-center gap-1.5 border-l border-slate-700 pl-3">
+                        <button onclick="window.setLanguage('tr')" id="flag-tr" class="text-sm hover:scale-125 transition" title="Türkçe">🇹🇷</button>
+                        <button onclick="window.setLanguage('en')" id="flag-en" class="text-sm hover:scale-125 transition grayscale opacity-50" title="English">🇬🇧</button>
+                        <button onclick="window.setLanguage('el')" id="flag-el" class="text-sm hover:scale-125 transition grayscale opacity-50" title="Ελληνικά">🇬🇷</button>
+                        <button onclick="window.setLanguage('ru')" id="flag-ru" class="text-sm hover:scale-125 transition grayscale opacity-50" title="Русский">🇷🇺</button>
+                        <button onclick="window.setLanguage('ar')" id="flag-ar" class="text-sm hover:scale-125 transition grayscale opacity-50" title="العربية">🇸🇦</button>
+                    </div>
+
                     <a href="admin.html" class="text-slate-600 hover:text-rose-500 transition cursor-pointer" title="Sistem Kontrol Merkezi">
                         <i data-lucide="shield" class="w-3.5 h-3.5"></i>
                     </a>
@@ -105,7 +115,7 @@
                                 <i data-lucide="shopping-cart" class="w-5 h-5"></i>
                                 <span id="cartCountBadge" class="absolute -top-1.5 -right-2 bg-orange-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center shadow-sm">0</span>
                             </div>
-                            <span class="text-[10px] font-bold mt-1 hidden sm:block">Sepetim</span>
+                            <span id="lblCart" class="text-[10px] font-bold mt-1 hidden sm:block">Sepetim</span>
                         </button>
                     </div>
                 </div>
@@ -146,7 +156,7 @@
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="window.closeMyOrders()"></div>
             <div class="relative w-full max-w-3xl bg-slate-50 rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="myOrdersPanel">
                 <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white shadow-sm z-10">
-                    <h2 class="text-lg font-black flex items-center gap-2 text-slate-900"><i data-lucide="package" class="w-5 h-5 text-orange-500"></i> Siparişlerim</h2>
+                    <h2 class="text-lg font-black flex items-center gap-2 text-slate-900"><i data-lucide="package" class="w-5 h-5 text-orange-500"></i> <span id="lblMyOrders">Siparişlerim</span></h2>
                     <button onclick="window.closeMyOrders()" class="p-2 text-slate-400 hover:bg-slate-200 rounded-full transition"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
                 <div class="flex-1 overflow-y-auto p-4 sm:p-6" id="myOrdersContainer">
@@ -161,7 +171,7 @@
                 <div class="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-white shadow-sm z-10">
                     <h2 class="text-lg font-black flex items-center gap-2 text-slate-900">
                         <i data-lucide="shopping-cart" class="w-5 h-5 text-orange-500"></i>
-                        Sepetim (<span id="cartHeaderCount">0</span> Ürün)
+                        <span id="lblCartTitle">Sepetim</span> (<span id="cartHeaderCount">0</span>)
                     </h2>
                     <button onclick="window.toggleCart()" class="p-2 text-slate-400 hover:bg-slate-200 rounded-full transition">
                         <i data-lucide="x" class="w-5 h-5"></i>
@@ -170,7 +180,7 @@
                 
                 <div class="bg-blue-50 p-3 border-b border-blue-100 flex items-start gap-2 text-xs text-blue-800 font-medium">
                     <i data-lucide="info" class="w-4 h-4 text-blue-500 shrink-0 mt-0.5"></i>
-                    <p>Sepetinizdeki ürünler mağazalara göre gruplanmıştır. Siparişleriniz her mağazanın kendi WhatsApp hattına güvenle iletilir.</p>
+                    <p id="lblCartInfo">Sepetinizdeki ürünler mağazalara göre gruplanmıştır. Siparişleriniz her mağazanın kendi WhatsApp hattına güvenle iletilir.</p>
                 </div>
                 
                 <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-4 space-y-5"></div>
@@ -194,7 +204,7 @@
                     <h2 id="detailTitle" class="text-2xl sm:text-3xl font-black text-slate-900 mb-3"></h2>
                     
                     <div class="mb-5">
-                        <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-wider">Ürün Açıklaması</h4>
+                        <h4 id="lblProductDesc" class="text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-wider">Ürün Açıklaması</h4>
                         <p id="detailDescription" class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap"></p>
                     </div>
 
@@ -215,7 +225,7 @@
                                 <img id="detailStoreLogo" src="" class="w-full h-full object-cover hidden">
                             </div>
                             <div>
-                                <div class="text-[10px] font-bold text-slate-400 uppercase group-hover:text-orange-500 transition-colors">Satıcı Profili & Tüm Ürünleri</div>
+                                <div id="lblSellerProfile" class="text-[10px] font-bold text-slate-400 uppercase group-hover:text-orange-500 transition-colors">Satıcı Profili & Tüm Ürünleri</div>
                                 <div class="font-black text-slate-800 text-lg flex items-center gap-1"><span id="detailStoreName"></span><i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i></div>
                                 <div class="text-xs font-bold text-slate-500 flex items-center gap-1 mt-0.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-orange-400"></i> <span id="detailDistrict"></span></div>
                             </div>
@@ -227,12 +237,12 @@
                     <div class="mb-8">
                         <input type="hidden" id="detailProductId">
                         <button id="detailAddToCartBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-xl font-black text-sm transition-all shadow-lg flex items-center justify-center gap-2">
-                            <i data-lucide="shopping-cart" class="w-5 h-5"></i> Sepete Ekle
+                            <i data-lucide="shopping-cart" class="w-5 h-5"></i> <span id="lblAddToCart">Sepete Ekle</span>
                         </button>
                     </div>
 
                     <div class="pt-6 border-t border-slate-100">
-                        <h3 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2"><i data-lucide="message-square" class="w-5 h-5 text-orange-500"></i> Müşteri Değerlendirmeleri</h3>
+                        <h3 id="lblReviews" class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2"><i data-lucide="message-square" class="w-5 h-5 text-orange-500"></i> Müşteri Değerlendirmeleri</h3>
                         <div id="detailReviewsContainer"></div>
                     </div>
                 </div>
@@ -241,7 +251,7 @@
 
         <div id="storeProfileModal" class="fixed inset-0 z-[95] hidden bg-slate-50 overflow-y-auto">
             <div class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center shadow-sm">
-                 <button onclick="window.closeStoreProfile()" class="flex items-center gap-2 text-slate-600 hover:text-orange-500 font-bold text-sm transition bg-white py-1.5 px-3 rounded-lg border border-slate-200 hover:border-orange-200"><i data-lucide="arrow-left" class="w-4 h-4"></i> Geri Dön</button>
+                 <button onclick="window.closeStoreProfile()" id="btnBack" class="flex items-center gap-2 text-slate-600 hover:text-orange-500 font-bold text-sm transition bg-white py-1.5 px-3 rounded-lg border border-slate-200 hover:border-orange-200"><i data-lucide="arrow-left" class="w-4 h-4"></i> Geri Dön</button>
                  <span class="font-black text-slate-900 truncate flex-1 text-center" id="storeProfileHeaderName"></span>
                  <div class="w-24"></div> 
             </div>
@@ -277,7 +287,7 @@
 
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[50vh]">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-black text-slate-900">Mağaza Ürünleri</h2>
+                    <h2 id="lblStoreProducts" class="text-xl font-black text-slate-900">Mağaza Ürünleri</h2>
                     <span id="spProductCount" class="text-xs font-bold text-slate-500 bg-slate-200 px-3 py-1 rounded-full"></span>
                 </div>
                 <div id="spProductsContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6"></div>
@@ -330,6 +340,202 @@
         
         let activeCategory = '';
         let activeDistrict = '';
+
+        // --- GELİŞMİŞ ÇOK DİLLİ SEO SÖZLÜĞÜ (UI & META) ---
+        const appTranslations = {
+            tr: {
+                search: "Aradığınız ürün, kategori veya markayı yazınız...",
+                login: "Satıcı Paneli",
+                allCategories: "Tüm Kategoriler",
+                browseCategories: "Kategorilere Göz At",
+                premiumListings: "Premium İlanlar",
+                favorites: "Favorileriniz",
+                forYou: "Sizin İçin Seçtiklerimiz",
+                notFound: "Kriterlere uygun ürün bulunamadı.",
+                clearFilter: "Filtreleri Temizle",
+                cart: "Sepetim",
+                cartInfo: "Sepetinizdeki ürünler mağazalara göre gruplanmıştır. Siparişleriniz her mağazanın kendi WhatsApp hattına güvenle iletilir.",
+                storeProfile: "Satıcı Profili & Tüm Ürünleri",
+                addToCart: "Sepete Ekle",
+                reviews: "Müşteri Değerlendirmeleri",
+                myOrders: "Siparişlerim",
+                storeProducts: "Mağaza Ürünleri",
+                back: "Geri Dön",
+                homeTitle: "Hızlı ve Güvenli Alışveriş",
+                homeDesc: "Pazaryeri'nde binlerce ürün. Hemen sipariş verin.",
+                productDesc: "Ürün Açıklaması",
+                dir: "ltr"
+            },
+            en: {
+                search: "Search for products, categories or brands...",
+                login: "Seller Panel",
+                allCategories: "All Categories",
+                browseCategories: "Browse Categories",
+                premiumListings: "Premium Listings",
+                favorites: "Your Favorites",
+                forYou: "Selected For You",
+                notFound: "No products found matching the criteria.",
+                clearFilter: "Clear Filters",
+                cart: "My Cart",
+                cartInfo: "Products in your cart are grouped by store. Your orders are safely sent to each store's WhatsApp line.",
+                storeProfile: "Seller Profile & All Products",
+                addToCart: "Add to Cart",
+                reviews: "Customer Reviews",
+                myOrders: "My Orders",
+                storeProducts: "Store Products",
+                back: "Go Back",
+                homeTitle: "Fast and Secure Shopping",
+                homeDesc: "Thousands of products on Marketplace. Order now.",
+                productDesc: "Product Description",
+                dir: "ltr"
+            },
+            el: {
+                search: "Αναζήτηση προϊόντων, κατηγοριών ή επωνυμιών...",
+                login: "Πίνακας Πωλητή",
+                allCategories: "Όλες οι Κατηγορίες",
+                browseCategories: "Περιήγηση Κατηγοριών",
+                premiumListings: "Premium Καταχωρήσεις",
+                favorites: "Τα Αγαπημένα σας",
+                forYou: "Επιλεγμένα για εσάς",
+                notFound: "Δεν βρέθηκαν προϊόντα που να ταιριάζουν στα κριτήρια.",
+                clearFilter: "Καθαρισμός Φίλτρων",
+                cart: "Το Καλάθι μου",
+                cartInfo: "Τα προϊόντα στο καλάθι σας ομαδοποιούνται ανά κατάστημα. Οι παραγγελίες σας αποστέλλονται με ασφάλεια στη γραμμή WhatsApp κάθε καταστήματος.",
+                storeProfile: "Προφίλ Πωλητή & Όλα τα Προϊόντα",
+                addToCart: "Προσθήκη στο Καλάθι",
+                reviews: "Κριτικές Πελατών",
+                myOrders: "Οι Παραγγελίες μου",
+                storeProducts: "Προϊόντα Καταστήματος",
+                back: "Επιστροφή",
+                homeTitle: "Γρήγορες και Ασφαλείς Αγορές",
+                homeDesc: "Χιλιάδες προϊόντα στο Marketplace. Παραγγείλτε τώρα.",
+                productDesc: "Περιγραφή Προϊόντος",
+                dir: "ltr"
+            },
+            ru: {
+                search: "Поиск товаров, категорий или брендов...",
+                login: "Панель продавца",
+                allCategories: "Все категории",
+                browseCategories: "Просмотр категорий",
+                premiumListings: "Премиум объявления",
+                favorites: "Ваши избранные",
+                forYou: "Выбрано для вас",
+                notFound: "Товары, соответствующие критериям, не найдены.",
+                clearFilter: "Очистить фильтры",
+                cart: "Моя корзина",
+                cartInfo: "Товары в вашей корзине сгруппированы по магазинам. Ваши заказы безопасно отправляются на линию WhatsApp каждого магазина.",
+                storeProfile: "Профиль продавца и все товары",
+                addToCart: "В корзину",
+                reviews: "Отзывы клиентов",
+                myOrders: "Мои заказы",
+                storeProducts: "Товары магазина",
+                back: "Назад",
+                homeTitle: "Быстрые и безопасные покупки",
+                homeDesc: "Тысячи товаров на Marketplace. Закажите сейчас.",
+                productDesc: "Описание товара",
+                dir: "ltr"
+            },
+            ar: {
+                search: "ابحث عن المنتجات أو الفئات أو العلامات التجارية...",
+                login: "لوحة البائع",
+                allCategories: "جميع الفئات",
+                browseCategories: "تصفح الفئات",
+                premiumListings: "إعلانات مميزة",
+                favorites: "مفضلاتك",
+                forYou: "مختارة لك",
+                notFound: "لم يتم العثور على منتجات تطابق المعايير.",
+                clearFilter: "مسح الفلاتر",
+                cart: "عربة التسوق",
+                cartInfo: "يتم تجميع المنتجات في عربة التسوق الخاصة بك حسب المتجر. يتم إرسال طلباتك بأمان إلى خط WhatsApp الخاص بكل متجر.",
+                storeProfile: "ملف البائع وجميع المنتجات",
+                addToCart: "أضف إلى السلة",
+                reviews: "تقييمات العملاء",
+                myOrders: "طلباتي",
+                storeProducts: "منتجات المتجر",
+                back: "عودة",
+                homeTitle: "تسوق سريع وآمن",
+                homeDesc: "آلاف المنتجات في السوق. اطلب الان.",
+                productDesc: "وصف المنتج",
+                dir: "rtl"
+            }
+        };
+
+        function getCurrentLang() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('lang') || 'tr';
+        }
+
+        window.t = function(key) {
+            const lang = getCurrentLang();
+            return (appTranslations[lang] || appTranslations['tr'])[key] || key;
+        };
+
+        window.setLanguage = (lang) => {
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('lang', lang);
+            window.history.pushState({}, '', newUrl);
+            applyTranslations();
+        };
+
+        function applyTranslations() {
+            const lang = getCurrentLang();
+            const tObj = appTranslations[lang] || appTranslations['tr'];
+
+            document.documentElement.lang = lang;
+            document.documentElement.dir = tObj.dir; 
+
+            ['tr','en','el','ru','ar'].forEach(l => {
+                const flag = document.getElementById(`flag-${l}`);
+                if(flag) {
+                    if(l === lang) flag.classList.remove('grayscale', 'opacity-50');
+                    else flag.classList.add('grayscale', 'opacity-50');
+                }
+            });
+
+            const searchInput = document.getElementById('searchInput');
+            if(searchInput) searchInput.placeholder = tObj.search;
+            
+            const searchInputMobile = document.getElementById('searchInputMobile');
+            if(searchInputMobile) searchInputMobile.placeholder = tObj.search;
+
+            if(document.getElementById('txtLogin')) document.getElementById('txtLogin').innerHTML = `<i data-lucide="store" class="w-3.5 h-3.5"></i> ${tObj.login}`;
+            if(document.getElementById('lblCart')) document.getElementById('lblCart').innerText = tObj.cart;
+            if(document.getElementById('lblCartTitle')) document.getElementById('lblCartTitle').innerText = tObj.cart;
+            if(document.getElementById('lblCartInfo')) document.getElementById('lblCartInfo').innerText = tObj.cartInfo;
+            if(document.getElementById('lblMyOrders')) document.getElementById('lblMyOrders').innerText = tObj.myOrders;
+            if(document.getElementById('lblProductDesc')) document.getElementById('lblProductDesc').innerText = tObj.productDesc;
+            if(document.getElementById('lblSellerProfile')) document.getElementById('lblSellerProfile').innerText = tObj.storeProfile;
+            if(document.getElementById('lblAddToCart')) document.getElementById('lblAddToCart').innerText = tObj.addToCart;
+            if(document.getElementById('lblReviews')) document.getElementById('lblReviews').innerHTML = `<i data-lucide="message-square" class="w-5 h-5 text-orange-500"></i> ${tObj.reviews}`;
+            if(document.getElementById('lblStoreProducts')) document.getElementById('lblStoreProducts').innerText = tObj.storeProducts;
+            if(document.getElementById('btnBack')) document.getElementById('btnBack').innerHTML = `<i data-lucide="arrow-left" class="w-4 h-4"></i> ${tObj.back}`;
+
+            // Tarayıcı sekmesi başlığı
+            const pName = window.appSettings?.platformName || 'Pazaryeri';
+            if(document.getElementById('productDetailPanel') && !document.getElementById('productDetailPanel').classList.contains('scale-95')) {
+                // Eğer ürün açıksa başlığı ellemeyelim
+            } else if (document.getElementById('storeProfileModal') && !document.getElementById('storeProfileModal').classList.contains('hidden')) {
+                // Eğer mağaza açıksa ellemeyelim
+            } else {
+                document.title = `${pName} | ${tObj.homeTitle}`;
+                updateMetaDescription(tObj.homeDesc);
+            }
+
+            if(typeof window.renderCategories === 'function') window.renderCategories();
+            if(typeof window.renderHome === 'function') window.renderHome(document.getElementById('searchInput').value);
+            
+            lucide.createIcons();
+        }
+
+        function updateMetaDescription(content) {
+            let meta = document.querySelector('meta[name="description"]');
+            if (!meta) {
+                meta = document.createElement('meta');
+                meta.name = "description";
+                document.head.appendChild(meta);
+            }
+            meta.content = content;
+        }
 
         window.showMessage = (msg, type = 'success') => {
             const toast = document.createElement('div');
@@ -390,7 +596,6 @@
                     if(data.platformName) {
                         appSettings.platformName = data.platformName;
                         document.getElementById('navBrandName').innerText = data.platformName;
-                        document.getElementById('pageTitle').innerText = `${data.platformName} | Hızlı ve Güvenli Alışveriş`;
                     }
                     if(data.platformLogo) {
                         document.getElementById('navLogo').src = data.platformLogo;
@@ -400,14 +605,14 @@
                     if(data.mainBanner) appSettings.mainBanner = data.mainBanner;
                     if(data.sideBanner1) appSettings.sideBanner1 = data.sideBanner1;
                     if(data.sideBanner2) appSettings.sideBanner2 = data.sideBanner2;
-                    window.renderHome(document.getElementById('searchInput').value);
+                    applyTranslations(); // Trigger meta updates based on settings
                 }
             });
 
             onSnapshot(storesRef, (snapshot) => {
                 dbStores = [];
                 snapshot.forEach(doc => { dbStores.push({id: doc.id, ...doc.data()}); });
-                checkAdminRedirects(); 
+                checkUrlRouting(); 
                 window.renderHome(document.getElementById('searchInput').value);
             });
 
@@ -415,36 +620,32 @@
                 dbProducts = [];
                 snapshot.forEach(doc => { dbProducts.push({id: doc.id, ...doc.data()}); });
                 window.renderCategories();
-                checkAdminRedirects(); 
+                checkUrlRouting(); 
                 window.renderHome(document.getElementById('searchInput').value);
             });
+
+            applyTranslations(); // İlk açılışta çevirileri uygula
         }
 
-        // Admin Panelinden gelen tıklamaları yakala
-        function checkAdminRedirects() {
+        // --- URL YÖNLENDİRİCİSİ (SEO PRODUCT/STORE LINKS) ---
+        function checkUrlRouting() {
             if (dbStores.length === 0 || dbProducts.length === 0) return; 
 
-            const targetStoreId = localStorage.getItem('admin_redirect_store');
-            if (targetStoreId) {
-                const store = dbStores.find(s => s.id === targetStoreId);
-                if (store) {
-                    localStorage.removeItem('admin_redirect_store');
-                    setTimeout(() => window.openStoreProfile(targetStoreId), 500);
-                } else {
-                    localStorage.removeItem('admin_redirect_store');
-                    window.showMessage("Admin Yönlendirmesi: Mağaza sistemde bulunamadı.", "error");
-                }
-            }
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetProductId = urlParams.get('urun') || localStorage.getItem('admin_redirect_product');
+            const targetStoreId = urlParams.get('magaza') || localStorage.getItem('admin_redirect_store');
 
-            const targetProductId = localStorage.getItem('admin_redirect_product');
             if (targetProductId) {
                 const prod = dbProducts.find(p => p.id === targetProductId);
                 if (prod) {
                     localStorage.removeItem('admin_redirect_product');
                     setTimeout(() => window.openProductDetail(targetProductId), 500);
-                } else {
-                    localStorage.removeItem('admin_redirect_product');
-                    window.showMessage("Admin Yönlendirmesi: İlan sistemde bulunamadı.", "error");
+                }
+            } else if (targetStoreId) {
+                const store = dbStores.find(s => s.id === targetStoreId);
+                if (store) {
+                    localStorage.removeItem('admin_redirect_store');
+                    setTimeout(() => window.openStoreProfile(targetStoreId), 500);
                 }
             }
         }
@@ -453,7 +654,7 @@
 
         window.renderCategories = () => {
             const container = document.getElementById('categoryContainer');
-            let html = `<button onclick="window.setCategory('')" class="whitespace-nowrap transition ${activeCategory === '' ? 'text-orange-500 font-black' : 'hover:text-orange-500'}">Tüm Kategoriler</button>`;
+            let html = `<button onclick="window.setCategory('')" class="whitespace-nowrap transition ${activeCategory === '' ? 'text-orange-500 font-black' : 'hover:text-orange-500'}">${window.t('allCategories')}</button>`;
             categoriesList.forEach(cat => {
                 html += `<button onclick="window.setCategory('${cat}')" class="whitespace-nowrap transition ${activeCategory === cat ? 'text-orange-500 font-black' : 'hover:text-orange-500'}">${cat}</button>`;
             });
@@ -472,13 +673,9 @@
         };
 
         window.handleSearch = (isMobile = false) => {
-            // Hangi arama çubuğundan yazıldıysa onun değerini al
             const val = isMobile ? document.getElementById('searchInputMobile').value : document.getElementById('searchInput').value;
-            
-            // Masaüstü ve Mobil arama çubuklarını birbiriyle senkronize et
             document.getElementById('searchInput').value = val;
             if(document.getElementById('searchInputMobile')) document.getElementById('searchInputMobile').value = val;
-            
             window.renderHome(val);
         };
 
@@ -606,7 +803,7 @@
 
                 html += `
                     <div class="mb-10">
-                        <h2 class="text-xl font-black text-slate-900 mb-5">Kategorilere Göz At</h2>
+                        <h2 class="text-xl font-black text-slate-900 mb-5">${window.t('browseCategories')}</h2>
                         <div class="grid grid-cols-3 sm:grid-cols-6 gap-4">
                 `;
                 categoriesList.forEach(cat => {
@@ -625,7 +822,7 @@
                     html += `
                         <div class="mb-12">
                             <div class="flex items-center justify-between mb-5">
-                                <div class="flex items-center gap-2"><div class="bg-purple-100 p-2 rounded-lg text-purple-600"><i data-lucide="award" class="w-5 h-5"></i></div><h2 class="text-xl font-black text-slate-900">Premium İlanlar</h2></div>
+                                <div class="flex items-center gap-2"><div class="bg-purple-100 p-2 rounded-lg text-purple-600"><i data-lucide="award" class="w-5 h-5"></i></div><h2 class="text-xl font-black text-slate-900">${window.t('premiumListings')}</h2></div>
                                 <div class="hidden sm:flex items-center gap-2"><button onclick="window.scrollFeatured(-1)" class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-orange-50 hover:text-orange-500 transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><button onclick="window.scrollFeatured(1)" class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-orange-50 hover:text-orange-500 transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>
                             </div>
                             <div id="featuredContainer" class="flex gap-4 sm:gap-5 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth snap-x">
@@ -636,18 +833,18 @@
 
                 const favProducts = displayProducts.filter(p => favorites.includes(p.id));
                 if (favProducts.length > 0) {
-                    html += `<div class="mb-12 bg-rose-50 rounded-3xl p-6 border border-rose-100"><h2 class="text-xl font-black text-rose-900 mb-5">Favorileriniz</h2><div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">`;
+                    html += `<div class="mb-12 bg-rose-50 rounded-3xl p-6 border border-rose-100"><h2 class="text-xl font-black text-rose-900 mb-5">${window.t('favorites')}</h2><div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">`;
                     favProducts.forEach(p => { html += window.createProductCard(p); });
                     html += `</div></div>`;
                 }
 
-                html += `<div class="mb-5"><h2 class="text-xl font-black text-slate-900">Sizin İçin Seçtiklerimiz</h2></div>`;
+                html += `<div class="mb-5"><h2 class="text-xl font-black text-slate-900">${window.t('forYou')}</h2></div>`;
                 if(displayProducts.length > 0) {
                     html += `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">`;
                     displayProducts.forEach(p => { html += window.createProductCard(p); });
                     html += `</div>`;
                 } else {
-                    html += `<div class="text-center py-12 bg-white rounded-3xl border"><p class="text-slate-500 font-bold">Henüz ürün bulunmuyor.</p></div>`;
+                    html += `<div class="text-center py-12 bg-white rounded-3xl border"><p class="text-slate-500 font-bold">${window.t('notFound')}</p></div>`;
                 }
 
             } else {
@@ -661,7 +858,7 @@
                 html += `<div class="flex justify-between items-end mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-100"><div><h2 class="text-xl font-black text-slate-900">${searchQuery ? `'${searchQuery}' sonuçları` : activeCategory ? `${activeCategory}` : 'Filtrelenmiş Ürünler'}</h2></div><span class="text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1.5 rounded-full">${displayProducts.length} Ürün Bulundu</span></div>`;
 
                 if (displayProducts.length === 0) {
-                    html += `<div class="text-center py-16 bg-white rounded-3xl border"><p class="text-slate-500 font-bold text-lg">Kriterlere uygun ürün bulunamadı.</p><button onclick="window.setCategory(''); document.getElementById('searchInput').value=''; if(document.getElementById('searchInputMobile')) document.getElementById('searchInputMobile').value=''; window.renderHome();" class="mt-4 text-orange-500 font-bold hover:underline">Filtreleri Temizle</button></div>`;
+                    html += `<div class="text-center py-16 bg-white rounded-3xl border"><p class="text-slate-500 font-bold text-lg">${window.t('notFound')}</p><button onclick="window.setCategory(''); document.getElementById('searchInput').value=''; if(document.getElementById('searchInputMobile')) document.getElementById('searchInputMobile').value=''; window.renderHome();" class="mt-4 text-orange-500 font-bold hover:underline">${window.t('clearFilter')}</button></div>`;
                 } else {
                     html += `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">`;
                     displayProducts.forEach(p => { html += window.createProductCard(p); });
@@ -675,6 +872,17 @@
         window.openProductDetail = (id) => {
             const product = dbProducts.find(p => p.id === id);
             if(!product) return;
+            
+            // Ürün Linkini URL'ye ekle
+            const url = new URL(window.location);
+            url.searchParams.set('urun', id);
+            url.searchParams.delete('magaza');
+            window.history.pushState({}, '', url);
+
+            // SEO Başlığı güncelle
+            const pName = window.appSettings?.platformName || 'Pazaryeri';
+            document.title = `${product.title} - ${product.storeName} | ${pName}`;
+            updateMetaDescription(`${product.title}, ${product.price} TL'ye ${product.storeName} mağazasında.`);
             
             const images = (product.images && product.images.length > 0) ? product.images : ['https://placehold.co/400x400/cbd5e1/475569?text=Gorsel+Yok'];
             document.getElementById('detailMainImage').src = images[0];
@@ -805,6 +1013,12 @@
         };
 
         window.closeProductDetail = () => {
+            // URL'yi temizle
+            const url = new URL(window.location);
+            url.searchParams.delete('urun');
+            window.history.pushState({}, '', url);
+            applyTranslations(); // Meta'yı geri al
+
             document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
             setTimeout(() => { document.getElementById('productDetailModal').classList.add('hidden'); document.getElementById('detailMainVideo').pause(); }, 300);
         };
@@ -823,6 +1037,17 @@
         window.openStoreProfile = (storeId) => {
             const store = dbStores.find(s => s.id === storeId);
             if(!store) return;
+
+            // URL Yönlendirmesi
+            const url = new URL(window.location);
+            url.searchParams.set('magaza', storeId);
+            url.searchParams.delete('urun');
+            window.history.pushState({}, '', url);
+
+            // SEO Başlığı güncelle
+            const pName = window.appSettings?.platformName || 'Pazaryeri';
+            document.title = `${store.name} Mağazası ve Ürünleri | ${pName}`;
+            updateMetaDescription(`${store.name} mağazasının tüm ürünlerini inceleyin. Hızlı kargo ve güvenli alışveriş.`);
 
             spActiveCategory = '';
             spStoreProducts = dbProducts.filter(p => p.storeId === storeId);
@@ -888,7 +1113,6 @@
                 const btn = document.getElementById('spFollowBtn');
                 btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> İşleniyor...`;
                 await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', storeId), { followers: followers });
-                // Firestore listener'ı tetiklendiğinde UI otomatik kendini güncelleyecektir fakat biz anında tepki verelim:
                 setTimeout(() => window.openStoreProfile(storeId), 100); 
             } catch(e) {
                 console.error(e);
@@ -897,6 +1121,12 @@
         };
 
         window.closeStoreProfile = () => {
+            // URL'yi temizle
+            const url = new URL(window.location);
+            url.searchParams.delete('magaza');
+            window.history.pushState({}, '', url);
+            applyTranslations();
+
             document.getElementById('storeProfileModal').classList.add('hidden');
             document.body.style.overflow = 'auto'; 
         };
