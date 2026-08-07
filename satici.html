@@ -1078,6 +1078,10 @@
             Papa.parse(file, {
                 header: true,
                 skipEmptyLines: true,
+                // BOM (Gizli Karakter) ve tırnak işaretlerini temizleme filtresi
+                transformHeader: function(header) {
+                    return header.trim().replace(/^\uFEFF/, '').replace(/"/g, '');
+                },
                 complete: async function(results) {
                     const data = results.data;
                     if(data.length === 0) { window.showMessage("Dosya boş veya format hatalı.", "error"); return; }
