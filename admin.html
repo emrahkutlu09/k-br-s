@@ -480,6 +480,7 @@
                             <div class="text-[9px] text-slate-500 mt-1">Bitiş: ${s.expiryDate ? new Date(s.expiryDate).toLocaleDateString('tr-TR') : 'Belirtilmedi'}</div>
                         </td>
                         <td class="px-6 py-4 text-right space-x-1">
+                            <button onclick="window.manageStoreAsAdmin('${s.id}')" class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 p-2 rounded-xl transition" title="Satıcı Paneline Gir (Destek Modu)"><i data-lucide="user-cog" class="w-4 h-4"></i></button>
                             ${s.status !== 'active' ? `<button onclick="window.updateStoreStatus('${s.id}', 'active')" class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-xl" title="Aktif Et"><i data-lucide="check" class="w-4 h-4"></i></button>` : `<button onclick="window.updateStoreStatus('${s.id}', 'suspended')" class="bg-amber-600 hover:bg-amber-500 text-white p-2 rounded-xl" title="Askıya Al"><i data-lucide="pause" class="w-4 h-4"></i></button>`}
                             <button onclick="window.setPackageDirectly('${s.id}', 'free')" class="bg-slate-700 text-white p-2 rounded-xl" title="Ücretsize Çek">Ü</button>
                             <button onclick="window.setPackageDirectly('${s.id}', 'standard')" class="bg-blue-600 text-white p-2 rounded-xl" title="Standart Paket">S</button>
@@ -682,6 +683,12 @@
         };
 
         // DİĞER İŞLEMLER
+        
+        window.manageStoreAsAdmin = (storeId) => {
+            localStorage.setItem('admin_support_mode_store_id', storeId);
+            window.open('satici.html', '_blank');
+        };
+
         window.updateStoreStatus = async (id, status) => {
             try {
                 let updates = { status: status };
