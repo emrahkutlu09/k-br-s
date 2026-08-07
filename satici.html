@@ -6,12 +6,25 @@
     <title>Satıcı Paneli | Kıbrıs Çarşı</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- CSV Okuyucu Kütüphane Eklendi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style> body { font-family: 'Inter', sans-serif; } .no-scrollbar::-webkit-scrollbar { display: none; } </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-orange-500 selection:text-white">
+
+    <div id="customConfirmModal" class="fixed inset-0 bg-slate-900/80 z-[400] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-3xl max-w-sm w-full shadow-2xl text-center transform transition-all">
+            <div class="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="alert-triangle" class="w-8 h-8 text-rose-500"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2">Onay Gerekiyor</h3>
+            <p id="confirmMessage" class="text-sm text-slate-500 mb-6 leading-relaxed"></p>
+            <div class="flex gap-3">
+                <button onclick="window.closeConfirm(false)" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-xl transition">İptal</button>
+                <button onclick="window.closeConfirm(true)" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-rose-500/30">Evet, Onaylıyorum</button>
+            </div>
+        </div>
+    </div>
 
     <div id="adminBypassBanner" class="bg-rose-600 text-white text-xs font-bold py-2.5 px-4 flex justify-between items-center hidden z-[300] sticky top-0 shadow-md">
         <span class="flex items-center gap-2"><i data-lucide="shield-alert" class="w-4 h-4 animate-pulse"></i> DİKKAT: Destek Modundasınız! Şu an başka bir satıcının mağazasına müdahale ediyorsunuz.</span>
@@ -178,7 +191,7 @@
                     </div>
                     <div class="flex flex-wrap justify-end gap-2 w-full sm:w-auto mt-3 sm:mt-0">
                         <div class="flex gap-2 w-full sm:w-auto">
-                            <button onclick="window.exportToCSV()" class="flex-1 sm:flex-none bg-emerald-50 hover:bg-emerald-100 text-emerald-600 px-3 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 border border-emerald-200" title="Ürünleri Excel/CSV olarak indir (Şablon)">
+                            <button onclick="window.exportToCSV()" class="flex-1 sm:flex-none bg-emerald-50 hover:bg-emerald-100 text-emerald-600 px-3 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 border border-emerald-200" title="Ürünleri Excel/CSV olarak indir">
                                 <i data-lucide="download" class="w-4 h-4"></i> Dışa Aktar
                             </button>
                             <button onclick="document.getElementById('csvImportInput').click()" class="flex-1 sm:flex-none bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 border border-blue-200" title="CSV dosyasından toplu ürün yükle">
@@ -197,6 +210,7 @@
                     </div>
                 </div>
 
+                <!-- Product Filters -->
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 border-b border-slate-200" id="vendorCategoryFilter">
                     <button onclick="window.filterVendorProducts('')" class="px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-800 text-white filter-btn" data-cat="">Tümü</button>
                 </div>
@@ -412,12 +426,10 @@
         </div>
     </div>
 
-    <!-- Admin Canlı Destek Butonu -->
     <button onclick="window.contactAdminSupport()" class="fixed bottom-6 left-6 bg-[#25D366] hover:bg-[#1DA851] text-white p-4 rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.5)] z-[60] flex items-center justify-center transition hover:scale-110" title="Platform Yöneticisine Ulaşın">
         <i data-lucide="message-circle" class="w-6 h-6"></i>
     </button>
 
-    <!-- FIREBASE & JAVASCRIPT KODLARI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -449,16 +461,16 @@
         let currentTab = 'stats';
         let currentFilterCategory = '';
 
-        // KENDİ WHATSAPP NUMARANIZI BURAYA YAZIN (Başında 90 olacak şekilde, boşluksuz)
+        // KENDİ WHATSAPP NUMARANIZI BURAYA YAZIN
         const ADMIN_WHATSAPP = "905000000000"; 
 
         const categoriesList = ["Elektronik", "Moda", "Ev & Yaşam", "Süpermarket", "Kozmetik", "Oto & Bahçe"];
 
-        // Toast Message System
+        // Toast Messages
         window.showMessage = (msg, type = 'success') => {
             const toast = document.createElement('div');
             const color = type === 'error' ? 'bg-rose-500' : 'bg-emerald-500';
-            toast.className = `fixed bottom-5 right-5 ${color} text-white px-5 py-3 rounded-2xl text-sm font-bold shadow-2xl z-[300] transition-all transform duration-300 translate-y-10 opacity-0 flex items-center gap-2`;
+            toast.className = `fixed bottom-5 right-5 ${color} text-white px-5 py-3 rounded-2xl text-sm font-bold shadow-2xl z-[500] transition-all transform duration-300 translate-y-10 opacity-0 flex items-center gap-2`;
             toast.innerHTML = `<i data-lucide="${type === 'error' ? 'alert-circle' : 'check-circle'}" class="w-5 h-5"></i> ${msg}`;
             document.body.appendChild(toast);
             lucide.createIcons();
@@ -467,12 +479,34 @@
             setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
         };
 
+        // Custom Confirm Setup
+        let confirmCallback = null;
+        window.customConfirm = (msg, callback) => {
+            document.getElementById('confirmMessage').innerText = msg;
+            document.getElementById('customConfirmModal').classList.remove('hidden');
+            document.getElementById('customConfirmModal').classList.add('flex');
+            confirmCallback = callback;
+        };
+        
+        window.closeConfirm = (result) => {
+            document.getElementById('customConfirmModal').classList.add('hidden');
+            document.getElementById('customConfirmModal').classList.remove('flex');
+            if(result && confirmCallback) confirmCallback();
+        };
+
+        // Screen Handling
         function showScreen(id) {
             ['loginScreen', 'registerScreen', 'pendingScreen', 'dashboardScreen', 'fullScreenLoader'].forEach(el => document.getElementById(el).classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             if(id !== 'dashboardScreen' && id !== 'fullScreenLoader') document.getElementById(id).classList.add('flex');
             lucide.createIcons();
         }
+
+        // Admin Bypass Mode Logic
+        window.exitAdminSupportMode = () => {
+            localStorage.removeItem('admin_support_mode_store_id');
+            window.location.reload();
+        };
 
         onAuthStateChanged(auth, (user) => {
             if (user) { currentUser = user; checkStoreStatus(); } 
@@ -481,11 +515,6 @@
 
         window.loginUser = async () => { try { await signInWithPopup(auth, provider); } catch (err) { window.showMessage("Giriş hatası: " + err.message, "error"); } };
         window.logoutUser = () => { signOut(auth).then(() => { window.location.reload(); }); };
-
-        window.exitAdminSupportMode = () => {
-            localStorage.removeItem('admin_support_mode_store_id');
-            window.location.reload();
-        };
 
         function checkStoreStatus() {
             showScreen('fullScreenLoader');
@@ -512,7 +541,11 @@
                     showScreen('registerScreen'); return; 
                 }
                 if(myStore.status === 'pending' && !supportModeStoreId) { showScreen('pendingScreen'); return; }
-                if(myStore.status === 'suspended' && !supportModeStoreId) { alert("Hesabınız askıya alınmıştır."); window.logoutUser(); return; }
+                if(myStore.status === 'suspended' && !supportModeStoreId) { 
+                    window.showMessage("Hesabınız askıya alınmıştır.", "error"); 
+                    setTimeout(() => window.logoutUser(), 2000); 
+                    return; 
+                }
                 
                 showScreen('dashboardScreen');
                 updateDashboardHeader();
@@ -537,7 +570,6 @@
             document.getElementById('storeDistrictDisplay').innerText = myStore.district;
             document.getElementById('storeWhatsappDisplay').innerText = myStore.whatsapp || '-';
             
-            // TAKİPÇİ SAYISI BURADA GÜNCELLENİR
             const followerCount = myStore.followers ? myStore.followers.length : 0;
             document.getElementById('storeFollowersDisplay').innerText = followerCount + " Takipçi";
             
@@ -612,7 +644,6 @@
             document.getElementById('statPendingOrders').innerText = pending;
         }
 
-        // SETTINGS (AYARLAR) TAB
         function populateSettingsForm() {
             document.getElementById('settingsName').value = myStore.name || '';
             document.getElementById('settingsWhatsapp').value = myStore.whatsapp || '';
@@ -686,7 +717,6 @@
             lucide.createIcons();
         };
 
-        // ORDERS (SİPARİŞLER)
         function renderOrders() {
             const tbody = document.getElementById('ordersTableBody');
             if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-slate-400">Sipariş bulunmuyor.</td></tr>'; return; }
@@ -703,7 +733,7 @@
                 else if(o.status === 'delivered') statusHtml = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-bold">Teslim Edildi</span>';
                 else if(o.status === 'cancelled') statusHtml = '<span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[10px] font-bold">İptal</span>';
 
-                let itemsStr = o.items.map(i => `${i.qty}x ${i.title}`).join(', ');
+                let itemsStr = o.items.map(i => `${i.qty}x ${i.product?.title || i.title}`).join(', ');
 
                 html += `
                     <tr class="hover:bg-slate-50">
@@ -744,7 +774,6 @@
             window.showMessage("Test siparişi oluşturuldu.");
         };
 
-        // PRODUCTS (ÜRÜNLER)
         function initCategoryFilters() {
             const container = document.getElementById('vendorCategoryFilter');
             let html = `<button onclick="window.filterVendorProducts('')" class="px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-800 text-white filter-btn" data-cat="">Tümü</button>`;
@@ -953,13 +982,13 @@
             btn.innerHTML = "Kaydet ve Yayınla"; btn.disabled = false;
         };
 
-        window.deleteProduct = async (id) => {
-            if(confirm("Bu ilanı silmek istediğinize emin misiniz?")) {
+        window.deleteProduct = (id) => {
+            window.customConfirm("Bu ilanı silmek istediğinize emin misiniz?", async () => {
                 try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id)); window.showMessage("İlan silindi."); }
                 catch(err) { window.showMessage("Silme hatası.", "error"); }
-            }
+            });
         };
-        // TOPLU FİYAT GÜNCELLEME
+
         window.openBulkPriceModal = () => { document.getElementById('bulkPriceModal').classList.remove('hidden'); };
         window.executeBulkPriceUpdate = async (e) => {
             e.preventDefault();
@@ -996,18 +1025,28 @@
             btn.innerText = "Güncellemeyi Başlat"; btn.disabled = false;
         };
 
-        // CSV İLE TOPLU DIŞA AKTARMA (EXPORT)
         window.exportToCSV = () => {
             if (myProducts.length === 0) { window.showMessage("Dışa aktarılacak ürün bulunmuyor.", "error"); return; }
             
-            let csvContent = "Baslik,Kategori,Fiyat,Aciklama,Gorseller,Varyantlar\n";
+            // Excel'in Türkçe sürümlerinde sorunsuz açılması için virgül (,) yerine noktalı virgül (;) kullanıyoruz.
+            const separator = ';';
+            let csvContent = `Baslik${separator}Kategori${separator}Fiyat${separator}Aciklama${separator}Gorseller${separator}Varyantlar\n`;
             
             myProducts.forEach(p => {
                 const baslik = `"${(p.title || '').replace(/"/g, '""')}"`;
                 const kategori = `"${p.category || ''}"`;
                 const fiyat = p.price || 0;
                 const aciklama = `"${(p.description || '').replace(/"/g, '""')}"`;
-                const gorseller = `"${(p.images || []).join('|')}"`;
+                
+                // Base64 görseller excel'i dondurur, bu yüzden filtreliyoruz
+                let cleanImages = [];
+                if(p.images && p.images.length > 0) {
+                    cleanImages = p.images.map(img => {
+                         if(img.startsWith('data:image')) return 'BASE64_Gorsel_Dısa_Aktarilamadi';
+                         return img;
+                    });
+                }
+                const gorseller = `"${cleanImages.join('|')}"`;
                 
                 let varsStr = '';
                 if(p.variants && p.variants.length > 0){
@@ -1015,7 +1054,7 @@
                 }
                 const varyantlar = `"${varsStr}"`;
                 
-                csvContent += `${baslik},${kategori},${fiyat},${aciklama},${gorseller},${varyantlar}\n`;
+                csvContent += `${baslik}${separator}${kategori}${separator}${fiyat}${separator}${aciklama}${separator}${gorseller}${separator}${varyantlar}\n`;
             });
             
             // Türkçe karakter bozulmaması için BOM (\uFEFF) ekliyoruz
@@ -1027,10 +1066,9 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            window.showMessage("Ürünleriniz CSV formatında indirildi.");
+            window.showMessage("Ürünleriniz Excel uyumlu CSV formatında indirildi.");
         };
 
-        // CSV İLE TOPLU İÇE AKTARMA (IMPORT)
         window.importFromCSV = (event) => {
             const file = event.target.files[0];
             if (!file) return;
@@ -1077,7 +1115,7 @@
                                 });
                             }
 
-                            const images = row.Gorseller ? row.Gorseller.split('|').filter(u => u.trim() !== '') : [];
+                            const images = row.Gorseller ? row.Gorseller.split('|').filter(u => u.trim() !== '' && u !== 'BASE64_Gorsel_Dısa_Aktarilamadi') : [];
 
                             const productData = {
                                 storeId: myStore.id,
@@ -1129,25 +1167,29 @@
             });
         };
 
-        // PAKET TALEBİ
         window.requestPackageUpgrade = async (pkgType) => {
             const pkgNames = { 'standard': 'Standart Paket', 'premium': 'Premium VIP Paket' };
             const pkgName = pkgNames[pkgType] || pkgType;
             
-            if(!confirm(`Yöneticiden ${pkgName} geçişi talep edilsin ve WhatsApp üzerinden iletişime geçilsin mi?`)) return;
-            
-            try {
-                // Sisteme kaydet (Admin panelinde kırmızı uyarı olarak görünmeye devam etmesi için)
-                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), { upgradeRequest: pkgType });
-                
-                // Yüz yüze iletişim için WhatsApp'a yönlendir (Fiyat sorup IBAN isteme)
-                let message = `Merhaba, *${myStore.name}* mağazam için *${pkgName}* aboneliğine geçmek istiyorum.\n\nFiyat bilgisi alabilir miyim ve ödeme için IBAN numaranızı gönderebilir misiniz?`;
-                window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
-                
-                window.showMessage("Talebiniz iletildi. WhatsApp'a yönlendiriliyorsunuz...");
-            } catch (err) { 
-                window.showMessage("Talep iletilemedi.", "error"); 
-            }
+            window.customConfirm(`Yöneticiden ${pkgName} geçişi talep edilsin ve WhatsApp üzerinden iletişime geçilsin mi?`, async () => {
+                try {
+                    // Sisteme kaydet (Admin panelinde uyarı olarak düşmesi için)
+                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), { upgradeRequest: pkgType });
+                    
+                    // WhatsApp Yönlendirmesi
+                    let message = `Merhaba, *${myStore.name}* mağazam için *${pkgName}* aboneliğine geçmek istiyorum.\n\nFiyat bilgisi alabilir miyim ve ödeme için IBAN numaranızı gönderebilir misiniz?`;
+                    window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
+                    
+                    window.showMessage("Talebiniz iletildi. WhatsApp'a yönlendiriliyorsunuz...");
+                } catch (err) { 
+                    window.showMessage("Talep iletilemedi.", "error"); 
+                }
+            });
+        };
+
+        window.contactAdminSupport = () => {
+            let message = `Merhaba, *${myStore ? myStore.name : 'Yeni Satıcı'}* satıcısı olarak platform hakkında desteğe ihtiyacım var. Yardımcı olabilir misiniz?`;
+            window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
         };
 
         lucide.createIcons();
