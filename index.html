@@ -1716,6 +1716,22 @@
             }
         };
 
+        // Siparişlerim Modalı Kapatma Fonksiyonu (Kesin Çözüm)
+        window.closeMyOrders = () => {
+            const panel = document.getElementById('myOrdersPanel');
+            const modal = document.getElementById('myOrdersModal');
+            
+            if (panel) {
+                panel.classList.add('scale-95', 'opacity-0');
+            }
+            
+            setTimeout(() => { 
+                if (modal) {
+                    modal.classList.add('hidden'); 
+                }
+            }, 300);
+        };
+
         window.markAsReceived = async (orderId) => {
             if(!confirm("Ürünü sorunsuz bir şekilde teslim aldığınızı onaylıyor musunuz?")) return;
             try {
