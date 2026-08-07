@@ -29,6 +29,9 @@
         .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
         .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
         .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
+
+        /* SAFARI (iPhone/iOS) ÇEVİRİ ZORLAMASI İÇİN EK KODLAR */
+        * { -webkit-text-size-adjust: none; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased selection:bg-orange-500 selection:text-white">
@@ -1749,7 +1752,6 @@
             }
         };
 
-        // Siparişlerim Modalı Kapatma Fonksiyonu (Kesin Çözüm)
         window.closeMyOrders = () => {
             const panel = document.getElementById('myOrdersPanel');
             const modal = document.getElementById('myOrdersModal');
