@@ -1069,106 +1069,140 @@
             window.showMessage("Ürünleriniz Excel uyumlu CSV formatında indirildi.");
         };
 
+        // YENİ VE GÜÇLENDİRİLMİŞ İÇE AKTARMA (IMPORT) SİSTEMİ
         window.importFromCSV = (event) => {
             const file = event.target.files[0];
             if (!file) return;
 
             window.showMessage("CSV dosyası okunuyor, lütfen bekleyin...", "info");
 
-            Papa.parse(file, {
-                header: true,
-                skipEmptyLines: true,
-                // BOM (Gizli Karakter) ve tırnak işaretlerini temizleme filtresi
-                transformHeader: function(header) {
-                    return header.trim().replace(/^\uFEFF/, '').replace(/"/g, '');
-                },
-                complete: async function(results) {
-                    const data = results.data;
-                    if(data.length === 0) { window.showMessage("Dosya boş veya format hatalı.", "error"); return; }
-                    
-                    const pkg = myStore.packageType || 'free';
-                    const limit = pkg === 'free' ? 10 : (pkg === 'standard' ? 50 : 9999);
-                    
-                    if (myProducts.length + data.length > limit) {
-                        window.showMessage(`Paket limitiniz (${limit}) bu kadar ürünü içe aktarmaya yetmiyor.`, "error");
-                        event.target.value = "";
-                        return;
-                    }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let text = e.target.result;
+                
+                // 1. BOM (Gizli Karakter) Temizliği
+                if (text.charCodeAt(0) === 0xFEFF) {
+                    text = text.substring(1);
+                }
 
-                    showScreen('fullScreenLoader');
-                    document.getElementById('loaderText').innerText = "Ürünler Sisteme Yükleniyor...";
+                // 2. Ayracı (Delimiter) otomatik tespit et: İlk satırda noktalı virgül (Excel Türkiye) varsa onu kullan, yoksa virgül kullan.
+                const firstLine = text.split('\n')[0];
+                const detectedDelimiter = firstLine.includes(';') ? ';' : ',';
 
-                    try {
-                        let batches = [];
-                        let currentBatch = writeBatch(db);
-                        let opCount = 0;
-                        let addedCount = 0;
+                Papa.parse(text, {
+                    header: true,
+                    skipEmptyLines: 'greedy',
+                    delimiter: detectedDelimiter,
+                    transformHeader: function(header) {
+                        return header.trim().replace(/"/g, '');
+                    },
+                    complete: async function(results) {
+                        const data = results.data;
+                        if(data.length === 0) { window.showMessage("Dosya boş veya format hatalı.", "error"); return; }
+                        
+                        // 3. Esnek Sütun Eşleştirme (Büyük/Küçük harf duyarlılığını veya Türkçe karakter bozuluşunu tolere etmek için)
+                        const firstRowKeys = Object.keys(data[0]);
+                        const baslikKey = firstRowKeys.find(k => k.toLowerCase().includes('baslik') || k.toLowerCase().includes('başlık'));
+                        const fiyatKey = firstRowKeys.find(k => k.toLowerCase().includes('fiyat'));
+                        const kategoriKey = firstRowKeys.find(k => k.toLowerCase().includes('kategori'));
+                        const aciklamaKey = firstRowKeys.find(k => k.toLowerCase().includes('aciklama') || k.toLowerCase().includes('açıklama'));
+                        const gorsellerKey = firstRowKeys.find(k => k.toLowerCase().includes('gorseller') || k.toLowerCase().includes('görseller'));
+                        const varyantlarKey = firstRowKeys.find(k => k.toLowerCase().includes('varyantlar'));
 
-                        for (const row of data) {
-                            if (!row.Baslik || !row.Fiyat) continue; // Başlık ve Fiyat zorunlu
-                            
-                            const newDocRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products'));
-                            
-                            const variants = [];
-                            if(row.Varyantlar) {
-                                row.Varyantlar.split('|').forEach(v => {
-                                    const parts = v.split(':');
-                                    if(parts.length > 0 && parts[0]) {
-                                        variants.push({ name: parts[0].trim(), stock: parts.length > 1 ? parseInt(parts[1]) || 0 : 0 });
-                                    }
-                                });
+                        if (!baslikKey || !fiyatKey) {
+                            window.showMessage("Format hatası: 'Baslik' ve 'Fiyat' sütunları bulunamadı.", "error");
+                            event.target.value = "";
+                            return;
+                        }
+
+                        const pkg = myStore.packageType || 'free';
+                        const limit = pkg === 'free' ? 10 : (pkg === 'standard' ? 50 : 9999);
+                        
+                        if (myProducts.length + data.length > limit) {
+                            window.showMessage(`Paket limitiniz (${limit}) bu kadar ürünü içe aktarmaya yetmiyor.`, "error");
+                            event.target.value = "";
+                            return;
+                        }
+
+                        showScreen('fullScreenLoader');
+                        document.getElementById('loaderText').innerText = "Ürünler Sisteme Yükleniyor...";
+
+                        try {
+                            let batches = [];
+                            let currentBatch = writeBatch(db);
+                            let opCount = 0;
+                            let addedCount = 0;
+
+                            for (const row of data) {
+                                // Eğer satırda başlık veya fiyat yoksa atla
+                                if (!row[baslikKey] || !row[fiyatKey]) continue; 
+                                
+                                const newDocRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products'));
+                                
+                                const variants = [];
+                                if(varyantlarKey && row[varyantlarKey]) {
+                                    row[varyantlarKey].split('|').forEach(v => {
+                                        const parts = v.split(':');
+                                        if(parts.length > 0 && parts[0]) {
+                                            variants.push({ name: parts[0].trim(), stock: parts.length > 1 ? parseInt(parts[1]) || 0 : 0 });
+                                        }
+                                    });
+                                }
+
+                                const images = (gorsellerKey && row[gorsellerKey]) ? row[gorsellerKey].split('|').filter(u => u.trim() !== '' && u !== 'BASE64_Gorsel_Dısa_Aktarilamadi') : [];
+
+                                const productData = {
+                                    storeId: myStore.id,
+                                    storeName: myStore.name,
+                                    storeWhatsapp: myStore.whatsapp,
+                                    district: myStore.district,
+                                    title: row[baslikKey],
+                                    description: (aciklamaKey && row[aciklamaKey]) ? row[aciklamaKey] : '',
+                                    category: (kategoriKey && row[kategoriKey]) ? row[kategoriKey] : 'Diğer',
+                                    price: parseFloat(row[fiyatKey]) || 0,
+                                    images: images,
+                                    variants: variants,
+                                    createdAt: Date.now()
+                                };
+
+                                currentBatch.set(newDocRef, productData);
+                                opCount++;
+                                addedCount++;
+                                
+                                // Firestore Batch limiti 500'dür, 500'ü aşarsa yeni batch oluştur
+                                if (opCount === 500) {
+                                    batches.push(currentBatch.commit());
+                                    currentBatch = writeBatch(db);
+                                    opCount = 0;
+                                }
                             }
-
-                            const images = row.Gorseller ? row.Gorseller.split('|').filter(u => u.trim() !== '' && u !== 'BASE64_Gorsel_Dısa_Aktarilamadi') : [];
-
-                            const productData = {
-                                storeId: myStore.id,
-                                storeName: myStore.name,
-                                storeWhatsapp: myStore.whatsapp,
-                                district: myStore.district,
-                                title: row.Baslik,
-                                description: row.Aciklama || '',
-                                category: row.Kategori || 'Diğer',
-                                price: parseFloat(row.Fiyat) || 0,
-                                images: images,
-                                variants: variants,
-                                createdAt: Date.now()
-                            };
-
-                            currentBatch.set(newDocRef, productData);
-                            opCount++;
-                            addedCount++;
                             
-                            // Firestore Batch limiti 500'dür, 500'ü aşarsa yeni batch oluştur
-                            if (opCount === 500) {
-                                batches.push(currentBatch.commit());
-                                currentBatch = writeBatch(db);
-                                opCount = 0;
+                            if (opCount > 0) batches.push(currentBatch.commit());
+                            await Promise.all(batches);
+
+                            if (addedCount > 0) {
+                                window.showMessage(`${addedCount} adet ürün başarıyla içe aktarıldı!`);
+                            } else {
+                                window.showMessage("Geçerli ürün bulunamadı. Lütfen CSV dosyanızı kontrol edin.", "error");
                             }
+                        } catch (err) {
+                            console.error(err);
+                            window.showMessage("İçe aktarma hatası: " + err.message, "error");
                         }
                         
-                        if (opCount > 0) batches.push(currentBatch.commit());
-                        await Promise.all(batches);
-
-                        if (addedCount > 0) {
-                            window.showMessage(`${addedCount} adet ürün başarıyla içe aktarıldı!`);
-                        } else {
-                            window.showMessage("Geçerli ürün bulunamadı. Lütfen CSV şablonunuzu kontrol edin.", "error");
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        window.showMessage("İçe aktarma hatası: " + err.message, "error");
+                        showScreen('dashboardScreen');
+                        event.target.value = ""; // Inputu sıfırla
+                    },
+                    error: function() {
+                        window.showMessage("Dosya okuma hatası oluştu.", "error");
+                        event.target.value = "";
+                        showScreen('dashboardScreen');
                     }
-                    
-                    showScreen('dashboardScreen');
-                    event.target.value = ""; // Inputu sıfırla
-                },
-                error: function() {
-                    window.showMessage("Dosya okuma hatası oluştu.", "error");
-                    event.target.value = "";
-                    showScreen('dashboardScreen');
-                }
-            });
+                });
+            };
+            
+            // Dosyayı Türkçe karakter uyumluluğu için UTF-8 formatında metin olarak okuyoruz
+            reader.readAsText(file, 'UTF-8');
         };
 
         window.requestPackageUpgrade = async (pkgType) => {
