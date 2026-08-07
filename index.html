@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 6px; }
@@ -31,6 +32,13 @@
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased selection:bg-orange-500 selection:text-white">
+
+    <!-- TAM EKRAN AÇILIŞ YÜKLEME EKRANI (VERİLER İNENE KADAR BEKLER) -->
+    <div id="initialLoader" class="fixed inset-0 z-[999] bg-slate-50 flex flex-col items-center justify-center transition-opacity duration-500">
+        <i data-lucide="loader-2" class="w-12 h-12 text-orange-500 animate-spin mb-4"></i>
+        <h2 id="loaderBrandName" class="text-2xl font-black text-slate-900 tracking-tighter animate-pulse">PAZAR<span class="text-orange-500">YERİ</span></h2>
+        <p class="text-xs font-bold text-slate-400 mt-2">Vitrin Hazırlanıyor...</p>
+    </div>
 
     <!-- GİZLİ GOOGLE ÇEVİRİ MOTORU -->
     <div id="google_translate_element" class="hidden"></div>
@@ -346,7 +354,6 @@
 
         let dbProducts = [];
         let dbStores = [];
-        // Bu kategoriler veritabanı sabitleridir. Ekranda görünürken sözlükten çevrilir.
         let categoriesList = ["Elektronik", "Moda", "Ev & Yaşam", "Süpermarket", "Kozmetik", "Oto & Bahçe"];
         
         let appSettings = {
@@ -756,9 +763,6 @@
                 // Modal açıksa SEO başlığını ellemeyelim (Ürün/Mağaza adı kalmalı)
             } else {
                 document.title = `${pName} | ${tObj.homeTitle}`;
-                let meta = document.querySelector('meta[name="description"]');
-                if (!meta) { meta = document.createElement('meta'); meta.name = "description"; document.head.appendChild(meta); }
-                meta.content = tObj.homeDesc;
             }
 
             // Javascript ile oluşturulan alanları yeniden render et (Anında Çeviri)
@@ -797,7 +801,7 @@
             const btnText = document.getElementById('navUserText');
             if (user && !user.isAnonymous) {
                 btnText.setAttribute('data-i18n', 'my_profile');
-                btnText.innerText = window.t('my_profile');
+                btnText.innerText = window.t('my_profile') || "Profilim";
                 document.getElementById('unauthMenu').classList.add('hidden');
                 document.getElementById('authMenu').classList.remove('hidden');
                 document.getElementById('dropdownEmail').innerText = user.email;
@@ -897,6 +901,9 @@
                 isProductsLoaded = true;
                 checkInitialLoadStatus();
             });
+            
+            // Başlangıçta URL'deki dili uygula
+            applyTranslations();
         }
 
         // Admin Panelinden gelen tıklamaları yakala
@@ -913,12 +920,16 @@
                 if (prod) {
                     localStorage.removeItem('admin_redirect_product');
                     setTimeout(() => window.openProductDetail(targetProductId), 500);
+                } else {
+                    localStorage.removeItem('admin_redirect_product');
                 }
             } else if (targetStoreId) {
                 const store = dbStores.find(s => s.id === targetStoreId);
                 if (store) {
                     localStorage.removeItem('admin_redirect_store');
                     setTimeout(() => window.openStoreProfile(targetStoreId), 500);
+                } else {
+                    localStorage.removeItem('admin_redirect_store');
                 }
             }
         }
