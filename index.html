@@ -701,6 +701,21 @@
         }
 
         window.setLanguage = (lang) => {
+            const currentLang = getCurrentLang();
+            
+            // Yabancı dilden Orijinal dile (Türkçe) geçişte Google Translate takılmasını önlemek için KESİN ÇÖZÜM:
+            if (lang === 'tr' && currentLang !== 'tr') {
+                // 1. Google Çeviri çerezlerini (hafızasını) tamamen yok et
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
+                
+                // 2. Sayfayı tertemiz bir şekilde Türkçe parametresiyle yeniden yükle (DOM'daki Google kalıntılarını siler)
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('lang', 'tr');
+                window.location.href = newUrl.toString();
+                return;
+            }
+
             const newUrl = new URL(window.location);
             newUrl.searchParams.set('lang', lang);
             window.history.pushState({}, '', newUrl);
