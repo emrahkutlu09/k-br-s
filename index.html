@@ -831,6 +831,21 @@
             }
         });
 
+        // Veri Yüklenme Durumlarını Takip Eden Değişkenler
+        let isSettingsLoaded = false;
+        let isStoresLoaded = false;
+        let isProductsLoaded = false;
+
+        function checkInitialLoadStatus() {
+            if(isSettingsLoaded && isStoresLoaded && isProductsLoaded) {
+                const loader = document.getElementById('initialLoader');
+                if(loader) {
+                    loader.classList.add('opacity-0');
+                    setTimeout(() => loader.classList.add('hidden'), 500); // 0.5 saniye fade-out animasyonu bekle
+                }
+            }
+        }
+
         async function initApp() {
             lucide.createIcons();
             updateCartUI();
@@ -845,6 +860,8 @@
                     if(data.platformName) {
                         appSettings.platformName = data.platformName;
                         document.getElementById('navBrandName').innerText = data.platformName;
+                        document.getElementById('pageTitle').innerText = `${data.platformName} | Hızlı ve Güvenli Alışveriş`;
+                        document.getElementById('loaderBrandName').innerText = data.platformName;
                     }
                     if(data.platformLogo) {
                         document.getElementById('navLogo').src = data.platformLogo;
@@ -854,8 +871,10 @@
                     if(data.mainBanner) appSettings.mainBanner = data.mainBanner;
                     if(data.sideBanner1) appSettings.sideBanner1 = data.sideBanner1;
                     if(data.sideBanner2) appSettings.sideBanner2 = data.sideBanner2;
-                    applyTranslations(); // Meta update
+                    window.renderHome(document.getElementById('searchInput').value);
                 }
+                isSettingsLoaded = true;
+                checkInitialLoadStatus();
             });
 
             onSnapshot(storesRef, (snapshot) => {
@@ -863,6 +882,9 @@
                 snapshot.forEach(doc => { dbStores.push({id: doc.id, ...doc.data()}); });
                 checkAdminRedirects(); 
                 window.renderHome(document.getElementById('searchInput').value);
+                
+                isStoresLoaded = true;
+                checkInitialLoadStatus();
             });
 
             onSnapshot(productsRef, (snapshot) => {
@@ -871,10 +893,10 @@
                 window.renderCategories();
                 checkAdminRedirects(); 
                 window.renderHome(document.getElementById('searchInput').value);
+                
+                isProductsLoaded = true;
+                checkInitialLoadStatus();
             });
-            
-            // Uygulama açılışında anında dili ayarla
-            applyTranslations();
         }
 
         // Admin Panelinden gelen tıklamaları yakala
