@@ -96,12 +96,17 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16 gap-4">
                     
-                    <div class="flex-shrink-0 flex items-center cursor-pointer gap-2" onclick="window.renderHome()">
-                        <img id="navLogo" src="" class="h-8 object-contain hidden" alt="Logo">
-                        <span id="navBrandName" class="text-2xl font-black tracking-tighter text-slate-900">KIBRIS<span class="text-orange-500">ÇARŞI</span></span>
+                    <!-- Sol Kısım: Logo (Sola Yaslı) -->
+                    <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.renderHome()">
+                        <img id="navLogo" src="" class="h-10 object-contain hidden" alt="Logo">
                     </div>
 
-                    <div class="flex-1 max-w-2xl hidden md:flex items-center">
+                    <!-- Tam Orta Kısım: Kıbrıs Çarşı Markası -->
+                    <div class="absolute left-1/2 transform -translate-x-1/2 cursor-pointer flex items-center gap-1" onclick="window.renderHome()">
+                        <span id="navBrandName" class="text-xl sm:text-2xl font-black tracking-tighter text-slate-900">KIBRIS<span class="text-orange-500">ÇARŞI</span></span>
+                    </div>
+
+                    <div class="flex-1 max-w-2xl hidden md:flex items-center mx-6">
                         <div class="relative w-full">
                             <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="Aradığınız ürün, kategori veya markayı yazınız..." class="w-full pl-4 pr-10 py-2.5 bg-slate-100 border border-slate-200 rounded-full text-sm font-medium focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all" onkeypress="if(event.key === 'Enter') window.handleSearch()"/>
                             <button onclick="window.handleSearch()" class="absolute right-3 top-2.5 rtl:left-3 rtl:right-auto">
@@ -1388,12 +1393,33 @@
             if(store.logoUrl) { logoEl.src = store.logoUrl; logoEl.classList.remove('hidden'); fallbackEl.classList.add('hidden'); }
             else { logoEl.classList.add('hidden'); fallbackEl.classList.remove('hidden'); }
 
+            const waBtn = document.getElementById('spWhatsappBtn');
+            if (store.whatsapp) {
+                waBtn.classList.remove('hidden');
+                waBtn.onclick = () => window.contactStoreForInfo(storeId);
+            } else {
+                waBtn.classList.add('hidden');
+            }
+
             window.renderStoreProfileCategories();
             window.renderStoreProfileProducts();
 
             document.getElementById('storeProfileModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden'; 
             lucide.createIcons();
+        };
+
+        window.contactStoreForInfo = (storeId) => {
+            const store = dbStores.find(s => s.id === storeId);
+            if (!store || !store.whatsapp) {
+                window.showMessage("Satıcının iletişim numarası bulunamadı.", "error");
+                return;
+            }
+            let phone = store.whatsapp.replace(/\D/g,'');
+            if (phone.length === 10 && !phone.startsWith('90')) phone = '90' + phone;
+
+            let message = `Merhaba *${store.name}*, Kıbrıs Çarşı üzerinden ulaşıyorum. Ürünleriniz ve mağazanız hakkında bilgi almak istiyorum.`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
         };
 
         window.toggleStoreFollow = async (storeId) => {
