@@ -108,7 +108,6 @@
                     
                     <!-- Sol Kısım: Hamburger Menü, Logo ve Marka -->
                     <div class="flex items-center gap-4">
-                        <!-- YENİ: Hamburger Kategori Butonu -->
                         <button onclick="window.toggleCategoryMenu(event)" class="text-slate-700 hover:text-orange-500 transition-colors p-1" title="Kategoriler">
                             <i data-lucide="menu" class="w-6 h-6"></i>
                         </button>
@@ -182,7 +181,7 @@
                 </div>
             </div>
 
-            <!-- YENİ: DİNAMİK HAMBURGER KATEGORİ MENÜSÜ -->
+            <!-- DİNAMİK HAMBURGER KATEGORİ MENÜSÜ -->
             <div id="categoryDropdownMenu" class="absolute left-4 sm:left-6 lg:left-8 top-[60px] sm:top-[65px] w-72 bg-white border border-slate-200 shadow-2xl rounded-2xl hidden z-50 overflow-hidden rtl:right-4 rtl:left-auto flex-col max-h-[70vh]">
                 <div class="bg-slate-900 text-white p-4 font-black text-sm flex items-center gap-2 shrink-0">
                     <i data-lucide="list" class="w-5 h-5 text-orange-500"></i> <span data-i18n="all_categories">Tüm Kategoriler</span>
@@ -194,7 +193,6 @@
                      <button onclick="window.setCategory('')" class="w-full bg-slate-50 hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold py-2 rounded-xl text-xs transition">Filtreyi Temizle</button>
                 </div>
             </div>
-            <!-- Eski yatay scroll kategoriler barını kaldırdık -->
 
         </nav>
 
@@ -358,7 +356,9 @@
                     <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
                         <h3 class="text-sm font-black text-slate-900 mb-3 flex items-center gap-2"><i data-lucide="map" class="w-4 h-4 text-orange-500"></i> Mağaza Konumu</h3>
                         <div class="w-full h-48 bg-slate-100 rounded-xl overflow-hidden mb-3 border border-slate-200 relative">
-                            <div id="customerStoreMap" class="w-full h-full"></div>
+                            <div id="customerStoreMap" class="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-2">
+                                <i data-lucide="map-pin-off" class="w-6 h-6"></i><span class="text-xs font-bold">Harita Yükleniyor...</span>
+                            </div>
                         </div>
                         <button id="getDirectionsBtn" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 border border-blue-200">
                             <i data-lucide="navigation" class="w-4 h-4"></i> Yol Tarifi Al
@@ -368,7 +368,6 @@
 
                 <!-- Sağ Taraf: Ürünler -->
                 <div class="w-full md:w-2/3">
-                    <!-- Dinamik Profil Kategorileri -->
                     <div class="bg-white rounded-2xl p-2 border border-slate-200 mb-6 overflow-x-auto no-scrollbar shadow-sm">
                         <div id="spCategoryContainer" class="flex items-center gap-2"></div>
                     </div>
@@ -409,11 +408,11 @@
         const settingsRef = doc(db, 'artifacts', APP_ID, 'public', 'settings');
         const reviewsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'reviews');
         const ordersRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'orders');
-        const categoriesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'); // YENİ EKLENDİ
+        const categoriesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories');
 
         let dbProducts = [];
         let dbStores = [];
-        let dbCategories = []; // Dinamik kategorileri tutacağımız liste
+        let dbCategories = [];
         
         let appSettings = {
             mainBanner: { tag: "Haftanın Fırsatı", title: "Seçili Ürünlerde<br><span class='text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400'>%50'ye Varan</span> İndirim", subtitle: "En sevdiğiniz yerel mağazalardan komisyonsuz, anında sipariş verin.", btnText: "Alışverişe Başla", linkType: "none", linkValue: "", image: null },
@@ -429,11 +428,11 @@
         
         let isCartOpen = false;
         let isUserMenuOpen = false;
-        let isCategoryMenuOpen = false; // YENİ
+        let isCategoryMenuOpen = false;
         let activeCategory = '';
         let activeDistrict = '';
 
-        // SÖZLÜK (Kategori çevirileri Dinamik olduğu için Google Translate'e bırakacağız, ana butonlar sabit kalacak)
+        // DİNAMİK ÇEVİRİ SÖZLÜĞÜ (Kategoriler artık Google Translate'e bırakılıyor)
         const appTranslations = {
             tr: {
                 dir: "ltr",
@@ -488,7 +487,7 @@
                 rate_products: "Ürünleri Değerlendirin",
                 submit_review: "Yorumu Gönder",
                 meets_expectation: "Beklentinizi karşıladı mı?",
-                guest_warning: "Şu anda <b>Misafir</b> olarak işlem yapıyorsunuz. Başka cihaza geçtiğinizde kaybolabilir.",
+                guest_warning: "Şu anda <b>Misafir</b> olarak işlem yapıyorsunuz.",
                 no_orders: "Henüz siparişiniz bulunmuyor.",
                 order_no: "Sipariş",
                 total_amount: "Toplam Tutar:",
@@ -861,16 +860,15 @@
             e.stopPropagation();
             isUserMenuOpen = !isUserMenuOpen;
             document.getElementById('userDropdown').classList.toggle('hidden', !isUserMenuOpen);
-            if(isUserMenuOpen && isCategoryMenuOpen) window.toggleCategoryMenu(e); // Diğer menüyü kapat
+            if(isUserMenuOpen && isCategoryMenuOpen) window.toggleCategoryMenu(e);
         };
 
-        // YENİ: Hamburger Menü Mantığı
         window.toggleCategoryMenu = (e) => {
             if(e) e.stopPropagation();
             isCategoryMenuOpen = !isCategoryMenuOpen;
             document.getElementById('categoryDropdownMenu').classList.toggle('hidden', !isCategoryMenuOpen);
             document.getElementById('categoryDropdownMenu').classList.toggle('flex', isCategoryMenuOpen);
-            if(isCategoryMenuOpen && isUserMenuOpen) window.toggleUserMenu(e); // Diğer menüyü kapat
+            if(isCategoryMenuOpen && isUserMenuOpen) window.toggleUserMenu(e);
         };
 
         document.addEventListener('click', (e) => {
@@ -948,13 +946,12 @@
                 checkInitialLoadStatus();
             });
 
-            // YENİ: Dinamik Kategorileri Çek
             onSnapshot(categoriesRef, (snapshot) => {
                 dbCategories = [];
                 snapshot.forEach(doc => { dbCategories.push({id: doc.id, ...doc.data()}); });
                 isCategoriesLoaded = true;
-                window.renderCategories(); // Hamburger menüyü çiz
-                window.renderHome(document.getElementById('searchInput').value); // Ana sayfadaki kategori kutularını çiz
+                window.renderCategories();
+                window.renderHome(document.getElementById('searchInput').value);
                 checkInitialLoadStatus();
             });
             
@@ -964,7 +961,7 @@
         function checkAdminRedirects() {
             if (!isStoresLoaded || !isProductsLoaded) return; 
 
-            const urlParams = newSearchParams(window.location.search);
+            const urlParams = new URLSearchParams(window.location.search);
             const targetProductId = urlParams.get('urun') || localStorage.getItem('admin_redirect_product');
             const targetStoreId = urlParams.get('magaza') || localStorage.getItem('admin_redirect_store');
 
@@ -987,10 +984,6 @@
             }
         }
 
-        // ==========================================
-        // YENİ: DİNAMİK HAMBURGER KATEGORİ AĞACI
-        // ==========================================
-        
         function buildCategoryTree(categories, parentId) {
             let tree = [];
             categories.forEach(cat => {
@@ -1003,7 +996,6 @@
             return tree.sort((a, b) => a.name.localeCompare(b.name));
         }
 
-        // Tıklanan alt menüyü açma/kapama fonksiyonu
         window.toggleSubmenu = (e, catId) => {
             e.stopPropagation();
             const submenu = document.getElementById(`submenu-${catId}`);
@@ -1065,8 +1057,8 @@
 
         window.setCategory = (cat) => {
             activeCategory = cat;
-            window.renderCategories(); // Menüdeki aktif stili güncelle
-            if(isCategoryMenuOpen) window.toggleCategoryMenu(); // Tıklayınca menüyü kapat
+            window.renderCategories(); 
+            if(isCategoryMenuOpen) window.toggleCategoryMenu(); 
             window.renderHome(document.getElementById('searchInput').value);
         };
 
@@ -1201,7 +1193,7 @@
                     </div>
                 `;
 
-                // ANA SAYFA VİTRİN KATEGORİLERİ (Sadece En Üst Seviye Kategoriler)
+                // ANA SAYFA VİTRİN KATEGORİLERİ
                 const rootCategories = dbCategories.filter(c => !c.parentId);
                 if(rootCategories.length > 0) {
                     html += `
@@ -1209,7 +1201,6 @@
                             <h2 class="text-xl font-black text-slate-900 mb-5">${window.t('browse_categories')}</h2>
                             <div class="grid grid-cols-3 sm:grid-cols-6 gap-4">
                     `;
-                    // Maksimum 6 kategori göster (tasarım bozulmasın diye)
                     rootCategories.slice(0, 6).forEach(cat => {
                         const iconName = cat.icon || 'box';
                         html += `
@@ -1249,13 +1240,16 @@
                 const premiumProds = displayProducts.filter(p => premiumStoreIds.includes(p.storeId));
                 const standardProds = displayProducts.filter(p => !premiumStoreIds.includes(p.storeId));
                 standardProds.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                const newestStandard = standardProds.slice(0, 50);
                 
-                let mixedPool = [...premiumProds, ...newestStandard];
+                // Mix premiums and the latest standards
+                let mixedPool = [...premiumProds, ...standardProds.slice(0, 50)];
+                
+                // Fisher-Yates Shuffle
                 for (let i = mixedPool.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [mixedPool[i], mixedPool[j]] = [mixedPool[j], mixedPool[i]];
                 }
+                
                 const finalForYou = mixedPool.slice(0, 20);
 
                 html += `<div class="mb-5"><h2 class="text-xl font-black text-slate-900">${window.t('for_you')}</h2></div>`;
@@ -1444,7 +1438,7 @@
 
         let spStoreProducts = [];
         let spActiveCategory = '';
-        let customerMapInstance = null; // Müşteri haritası instance'ı
+        let customerMapInstance = null;
 
         window.openStoreProfileFromDetail = () => {
             const storeId = document.getElementById('detailStoreIdHidden').value;
@@ -1515,39 +1509,36 @@
             document.body.style.overflow = 'hidden'; 
             lucide.createIcons();
 
-            // YENİ: Harita Yükleme İşlemi
+            // Leaflet Map Initialization
             setTimeout(() => {
                 const mapContainer = document.getElementById('customerStoreMap');
-                // Eğer mağazanın konumu varsa haritayı çiz
                 if(store.lat && store.lng) {
                     mapContainer.innerHTML = `<div id="spLeafletMap" class="w-full h-full"></div>`;
                     
                     if(customerMapInstance) { customerMapInstance.remove(); }
                     
                     customerMapInstance = L.map('spLeafletMap', {
-                        zoomControl: false, // Sade görünüm için
-                        dragging: !L.Browser.mobile // Mobilde yanlışlıkla sürüklemeyi önle
+                        zoomControl: false,
+                        dragging: !L.Browser.mobile
                     }).setView([store.lat, store.lng], 15);
                     
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; OpenStreetMap Kıbrıs Çarşı'
+                        attribution: '&copy; OpenStreetMap'
                     }).addTo(customerMapInstance);
 
                     L.marker([store.lat, store.lng]).addTo(customerMapInstance)
                      .bindPopup(`<b>${store.name}</b><br>${store.district}`).openPopup();
 
-                    // Yol Tarifi Butonu Tıklanınca Google Haritalara Yönlendir
                     document.getElementById('getDirectionsBtn').onclick = () => {
                         const url = `https://www.google.com/maps/dir/?api=1&destination=${store.lat},${store.lng}`;
                         window.open(url, '_blank');
                     };
                 } else {
-                    // Konum eklenmemişse uyarı göster
                     mapContainer.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-2"><i data-lucide="map-pin-off" class="w-6 h-6"></i><span class="text-xs font-bold">Konum bilgisi eklenmemiş.</span></div>`;
                     lucide.createIcons();
                     document.getElementById('getDirectionsBtn').onclick = () => { window.showMessage("Mağaza henüz konumunu eklememiş.", "error"); };
                 }
-            }, 300); // Animasyon bitince çiz
+            }, 300);
         };
 
         window.contactStoreForInfo = (storeId) => {
