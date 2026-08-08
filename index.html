@@ -389,8 +389,11 @@
             sideBanner2: { title: "Ev & Yaşam", subtitle: "Evinizi yenileyin", icon: "home", linkType: "category", linkValue: "Ev & Yaşam", image: null }
         };
 
-        let cart = JSON.parse(localStorage.getItem('cart_items_v2')) || [];
-        let favorites = JSON.parse(localStorage.getItem('user_favorites')) || [];
+        let cart = [];
+        let favorites = [];
+        
+        try { cart = JSON.parse(localStorage.getItem('cart_items_v2')) || []; } catch(e) { cart = []; }
+        try { favorites = JSON.parse(localStorage.getItem('user_favorites')) || []; } catch(e) { favorites = []; }
         
         let isCartOpen = false;
         let isUserMenuOpen = false;
@@ -926,10 +929,11 @@
             onSnapshot(storesRef, (snapshot) => {
                 dbStores = [];
                 snapshot.forEach(doc => { dbStores.push({id: doc.id, ...doc.data()}); });
-                checkAdminRedirects(); 
-                window.renderHome(document.getElementById('searchInput').value);
                 
                 isStoresLoaded = true;
+                if(isStoresLoaded && isProductsLoaded) checkAdminRedirects(); 
+                window.renderHome(document.getElementById('searchInput').value);
+                
                 checkInitialLoadStatus();
             });
 
@@ -937,10 +941,11 @@
                 dbProducts = [];
                 snapshot.forEach(doc => { dbProducts.push({id: doc.id, ...doc.data()}); });
                 window.renderCategories();
-                checkAdminRedirects(); 
-                window.renderHome(document.getElementById('searchInput').value);
                 
                 isProductsLoaded = true;
+                if(isStoresLoaded && isProductsLoaded) checkAdminRedirects(); 
+                window.renderHome(document.getElementById('searchInput').value);
+                
                 checkInitialLoadStatus();
             });
             
@@ -950,7 +955,7 @@
 
         // Admin Panelinden gelen tıklamaları yakala
         function checkAdminRedirects() {
-            if (dbStores.length === 0 || dbProducts.length === 0) return; 
+            if (!isStoresLoaded || !isProductsLoaded) return; 
 
             const urlParams = new URLSearchParams(window.location.search);
             const targetProductId = urlParams.get('urun') || localStorage.getItem('admin_redirect_product');
@@ -1178,8 +1183,8 @@
 
             } else {
                 if (searchQuery) {
-                    const q = searchQuery.toLowerCase();
-                    displayProducts = displayProducts.filter(p => p.title.toLowerCase().includes(q) || p.storeName.toLowerCase().includes(q));
+                    const q = searchQuery.toLocaleLowerCase('tr-TR');
+                    displayProducts = displayProducts.filter(p => p.title.toLocaleLowerCase('tr-TR').includes(q) || p.storeName.toLocaleLowerCase('tr-TR').includes(q));
                 }
                 if (activeCategory) displayProducts = displayProducts.filter(p => p.category === activeCategory);
                 if (activeDistrict) displayProducts = displayProducts.filter(p => p.district === activeDistrict);
