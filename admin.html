@@ -23,7 +23,7 @@
             </div>
             <h2 class="text-2xl font-black text-white">Süper Admin Paneli</h2>
             <p class="text-xs text-slate-400">Pazaryerindeki tüm satıcıları, vitrin ayarlarını ve ürünleri yönetmek için yetkili hesabınızla giriş yapın.</p>
-            <button onclick="window.loginAdmin()" class="w-full bg-white text-slate-900 hover:bg-slate-100 font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
+            <button id="loginBtn" onclick="window.loginAdmin()" class="w-full bg-white text-slate-900 hover:bg-slate-100 font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Google ile Yetkilendir
             </button>
             <a href="index.html" class="block text-xs font-bold text-slate-500 hover:text-white transition">Pazaryerine Dön</a>
@@ -295,7 +295,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // getDoc EKLENDİ (Güvenlik kontrolü için gerekli)
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -344,21 +345,72 @@
             window.showMessage("Kopyalandı: " + text);
         };
 
-        onAuthStateChanged(auth, (user) => {
+        // YENİ VE GELİŞMİŞ GÜVENLİK (RBAC) KONTROL SİSTEMİ
+        onAuthStateChanged(auth, async (user) => {
             if(user && !user.isAnonymous) {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('adminApp').classList.remove('hidden');
-                document.getElementById('adminApp').classList.add('flex');
-                document.getElementById('adminEmailDisplay').innerText = user.email;
-                initData();
+                // Kullanıcı giriş yaptı, hemen panele almadan önce yetkilerini kontrol ediyoruz.
+                const loginBtn = document.getElementById('loginBtn');
+                let originalBtnText = "";
+                
+                if(loginBtn) { 
+                    originalBtnText = loginBtn.innerHTML;
+                    loginBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Yetki Kontrol Ediliyor...`; 
+                    loginBtn.disabled = true; 
+                    lucide.createIcons(); 
+                }
+
+                let isAdmin = false;
+                
+                // Güvenlik 1: Firebase Custom Claims (Gelişmiş Rol Sistemi Kontrolü)
+                try { 
+                    const idTokenResult = await user.getIdTokenResult(); 
+                    if (idTokenResult.claims.admin) isAdmin = true; 
+                } catch(e) {}
+
+                // Güvenlik 2: Firestore Veritabanı Kontrolü ("admin_users" koleksiyonunda kullanıcının emaili var mı?)
+                if(!isAdmin) {
+                    try { 
+                        const adminSnap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'admin_users', user.email)); 
+                        if (adminSnap.exists()) isAdmin = true; 
+                    } catch(e) {}
+                }
+
+                // Güvenlik 3: Sabit Master Kurucu Hesabı 
+                // DİKKAT: AŞAĞIDAKİ E-POSTA ADRESİNİ KENDİ GİRİŞ YAPACAĞINIZ GOOGLE MAİLİNİZ İLE DEĞİŞTİRİN!
+                const masterAdminEmail = "sizin.epostaniz@gmail.com"; 
+                if (user.email === masterAdminEmail) isAdmin = true;
+
+                if(isAdmin) {
+                    // Kullanıcının yetkisi doğrulandı, içeri girebilir.
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('adminApp').classList.remove('hidden');
+                    document.getElementById('adminApp').classList.add('flex');
+                    document.getElementById('adminEmailDisplay').innerText = user.email;
+                    initData();
+                    if(loginBtn) { loginBtn.innerHTML = originalBtnText; loginBtn.disabled = false; }
+                } else {
+                    // Kullanıcı giriş yaptı ama yetkisi yok (Örneğin bir satıcı veya müşteri girmeye çalıştı)
+                    window.showMessage("Yetkisiz Giriş! Bu panele sadece sistem yöneticileri girebilir.", "error");
+                    signOut(auth); // Saniyesinde sistemden at (Log out)
+                    if(loginBtn) { loginBtn.innerHTML = originalBtnText; loginBtn.disabled = false; }
+                }
             } else {
+                // Kullanıcı giriş yapmamış
                 document.getElementById('loginScreen').classList.remove('hidden');
                 document.getElementById('adminApp').classList.add('hidden');
                 document.getElementById('adminApp').classList.remove('flex');
             }
         });
 
-        window.loginAdmin = async () => { try { await signInWithPopup(auth, provider); window.showMessage("Giriş yapıldı."); } catch(e) { window.showMessage("Giriş başarısız.", "error"); } };
+        window.loginAdmin = async () => { 
+            try { 
+                await signInWithPopup(auth, provider); 
+                // Uyarıyı kaldırdık çünkü asıl uyarı (Başarılı/Başarısız) yetki kontrolü aşamasında veriliyor.
+            } catch(e) { 
+                window.showMessage("Giriş penceresi kapatıldı veya başarısız.", "error"); 
+            } 
+        };
+        
         window.logoutAdmin = () => { signOut(auth); };
 
         window.switchTab = (tab) => {
