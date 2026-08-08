@@ -96,13 +96,9 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16 gap-4">
                     
-                    <!-- Sol Kısım: Logo (Sola Yaslı) -->
-                    <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.renderHome()">
-                        <img id="navLogo" src="" class="h-10 object-contain hidden" alt="Logo">
-                    </div>
-
-                    <!-- Tam Orta Kısım: Kıbrıs Çarşı Markası -->
-                    <div class="absolute left-1/2 transform -translate-x-1/2 cursor-pointer flex items-center gap-1" onclick="window.renderHome()">
+                    <!-- Sol Kısım: Logo ve Yanında Kıbrıs Çarşı Yazısı -->
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="window.renderHome()">
+                        <img id="navLogo" src="" class="h-9 object-contain hidden" alt="Logo">
                         <span id="navBrandName" class="text-xl sm:text-2xl font-black tracking-tighter text-slate-900">KIBRIS<span class="text-orange-500">ÇARŞI</span></span>
                     </div>
 
@@ -328,9 +324,14 @@
                                  <span class="flex items-center gap-1"><i data-lucide="heart" class="w-4 h-4 text-rose-400"></i> <span id="spFollowersCount">0</span> <span data-i18n="followers">Takipçi</span></span>
                              </p>
                          </div>
-                         <button id="spFollowBtn" class="w-full sm:w-auto bg-white text-slate-900 px-5 py-2.5 rounded-xl font-bold text-sm transition flex justify-center items-center gap-2 shadow-lg shadow-white/20 hover:bg-rose-50 hover:text-rose-600">
-                             <i data-lucide="heart" class="w-4 h-4"></i> <span id="spFollowBtnText" data-i18n="follow">Takip Et</span>
-                         </button>
+                         <div class="flex gap-2 w-full sm:w-auto">
+                            <button id="spFollowBtn" class="w-full sm:w-auto bg-white text-slate-900 px-5 py-2.5 rounded-xl font-bold text-sm transition flex justify-center items-center gap-2 shadow-lg shadow-white/20 hover:bg-rose-50 hover:text-rose-600">
+                                <i data-lucide="heart" class="w-4 h-4"></i> <span id="spFollowBtnText" data-i18n="follow">Takip Et</span>
+                            </button>
+                            <button id="spWhatsappBtn" class="w-full sm:w-auto bg-[#25D366] text-white px-5 py-2.5 rounded-xl font-bold text-sm transition flex justify-center items-center gap-2 shadow-lg shadow-green-500/20 hover:bg-[#1DA851] hidden">
+                                <i data-lucide="message-circle" class="w-4 h-4"></i> <span data-i18n="ask_seller">Satıcıya Sor</span>
+                            </button>
+                        </div>
                      </div>
                 </div>
             </div>
@@ -432,6 +433,7 @@
                 follow: "Takip Et",
                 unfollow: "Takibi Bırak",
                 followers: "Takipçi",
+                ask_seller: "Satıcıya Sor",
                 store_products: "Mağaza Ürünleri",
                 all_categories: "Tüm Kategoriler",
                 browse_categories: "Kategorilere Göz At",
@@ -458,6 +460,9 @@
                 total_amount: "Toplam Tutar:",
                 homeTitle: "Hızlı ve Güvenli Alışveriş",
                 homeDesc: "Kıbrıs Çarşı'nda binlerce ürün. Hemen sipariş verin.",
+                seller_cta_title: "Hemen Ücretsiz Mağazanızı Açın!",
+                seller_cta_desc: "Kıbrıs Çarşı'nın binlerce müşterisine komisyonsuz ulaşın. Kendi işinizi dijitale taşıyın ve satışlarınızı anında artırın.",
+                seller_cta_btn: "Ücretsiz Satıcı Ol",
                 categories: {
                     "Elektronik": "Elektronik", "Moda": "Moda", "Ev & Yaşam": "Ev & Yaşam",
                     "Süpermarket": "Süpermarket", "Kozmetik": "Kozmetik", "Oto & Bahçe": "Oto & Bahçe"
@@ -495,6 +500,7 @@
                 follow: "Follow",
                 unfollow: "Unfollow",
                 followers: "Followers",
+                ask_seller: "Ask Seller",
                 store_products: "Store Products",
                 all_categories: "All Categories",
                 browse_categories: "Browse Categories",
@@ -521,6 +527,9 @@
                 total_amount: "Total Amount:",
                 homeTitle: "Fast and Secure Shopping",
                 homeDesc: "Thousands of products on Kıbrıs Çarşı. Order now.",
+                seller_cta_title: "Open Your Free Store Now!",
+                seller_cta_desc: "Reach thousands of customers on Kıbrıs Çarşı commission-free. Take your business digital and increase your sales instantly.",
+                seller_cta_btn: "Become a Seller for Free",
                 categories: {
                     "Elektronik": "Electronics", "Moda": "Fashion", "Ev & Yaşam": "Home & Living",
                     "Süpermarket": "Supermarket", "Kozmetik": "Cosmetics", "Oto & Bahçe": "Auto & Garden"
@@ -558,6 +567,7 @@
                 follow: "Ακολουθήστε",
                 unfollow: "Κατάργηση Ακολούθησης",
                 followers: "Ακόλουθοι",
+                ask_seller: "Ρωτήστε τον Πωλητή",
                 store_products: "Προϊόντα Καταστήματος",
                 all_categories: "Όλες οι Κατηγορίες",
                 browse_categories: "Περιήγηση Κατηγοριών",
@@ -584,6 +594,9 @@
                 total_amount: "Συνολικό Ποσό:",
                 homeTitle: "Γρήγορες και Ασφαλείς Αγορές",
                 homeDesc: "Χιλιάδες προϊόντα στο Kıbrıs Çarşı. Παραγγείλτε τώρα.",
+                seller_cta_title: "Ανοίξτε το Δωρεάν Κατάστημά σας Τώρα!",
+                seller_cta_desc: "Προσεγγίστε χιλιάδες πελάτες στο Kıbrıs Çarşı χωρίς προμήθεια. Μεταφέρετε την επιχείρησή σας ψηφιακά και αυξήστε τις πωλήσεις σας αμέσως.",
+                seller_cta_btn: "Γίνετε Πωλητής Δωρεάν",
                 categories: {
                     "Elektronik": "Ηλεκτρονικά", "Moda": "Μόδα", "Ev & Yaşam": "Σπίτι & Διαβίωση",
                     "Süpermarket": "Σούπερ Μάρκετ", "Kozmetik": "Καλλυντικά", "Oto & Bahçe": "Αυτοκίνητο & Κήπος"
@@ -621,6 +634,7 @@
                 follow: "Подписаться",
                 unfollow: "Отписаться",
                 followers: "Подписчики",
+                ask_seller: "Спросить продавца",
                 store_products: "Товары магазина",
                 all_categories: "Все категории",
                 browse_categories: "Просмотр категорий",
@@ -647,6 +661,9 @@
                 total_amount: "Итоговая сумма:",
                 homeTitle: "Быстрые и безопасные покупки",
                 homeDesc: "Тысячи товаров на Kıbrıs Çarşı. Закажите сейчас.",
+                seller_cta_title: "Откройте свой бесплатный магазин прямо сейчас!",
+                seller_cta_desc: "Охватите тысячи клиентов на Kıbrıs Çarşı без комиссий. Переведите свой бизнес в цифровой формат и мгновенно увеличьте продажи.",
+                seller_cta_btn: "Стать продавцом бесплатно",
                 categories: {
                     "Elektronik": "Электроника", "Moda": "Мода", "Ev & Yaşam": "Дом и быт",
                     "Süpermarket": "Супермаркет", "Kozmetik": "Косметика", "Oto & Bahçe": "Авто и сад"
@@ -684,6 +701,7 @@
                 follow: "متابعة",
                 unfollow: "إلغاء المتابعة",
                 followers: "متابعون",
+                ask_seller: "اسأل البائع",
                 store_products: "منتجات المتجر",
                 all_categories: "جميع الفئات",
                 browse_categories: "تصفح الفئات",
@@ -710,6 +728,9 @@
                 total_amount: "المبلغ الإجمالي:",
                 homeTitle: "تسوق سريع وآمن",
                 homeDesc: "آلاف المنتجات في Kıbrıs Çarşı. اطلب الان.",
+                seller_cta_title: "افتح متجرك المجاني الآن!",
+                seller_cta_desc: "الوصول إلى آلاف العملاء على Kıbrıs Çarşı بدون عمولة. انقل عملك إلى العالم الرقمي وزد مبيعاتك على الفور.",
+                seller_cta_btn: "كن بائعًا مجانًا",
                 categories: {
                     "Elektronik": "إلكترونيات", "Moda": "موضة", "Ev & Yaşam": "المنزل والمعيشة",
                     "Süpermarket": "سوبر ماركت", "Kozmetik": "مستحضرات تجميل", "Oto & Bahçe": "السيارات والحدائق"
@@ -738,11 +759,8 @@
             
             // Yabancı dilden Orijinal dile (Türkçe) geçişte Google Translate takılmasını önlemek için KESİN ÇÖZÜM:
             if (lang === 'tr' && currentLang !== 'tr') {
-                // 1. Google Çeviri çerezlerini (hafızasını) tamamen yok et
                 document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                 document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
-                
-                // 2. Sayfayı tertemiz bir şekilde Türkçe parametresiyle yeniden yükle (DOM'daki Google kalıntılarını siler)
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.set('lang', 'tr');
                 window.location.href = newUrl.toString();
@@ -832,8 +850,8 @@
                 document.getElementById('authMenu').classList.remove('hidden');
                 document.getElementById('dropdownEmail').innerText = user.email;
             } else {
-                btnText.removeAttribute('data-i18n'); // Data tagini kaldırıyoruz ki dinamik çevirebilelim
-                btnText.innerText = "Giriş Yap"; // Fallback, dil dosyasına göre çevrilmiş hali login_google falan olabilir ama yer dar.
+                btnText.removeAttribute('data-i18n');
+                btnText.innerText = "Giriş Yap";
                 document.getElementById('unauthMenu').classList.remove('hidden');
                 document.getElementById('authMenu').classList.add('hidden');
             }
@@ -871,7 +889,7 @@
                 const loader = document.getElementById('initialLoader');
                 if(loader) {
                     loader.classList.add('opacity-0');
-                    setTimeout(() => loader.classList.add('hidden'), 500); // 0.5 saniye fade-out animasyonu bekle
+                    setTimeout(() => loader.classList.add('hidden'), 500);
                 }
             }
         }
@@ -889,14 +907,12 @@
                     const data = docSnap.data();
                     if(data.platformName) {
                         appSettings.platformName = data.platformName;
-                        document.getElementById('navBrandName').innerText = data.platformName;
                         document.getElementById('pageTitle').innerText = `${data.platformName} | Hızlı ve Güvenli Alışveriş`;
                         document.getElementById('loaderBrandName').innerText = data.platformName;
                     }
                     if(data.platformLogo) {
                         document.getElementById('navLogo').src = data.platformLogo;
                         document.getElementById('navLogo').classList.remove('hidden');
-                        document.getElementById('navBrandName').classList.add('hidden');
                     }
                     if(data.mainBanner) appSettings.mainBanner = data.mainBanner;
                     if(data.sideBanner1) appSettings.sideBanner1 = data.sideBanner1;
@@ -936,7 +952,6 @@
         function checkAdminRedirects() {
             if (dbStores.length === 0 || dbProducts.length === 0) return; 
 
-            // SEO URL Check (Ürün ve Mağaza Linkleri için)
             const urlParams = new URLSearchParams(window.location.search);
             const targetProductId = urlParams.get('urun') || localStorage.getItem('admin_redirect_product');
             const targetStoreId = urlParams.get('magaza') || localStorage.getItem('admin_redirect_store');
@@ -1830,7 +1845,7 @@
             btn.disabled = true;
 
             const rating = parseInt(form.querySelector('select').value);
-            const comment = form.textarea.value; // Fixed textarea selection to match earlier form generation
+            const comment = form.querySelector('textarea').value; 
 
             try {
                 const userName = auth.currentUser.isAnonymous ? 'Guest' : (auth.currentUser.email ? auth.currentUser.email.split('@')[0] : 'User');
