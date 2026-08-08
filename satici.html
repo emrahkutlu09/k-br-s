@@ -14,7 +14,6 @@
     <style> 
         body { font-family: 'Inter', sans-serif; } 
         .no-scrollbar::-webkit-scrollbar { display: none; } 
-        /* Haritanın diğer elementlerin üstüne çıkmaması için */
         .leaflet-container { z-index: 10 !important; font-family: 'Inter', sans-serif;}
     </style>
 </head>
@@ -52,7 +51,7 @@
         <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-6 shadow-2xl">
             <div class="w-16 h-16 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-2"><i data-lucide="store" class="w-8 h-8"></i></div>
             <h2 class="text-2xl font-black">İşletme Paneli</h2>
-            <p class="text-xs text-slate-500">Mağazanızı yönetmek ve satışlara başlamak için Google hesabınızla giriş yapın.</p>
+            <p class="text-xs text-slate-500">Mağazanızı yönetmek veya yeni bir mağaza açmak için Google hesabınızla giriş yapmalısınız.</p>
             <button onclick="window.loginUser()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow-lg">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Google ile Giriş Yap
             </button>
@@ -60,25 +59,52 @@
         </div>
     </div>
 
-    <!-- Kayıt Ekranı -->
+    <!-- Kayıt Ekranı (GOOGLE ZORUNLU KURALI ENTEGRE EDİLDİ) -->
     <div id="registerScreen" class="fixed inset-0 bg-slate-900 z-[90] hidden flex-col items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white p-8 rounded-3xl max-w-md w-full space-y-4 shadow-2xl my-8">
-            <h2 class="text-xl font-black border-b pb-2">İşletme Kaydı</h2>
-            <p class="text-xs text-slate-500">Aramıza hoş geldiniz! Mağazanızı oluşturmak için temel bilgileri doldurun. Logoyu daha sonra ayarlardan ekleyebilirsiniz.</p>
+            <div class="flex items-center gap-3 border-b pb-3">
+                <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center shrink-0">
+                    <i data-lucide="store" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-black text-slate-900">İşletme Kaydı</h2>
+                    <p class="text-[10px] text-slate-400 font-bold">Zorunlu Google Hesabı Doğrulaması</p>
+                </div>
+            </div>
+            <p class="text-xs text-slate-500 leading-relaxed">Aramıza hoş geldiniz! Bilgilerinizi doldurduktan sonra **Google Hesabınızla** doğrulanarak mağazanız anında açılacaktır.</p>
+            
             <form onsubmit="window.submitRegistration(event)" class="space-y-4">
-                <input type="text" id="regName" placeholder="Mağaza Adı" required class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none" />
-                <select id="regDistrict" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none">
-                    <option value="Girne">Girne</option>
-                    <option value="Lefkoşa">Lefkoşa</option>
-                    <option value="Gazimağusa">Gazimağusa</option>
-                    <option value="İskele">İskele</option>
-                    <option value="Güzelyurt">Güzelyurt</option>
-                    <option value="Lefke">Lefke</option>
-                </select>
-                <input type="text" id="regWhatsapp" placeholder="WhatsApp Numarası (Örn: 905331112233)" required class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-mono focus:ring-2 focus:ring-orange-500 outline-none" />
-                <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-3.5 rounded-xl transition shadow-lg shadow-orange-500/20">Kayıt Ol ve Mağazayı Aç</button>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Mağaza Adı</label>
+                    <input type="text" id="regName" placeholder="Örn: Ada Teknoloji" required class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Bulunduğunuz İlçe</label>
+                    <select id="regDistrict" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none">
+                        <option value="Girne">Girne</option>
+                        <option value="Lefkoşa">Lefkoşa</option>
+                        <option value="Gazimağusa">Gazimağusa</option>
+                        <option value="İskele">İskele</option>
+                        <option value="Güzelyurt">Güzelyurt</option>
+                        <option value="Lefke">Lefke</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">WhatsApp Numarası</label>
+                    <input type="text" id="regWhatsapp" placeholder="905331112233" required class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-mono focus:ring-2 focus:ring-orange-500 outline-none" />
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" id="btnRegisterSubmit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl transition shadow-lg flex items-center justify-center gap-3">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5">
+                        <span id="btnRegText">Google ile Doğrula ve Kaydol</span>
+                    </button>
+                </div>
             </form>
-            <button onclick="window.logoutUser()" class="w-full text-xs font-bold text-rose-500 hover:underline pt-2">Farklı Hesapla Giriş Yap</button>
+            <div id="authAccountInfo" class="hidden text-center text-xs font-bold text-slate-500 pt-1">
+                Giriş Yapılan Hesap: <span id="regEmailBadge" class="text-orange-600"></span>
+            </div>
+            <button onclick="window.logoutUser()" class="w-full text-xs font-bold text-rose-500 hover:underline pt-2 block text-center">Farklı Hesapla Giriş Yap</button>
         </div>
     </div>
 
@@ -87,7 +113,7 @@
         <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-4 shadow-2xl">
             <i data-lucide="clock" class="w-12 h-12 text-amber-500 mx-auto animate-pulse"></i>
             <h2 class="text-xl font-black">Onay Bekleniyor</h2>
-            <p class="text-sm text-slate-500">Mağaza başvurunuz alındı. Yöneticiler onayladıktan sonra panele erişebilirsiniz.</p>
+            <p class="text-sm text-slate-500">Mağaza başvurunuz başarıyla alındı. Yöneticilerimiz onayladıktan sonra panele erişebilirsiniz.</p>
             <button onclick="window.logoutUser()" class="text-xs font-bold text-rose-500 mt-2 hover:underline block mx-auto">Çıkış Yap</button>
         </div>
     </div>
@@ -336,7 +362,7 @@
                                 </select>
                             </div>
                             
-                            <!-- Yeni Harita Konum Seçici Modülü -->
+                            <!-- Harita Konum Seçici Modülü -->
                             <div class="sm:col-span-2 mt-2">
                                 <label class="block text-xs font-bold text-slate-500 mb-1 flex items-center gap-1">
                                     <i data-lucide="map-pin" class="w-4 h-4 text-orange-500"></i> Mağaza Konumu (Haritadan Seçin)
@@ -347,7 +373,6 @@
                                     <div id="storeLocationMap" class="w-full h-64 sm:h-80 bg-slate-100"></div>
                                 </div>
                                 
-                                <!-- Arka planda tutulacak koordinatlar -->
                                 <input type="hidden" id="settingsLat">
                                 <input type="hidden" id="settingsLng">
                             </div>
@@ -497,8 +522,8 @@
         let dbCategories = []; 
         let currentTab = 'stats';
         let currentFilterCategory = '';
+        let pendingRegistrationData = null; // Google öncesi doldurulan kayıt bilgileri
 
-        // KENDİ WHATSAPP NUMARANIZI BURAYA YAZIN
         const ADMIN_WHATSAPP = "905000000000"; 
 
         window.showMessage = (msg, type = 'success') => {
@@ -539,13 +564,89 @@
             window.location.reload();
         };
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) { currentUser = user; checkStoreStatus(); } 
-            else { currentUser = null; myStore = null; showScreen('loginScreen'); }
+        onAuthStateChanged(auth, async (user) => {
+            if (user && !user.isAnonymous) {
+                currentUser = user; 
+                // Eğer form doldurulup Google ile giriş yapıldıysa kaydı tamamla
+                if (pendingRegistrationData) {
+                    await completeRegistrationWithAuth(pendingRegistrationData);
+                    pendingRegistrationData = null;
+                } else {
+                    checkStoreStatus();
+                }
+            } else { 
+                currentUser = null; 
+                myStore = null; 
+                showScreen('loginScreen'); 
+            }
         });
 
-        window.loginUser = async () => { try { await signInWithPopup(auth, provider); } catch (err) { window.showMessage("Giriş hatası.", "error"); } };
+        window.loginUser = async () => { 
+            try { 
+                await signInWithPopup(auth, provider); 
+            } catch (err) { 
+                window.showMessage("Giriş hatası.", "error"); 
+            } 
+        };
+
         window.logoutUser = () => { signOut(auth).then(() => { window.location.reload(); }); };
+
+        // GOOGLE İLE ZORUNLU SATICI KAYDI AKIŞI
+        window.submitRegistration = async (e) => {
+            e.preventDefault();
+            const btnText = document.getElementById('btnRegText');
+            const btn = document.getElementById('btnRegisterSubmit');
+            
+            const regData = {
+                name: document.getElementById('regName').value.trim(),
+                district: document.getElementById('regDistrict').value,
+                whatsapp: document.getElementById('regWhatsapp').value.trim()
+            };
+
+            // Eğer zaten önceden Google ile giriş yapılmışsa direkt kaydet
+            if (currentUser && !currentUser.isAnonymous) {
+                btnText.innerText = "Mağaza Oluşturuluyor..."; btn.disabled = true;
+                await completeRegistrationWithAuth(regData);
+            } else {
+                // Giriş yapılmamışsa verileri sakla ve Google Popup tetikle
+                pendingRegistrationData = regData;
+                btnText.innerText = "Google Doğrulanıyor..."; btn.disabled = true;
+                try {
+                    await signInWithPopup(auth, provider);
+                } catch (err) {
+                    window.showMessage("Google doğrulaması iptal edildi. Mağaza açmak için Google ile giriş yapmalısınız.", "error");
+                    btnText.innerText = "Google ile Doğrula ve Kaydol"; btn.disabled = false;
+                    pendingRegistrationData = null;
+                }
+            }
+        };
+
+        async function completeRegistrationWithAuth(regData) {
+            showScreen('fullScreenLoader');
+            document.getElementById('loaderText').innerText = "Mağazanız Açılıyor...";
+
+            const newStore = {
+                ownerUid: currentUser.uid,
+                ownerEmail: currentUser.email,
+                name: regData.name,
+                district: regData.district,
+                whatsapp: regData.whatsapp,
+                status: 'pending',
+                packageType: 'free',
+                isPremium: false,
+                createdAt: Date.now(),
+                followers: []
+            };
+
+            try {
+                await setDoc(doc(storesRef), newStore);
+                window.showMessage("Google doğrulaması başarılı! Mağaza başvurunuz alındı.");
+                checkStoreStatus();
+            } catch(err) {
+                window.showMessage("Kayıt hatası: " + err.message, "error");
+                showScreen('registerScreen');
+            }
+        }
 
         function checkStoreStatus() {
             showScreen('fullScreenLoader');
@@ -569,8 +670,18 @@
 
                 if(!myStore) { 
                     if(supportModeStoreId) { window.showMessage("Destek olunacak mağaza bulunamadı!", "error"); window.exitAdminSupportMode(); return; }
-                    showScreen('registerScreen'); return; 
+                    
+                    // Kullanıcı oturum açmış ama mağazası yoksa Kayıt Ekranını ayarla
+                    if (currentUser && !currentUser.isAnonymous) {
+                        document.getElementById('regEmailBadge').innerText = currentUser.email;
+                        document.getElementById('authAccountInfo').classList.remove('hidden');
+                        document.getElementById('btnRegText').innerText = "Mağazayı Oluştur ve Aç";
+                    }
+                    
+                    showScreen('registerScreen'); 
+                    return; 
                 }
+
                 if(myStore.status === 'pending' && !supportModeStoreId) { showScreen('pendingScreen'); return; }
                 if(myStore.status === 'suspended' && !supportModeStoreId) { 
                     window.showMessage("Hesabınız askıya alınmıştır.", "error"); 
@@ -584,58 +695,38 @@
             });
         }
 
-        window.submitRegistration = async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button'); btn.innerText = "Gönderiliyor..."; btn.disabled = true;
-            const newStore = {
-                ownerUid: currentUser.uid, ownerEmail: currentUser.email,
-                name: document.getElementById('regName').value, district: document.getElementById('regDistrict').value, whatsapp: document.getElementById('regWhatsapp').value,
-                status: 'pending', packageType: 'free', isPremium: false, createdAt: Date.now(), followers: []
-            };
-            try { await setDoc(doc(storesRef), newStore); } 
-            catch(err) { window.showMessage("Kayıt hatası: " + err.message, "error"); btn.innerText = "Kayıt Ol ve Mağazayı Aç"; btn.disabled = false; }
-        };
-
         let locationMap;
         let locationMarker;
 
         function initLocationMap() {
-            if(locationMap) return; // Zaten yüklendiyse tekrar yükleme
+            if(locationMap) return; 
             
-            // Konum varsa onu al, yoksa varsayılan Kıbrıs (Lefkoşa) koordinatları
             let startLat = myStore?.lat || 35.1856; 
             let startLng = myStore?.lng || 33.3823;
 
-            // Haritayı oluştur
             locationMap = L.map('storeLocationMap').setView([startLat, startLng], 10);
             
-            // OpenStreetMap ücretsiz harita katmanı
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap Kıbrıs Çarşı'
             }).addTo(locationMap);
 
-            // Sürüklenebilir İğneyi Ekle
             locationMarker = L.marker([startLat, startLng], {draggable: true}).addTo(locationMap);
 
-            // İğne Sürüklendiğinde Gizli Alanları Güncelle
             locationMarker.on('dragend', function(e) {
                 const pos = locationMarker.getLatLng();
                 document.getElementById('settingsLat').value = pos.lat;
                 document.getElementById('settingsLng').value = pos.lng;
             });
             
-            // Haritaya tıklandığında iğneyi o noktaya taşı
             locationMap.on('click', function(e) {
                 locationMarker.setLatLng(e.latlng);
                 document.getElementById('settingsLat').value = e.latlng.lat;
                 document.getElementById('settingsLng').value = e.latlng.lng;
             });
 
-            // Başlangıç değerlerini gizli inputlara yaz
             document.getElementById('settingsLat').value = startLat;
             document.getElementById('settingsLng').value = startLng;
             
-            // Sekme gizliyken açıldığı için Leaflet boyutunu güncellemeye ihtiyaç duyar
             setTimeout(() => locationMap.invalidateSize(), 400);
         }
 
@@ -679,7 +770,6 @@
             
             if(tab === 'settings') {
                 populateSettingsForm();
-                // Harita div'i görünür olduktan sonra başlatılır
                 setTimeout(() => { initLocationMap(); }, 100);
             }
         };
@@ -1094,7 +1184,6 @@
                     name: document.getElementById('settingsName').value,
                     whatsapp: document.getElementById('settingsWhatsapp').value,
                     district: document.getElementById('settingsDistrict').value,
-                    // Harita verilerini Firestore'a gönderiyoruz
                     lat: parseFloat(document.getElementById('settingsLat').value),
                     lng: parseFloat(document.getElementById('settingsLng').value)
                 };
@@ -1348,3 +1437,9 @@
     </script>
 </body>
 </html>
+```
+
+### Yapılan Güncellemeler:
+1. **Google İle Zorunlu Giriş/Kayıt Akışı:** Kullanıcı İşletme Kaydı formuna bastığında sistem `pendingRegistrationData` mantığı ile bilgileri tutar. Eğer oturum açılmamışsa doğrudan **Google Popup** penceresini açar. Google doğrulaması yapılmadan veritabanına mağaza **kaydedilmez**.
+2. **Kayıt Butonu Görselliği:** Formun altındaki buton artık Google ikonlu **"Google ile Doğrula ve Kaydol"** olarak tasarlandı.
+3. **Zaten Giriş Yapmış Kullanıcı Uyumu:** Eğer kullanıcı zaten Google ile önceden giriş yapmışsa, hesabı algılanır ve mağaza adının hemen altında "Giriş Yapılan Hesap: email@gmail.com" rozeti çıkarak tek tıkla kaydı tamamlar.
