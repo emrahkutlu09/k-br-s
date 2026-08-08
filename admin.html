@@ -116,7 +116,6 @@
             <!-- KATEGORİLER SEKMESİ -->
             <div id="categoriesView" class="space-y-6 hidden">
                 <div class="flex flex-col md:flex-row gap-6">
-                    <!-- Kategori Ekleme Formu -->
                     <div class="w-full md:w-1/3 space-y-4 bg-slate-800/50 border border-slate-700/50 p-6 rounded-3xl self-start sticky top-20">
                         <h3 class="text-lg font-black text-white flex items-center gap-2 mb-4"><i data-lucide="folder-plus" class="w-5 h-5 text-rose-500"></i> Yeni Kategori Ekle</h3>
                         <form onsubmit="window.saveCategory(event)" class="space-y-4">
@@ -129,9 +128,7 @@
                                 <label class="block text-xs font-bold text-slate-400 mb-1">Üst Kategori (Opsiyonel)</label>
                                 <select id="catParent" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none">
                                     <option value="">-- Ana Kategori Olarak Ekle --</option>
-                                    <!-- JS ile doldurulacak -->
                                 </select>
-                                <p class="text-[10px] text-slate-500 mt-1">Eğer bir alt kategori ekliyorsanız, üst kategorisini seçin.</p>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-400 mb-1">İkon Adı (Lucide - Opsiyonel)</label>
@@ -144,12 +141,9 @@
                         </form>
                     </div>
 
-                    <!-- Kategori Ağacı -->
                     <div class="w-full md:w-2/3 bg-slate-800/30 border border-slate-700/50 p-6 rounded-3xl">
                         <h3 class="text-lg font-black text-white flex items-center gap-2 mb-6"><i data-lucide="list-tree" class="w-5 h-5 text-purple-400"></i> Kategori Ağacı</h3>
-                        <div id="categoryTreeContainer" class="space-y-2">
-                            <!-- JS ile Ağaç Yapısı Doldurulacak -->
-                        </div>
+                        <div id="categoryTreeContainer" class="space-y-2"></div>
                     </div>
                 </div>
             </div>
@@ -371,12 +365,12 @@
         const productsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'products');
         const settingsRef = doc(db, 'artifacts', APP_ID, 'public', 'settings');
         const reviewsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'reviews');
-        const categoriesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'); // Yeni Referans
+        const categoriesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories');
 
         let dbStores = [];
         let dbProducts = [];
         let dbReviews = [];
-        let dbCategories = []; // Kategoriler
+        let dbCategories = [];
         let systemSettings = {};
         let currentTab = 'stores';
 
@@ -401,29 +395,24 @@
             window.showMessage("Kopyalandı: " + text);
         };
 
-        // YENİ, KESİNTİSİZ VE GÜVENLİ OTURUM YÖNETİMİ
         onAuthStateChanged(auth, async (user) => {
             if(user && !user.isAnonymous) {
                 let isAdmin = false;
                 const userEmail = user.email ? user.email.toLowerCase() : "";
                 
-                // 1. Yetki Kontrolü (Firebase Custom Claims)
                 try { 
                     const idTokenResult = await user.getIdTokenResult(); 
                     if (idTokenResult.claims.admin) isAdmin = true; 
                 } catch(e) { console.warn("Claim kontrolü yapılamadı."); }
 
-                // 2. Yetki Kontrolü (Firestore 'admin_users' tablosu) - En güvenilir yöntem
                 if(!isAdmin) {
                     try { 
-                        // Veritabanında artifacts -> kibris-pazar -> admin_users -> [kullanici_maili] aranır.
                         const adminSnap = await getDoc(doc(db, 'artifacts', APP_ID, 'admin_users', userEmail)); 
                         if (adminSnap.exists()) isAdmin = true; 
                     } catch(e) { console.warn("Firestore rol kontrolü başarısız:", e); }
                 }
 
                 if(isAdmin) {
-                    // Yükleme ve Giriş ekranlarını sakla, Admin Panelini göster
                     document.getElementById('fullScreenLoader').classList.add('hidden');
                     document.getElementById('loginScreen').classList.add('hidden');
                     document.getElementById('adminApp').classList.remove('hidden');
@@ -431,14 +420,12 @@
                     document.getElementById('adminEmailDisplay').innerText = user.email;
                     initData();
                 } else {
-                    // Yetkisi yoksa, uyar ve sistemden at
                     window.showMessage("Yetkisiz Giriş! Bu panele sadece sistem yöneticileri girebilir.", "error");
                     signOut(auth);
                     document.getElementById('fullScreenLoader').classList.add('hidden');
                     document.getElementById('loginScreen').classList.remove('hidden');
                 }
             } else {
-                // Giriş yapılmamış veya çıkış yapılmışsa direkt Login ekranını göster
                 document.getElementById('fullScreenLoader').classList.add('hidden');
                 document.getElementById('adminApp').classList.add('hidden');
                 document.getElementById('adminApp').classList.remove('flex');
@@ -490,23 +477,30 @@
         function initData() {
             onSnapshot(storesRef, (snap) => {
                 dbStores = [];
-                let pendingCount = 0; let premiumCount = 0;
+                let pendingCount = 0;
                 snap.forEach(doc => {
                     const data = doc.data();
                     dbStores.push({id: doc.id, ...data});
                     if(data.status === 'pending') pendingCount++;
-                    if(data.packageType === 'premium' || data.isPremium) premiumCount++;
                 });
-                document.getElementById('statStores').innerText = dbStores.filter(s=>s.status==='active').length;
-                document.getElementById('statPending').innerText = pendingCount;
-                document.getElementById('statPremium').innerText = premiumCount;
-                renderStores(); renderRequests();
+                
+                const statStoresEl = document.getElementById('statStores');
+                if(statStoresEl) statStoresEl.innerText = dbStores.filter(s=>s.status==='active').length;
+                
+                const statPendingEl = document.getElementById('statPending');
+                if(statPendingEl) statPendingEl.innerText = pendingCount;
+                
+                renderStores(); 
+                renderRequests();
             });
 
             onSnapshot(productsRef, (snap) => {
                 dbProducts = [];
                 snap.forEach(doc => dbProducts.push({id: doc.id, ...doc.data()}));
-                document.getElementById('statProducts').innerText = dbProducts.length;
+                
+                const statProductsEl = document.getElementById('statProducts');
+                if(statProductsEl) statProductsEl.innerText = dbProducts.length;
+                
                 renderProducts();
             });
             
@@ -517,11 +511,13 @@
                 renderReviews();
             });
 
-            // Yeni: Kategorileri Dinle
             onSnapshot(categoriesRef, (snap) => {
                 dbCategories = [];
                 snap.forEach(doc => dbCategories.push({id: doc.id, ...doc.data()}));
-                document.getElementById('statCategories').innerText = dbCategories.length;
+                
+                const statCategoriesEl = document.getElementById('statCategories');
+                if(statCategoriesEl) statCategoriesEl.innerText = dbCategories.length;
+                
                 renderCategories();
             });
 
@@ -531,11 +527,9 @@
         }
 
         // --- KATEGORİ YÖNETİMİ ---
-
         function renderCategories() {
-            // Dropdown'ı doldur (Üst kategori seçimi için)
             const parentSelect = document.getElementById('catParent');
-            // Sadece diğer kategorileri göster (Kendisini alt kategori yapamasın)
+            if(!parentSelect) return;
             const editingId = document.getElementById('catEditId').value;
             
             let optionsHtml = '<option value="">-- Ana Kategori Olarak Ekle --</option>';
@@ -546,8 +540,8 @@
             });
             parentSelect.innerHTML = optionsHtml;
 
-            // Ağacı Oluştur
             const treeContainer = document.getElementById('categoryTreeContainer');
+            if(!treeContainer) return;
             if(dbCategories.length === 0) {
                 treeContainer.innerHTML = '<div class="p-4 text-center text-slate-500 italic border border-dashed border-slate-700 rounded-xl">Henüz hiç kategori eklenmemiş.</div>';
                 return;
@@ -567,13 +561,12 @@
                     tree.push(cat);
                 }
             });
-            // İsimlerine göre alfabetik sırala
             return tree.sort((a, b) => a.name.localeCompare(b.name));
         }
 
         function generateCategoryTreeHtml(nodes, depth) {
             let html = '';
-            const paddingLeft = depth * 24; // Her seviyede girinti
+            const paddingLeft = depth * 24;
 
             nodes.forEach(node => {
                 const iconHtml = node.icon ? `<i data-lucide="${node.icon}" class="w-4 h-4 text-slate-400"></i>` : `<div class="w-4 h-4 rounded-full border border-slate-600"></div>`;
@@ -642,12 +635,10 @@
             document.getElementById('catName').value = cat.name;
             document.getElementById('catIcon').value = cat.icon || '';
             
-            // Dropdown'u güncelle ve Parent'i seç (Kendisini seçeneklerden çıkarır)
             renderCategories(); 
             document.getElementById('catParent').value = cat.parentId || '';
             
             document.getElementById('btnSaveCategory').innerText = "Değişiklikleri Kaydet";
-            // Sayfanın başına kaydır form görünsün
             document.getElementById('categoriesView').scrollIntoView({ behavior: 'smooth' });
         };
 
@@ -661,14 +652,13 @@
         };
 
         window.deleteCategory = async (id) => {
-            // Önce bu kategorinin alt kategorisi var mı kontrol et
             const hasChildren = dbCategories.some(c => c.parentId === id);
             if(hasChildren) {
                 window.showMessage("Bu kategoriyi silemezsiniz. Önce altındaki alt kategorileri silmeniz veya taşımanız gerekiyor.", "error");
                 return;
             }
 
-            if(!confirm("Bu kategoriyi kalıcı olarak silmek istediğinize emin misiniz? (Ürünler silinmez, sadece kategori ağacı güncellenir)")) return;
+            if(!confirm("Bu kategoriyi kalıcı olarak silmek istediğinize emin misiniz?")) return;
 
             try {
                 await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categories', id));
@@ -681,6 +671,7 @@
         // --- MAĞAZALAR ---
         function renderStores() {
             const tbody = document.getElementById('storesTableBody');
+            if(!tbody) return;
             if(dbStores.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500">Kayıtlı mağaza bulunmuyor.</td></tr>`; return; }
 
             let html = '';
@@ -743,12 +734,16 @@
 
         function renderRequests() {
             const container = document.getElementById('requestsContainer');
+            if(!container) return;
             const requests = dbStores.filter(s => s.upgradeRequest);
             
+            const badge = document.getElementById('requestBadge');
             if(requests.length > 0) {
-                document.getElementById('requestBadge').innerText = requests.length;
-                document.getElementById('requestBadge').classList.remove('hidden');
-            } else { document.getElementById('requestBadge').classList.add('hidden'); }
+                if(badge) {
+                    badge.innerText = requests.length;
+                    badge.classList.remove('hidden');
+                }
+            } else { if(badge) badge.classList.add('hidden'); }
 
             if(requests.length === 0) { container.innerHTML = `<div class="col-span-full py-8 text-center text-slate-500 bg-slate-800/30 rounded-3xl border border-slate-700/50">Bekleyen paket yükseltme talebi yok.</div>`; return; }
 
@@ -776,6 +771,7 @@
 
         function renderProducts() {
             const tbody = document.getElementById('productsTableBody');
+            if(!tbody) return;
             if(dbProducts.length === 0) { tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-500">Sistemde ilan bulunmuyor.</td></tr>`; return; }
 
             let html = '';
@@ -818,6 +814,7 @@
         
         function renderReviews() {
             const container = document.getElementById('reviewsContainer');
+            if(!container) return;
             if(dbReviews.length === 0) { 
                 container.innerHTML = `<div class="col-span-full py-8 text-center text-slate-500 border border-slate-700 border-dashed rounded-2xl">Henüz platformda yapılmış bir yorum bulunmuyor.</div>`; 
                 return; 
