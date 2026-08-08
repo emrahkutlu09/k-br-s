@@ -8,10 +8,14 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style> body { font-family: 'Inter', sans-serif; } .no-scrollbar::-webkit-scrollbar { display: none; } </style>
+    <style> 
+        body { font-family: 'Inter', sans-serif; } 
+        .no-scrollbar::-webkit-scrollbar { display: none; } 
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-orange-500 selection:text-white">
 
+    <!-- Custom Confirm Modal -->
     <div id="customConfirmModal" class="fixed inset-0 bg-slate-900/80 z-[400] hidden items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white p-6 rounded-3xl max-w-sm w-full shadow-2xl text-center transform transition-all">
             <div class="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -26,16 +30,19 @@
         </div>
     </div>
 
-    <div id="adminBypassBanner" class="bg-rose-600 text-white text-xs font-bold py-2.5 px-4 flex justify-between items-center hidden z-[300] sticky top-0 shadow-md">
-        <span class="flex items-center gap-2"><i data-lucide="shield-alert" class="w-4 h-4 animate-pulse"></i> DİKKAT: Destek Modundasınız! Şu an başka bir satıcının mağazasına müdahale ediyorsunuz.</span>
+    <!-- Admin Support Bypass Banner -->
+    <div id="adminBypassBanner" class="bg-rose-600 text-white text-xs font-bold py-2.5 px-4 justify-between items-center hidden z-[300] sticky top-0 shadow-md">
+        <span class="flex items-center gap-2"><i data-lucide="shield-alert" class="w-4 h-4 animate-pulse"></i> DİKKAT: Destek Modundasınız! Başka bir mağazayı yönetiyorsunuz.</span>
         <button onclick="window.exitAdminSupportMode()" class="bg-white text-rose-600 hover:bg-rose-50 px-3 py-1.5 rounded-lg shadow-sm text-[10px] transition font-black">Moddan Çık</button>
     </div>
 
+    <!-- Full Screen Loader -->
     <div id="fullScreenLoader" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center flex-col gap-4">
         <i data-lucide="loader-2" class="w-12 h-12 text-orange-500 animate-spin"></i>
         <p class="text-white font-bold animate-pulse" id="loaderText">Sistem Başlatılıyor...</p>
     </div>
 
+    <!-- Login Screen -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[100] hidden flex-col items-center justify-center p-4">
         <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-6 shadow-2xl">
             <div class="w-16 h-16 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-2"><i data-lucide="store" class="w-8 h-8"></i></div>
@@ -48,6 +55,7 @@
         </div>
     </div>
 
+    <!-- Register Screen -->
     <div id="registerScreen" class="fixed inset-0 bg-slate-900 z-[90] hidden flex-col items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white p-8 rounded-3xl max-w-md w-full space-y-4 shadow-2xl my-8">
             <h2 class="text-xl font-black border-b pb-2">İşletme Kaydı</h2>
@@ -69,6 +77,7 @@
         </div>
     </div>
 
+    <!-- Pending Approval Screen -->
     <div id="pendingScreen" class="fixed inset-0 bg-slate-900 z-[80] hidden flex-col items-center justify-center p-4">
         <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-4 shadow-2xl">
             <i data-lucide="clock" class="w-12 h-12 text-amber-500 mx-auto animate-pulse"></i>
@@ -78,7 +87,9 @@
         </div>
     </div>
 
+    <!-- Main Dashboard Application -->
     <div id="dashboardScreen" class="hidden flex-col min-h-screen">
+        <!-- Top Navbar -->
         <div class="bg-slate-900 text-white p-4 sm:px-8 flex justify-between items-center shadow-md z-10 relative">
             <div><span class="text-xl font-black text-white tracking-tight">KOBİ<span class="text-orange-500">PANEL</span></span></div>
             <div class="flex items-center gap-4">
@@ -88,6 +99,7 @@
         </div>
 
         <main class="flex-1 max-w-6xl mx-auto w-full p-4 sm:p-6 flex flex-col gap-6 pb-20">
+            <!-- Store Profile Header -->
             <div class="relative w-full h-40 sm:h-56 rounded-3xl overflow-hidden shadow-md bg-slate-800 group shrink-0">
                 <img id="dashboardCover" src="" class="absolute inset-0 w-full h-full object-cover opacity-60 hidden">
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
@@ -117,6 +129,7 @@
                 </div>
             </div>
 
+            <!-- Navigation Tabs -->
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 border-b border-slate-200">
                 <button onclick="window.switchTab('stats')" id="tabBtn-stats" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-900 text-white shadow-md shrink-0 transition flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Genel Bakış</button>
                 <button onclick="window.switchTab('orders')" id="tabBtn-orders" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="shopping-cart" class="w-4 h-4"></i> Siparişler</button>
@@ -125,6 +138,7 @@
                 <button onclick="window.switchTab('settings')" id="tabBtn-settings" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4"></i> Mağaza Ayarları</button>
             </div>
 
+            <!-- Tab Content: Statistics -->
             <div id="tab-stats" class="space-y-6">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
@@ -158,6 +172,7 @@
                 </div>
             </div>
 
+            <!-- Tab Content: Orders -->
             <div id="tab-orders" class="hidden space-y-4">
                 <div class="flex items-center justify-between mb-2">
                     <h3 class="text-lg font-black text-slate-800">Sipariş Yönetimi</h3>
@@ -177,12 +192,14 @@
                                 </tr>
                             </thead>
                             <tbody id="ordersTableBody" class="divide-y divide-slate-100 text-slate-700">
+                                <!-- JS Dolduracak -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
+            <!-- Tab Content: Products -->
             <div id="tab-products" class="hidden space-y-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
@@ -210,14 +227,15 @@
                     </div>
                 </div>
 
-                <!-- Product Filters -->
+                <!-- Product Dynamic Filters -->
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 border-b border-slate-200" id="vendorCategoryFilter">
-                    <button onclick="window.filterVendorProducts('')" class="px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-800 text-white filter-btn" data-cat="">Tümü</button>
+                    <!-- Dinamik Kategoriler JS ile Doldurulacak -->
                 </div>
                 
                 <div id="vendorProductsContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
             </div>
 
+            <!-- Tab Content: Packages -->
             <div id="tab-packages" class="hidden space-y-6">
                 <h3 class="text-lg font-black text-slate-800 mb-2">Paket & Abonelik Yönetimi</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -258,6 +276,7 @@
                 </div>
             </div>
 
+            <!-- Tab Content: Settings -->
             <div id="tab-settings" class="hidden space-y-6">
                 <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 max-w-3xl">
                     <h3 class="text-lg font-black text-slate-800 mb-6 flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-orange-500"></i> Mağaza Profili Ayarları</h3>
@@ -322,6 +341,7 @@
         </main>
     </div>
 
+    <!-- Product Modal -->
     <div id="productModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] shadow-2xl">
             <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
@@ -346,13 +366,8 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">Kategori</label>
+                            <!-- Kategoriler JS ile dinamik doldurulacak -->
                             <select id="pCategory" class="w-full p-3.5 bg-white rounded-xl border border-slate-200 text-sm font-bold outline-none focus:ring-2 focus:ring-orange-500">
-                                <option value="Elektronik">Elektronik</option>
-                                <option value="Moda">Moda</option>
-                                <option value="Ev & Yaşam">Ev & Yaşam</option>
-                                <option value="Süpermarket">Süpermarket</option>
-                                <option value="Kozmetik">Kozmetik</option>
-                                <option value="Oto & Bahçe">Oto & Bahçe</option>
                             </select>
                         </div>
                         <div>
@@ -382,6 +397,7 @@
         </div>
     </div>
 
+    <!-- Bulk Price Update Modal -->
     <div id="bulkPriceModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden flex flex-col shadow-2xl">
             <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
@@ -393,13 +409,7 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-1">Hangi Ürünlere Uygulansın?</label>
                         <select id="bulkCategory" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold outline-none focus:ring-2 focus:ring-orange-500">
-                            <option value="ALL">Tüm Ürünlerim</option>
-                            <option value="Elektronik">Sadece Elektronik</option>
-                            <option value="Moda">Sadece Moda</option>
-                            <option value="Ev & Yaşam">Sadece Ev & Yaşam</option>
-                            <option value="Süpermarket">Sadece Süpermarket</option>
-                            <option value="Kozmetik">Sadece Kozmetik</option>
-                            <option value="Oto & Bahçe">Sadece Oto & Bahçe</option>
+                            <!-- JS ile dinamik dolacak -->
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
@@ -426,6 +436,7 @@
         </div>
     </div>
 
+    <!-- Contact Admin Floating Button -->
     <button onclick="window.contactAdminSupport()" class="fixed bottom-6 left-6 bg-[#25D366] hover:bg-[#1DA851] text-white p-4 rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.5)] z-[60] flex items-center justify-center transition hover:scale-110" title="Platform Yöneticisine Ulaşın">
         <i data-lucide="message-circle" class="w-6 h-6"></i>
     </button>
@@ -435,6 +446,7 @@
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Gerekli Firebase konfigürasyonunuz (Değiştirmeden bırakıldı)
         const firebaseConfig = {
             apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
             authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -453,18 +465,18 @@
         const storesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'stores');
         const productsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'products');
         const ordersRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'orders');
+        const categoriesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'); // Yeni referans
 
         let currentUser = null;
         let myStore = null;
         let myProducts = [];
         let myOrders = [];
+        let dbCategories = []; // Kategorileri tutacağımız dizi
         let currentTab = 'stats';
         let currentFilterCategory = '';
 
         // KENDİ WHATSAPP NUMARANIZI BURAYA YAZIN
         const ADMIN_WHATSAPP = "905000000000"; 
-
-        const categoriesList = ["Elektronik", "Moda", "Ev & Yaşam", "Süpermarket", "Kozmetik", "Oto & Bahçe"];
 
         // Toast Messages
         window.showMessage = (msg, type = 'success') => {
@@ -590,8 +602,6 @@
             const fallbackEl = document.getElementById('dashboardLogoFallback');
             if(myStore.logoUrl) { logoEl.src = myStore.logoUrl; logoEl.classList.remove('hidden'); fallbackEl.classList.add('hidden'); }
             else { logoEl.classList.add('hidden'); fallbackEl.classList.remove('hidden'); }
-
-            initCategoryFilters();
         }
 
         window.switchTab = (tab) => {
@@ -609,6 +619,7 @@
         };
 
         function listenMyData() {
+            // Listen to Products
             onSnapshot(productsRef, (snapshot) => {
                 myProducts = [];
                 snapshot.forEach(d => { if(d.data().storeId === myStore.id) myProducts.push({id: d.id, ...d.data()}); });
@@ -616,11 +627,21 @@
                 calculateStats();
             });
 
+            // Listen to Orders
             onSnapshot(ordersRef, (snapshot) => {
                 myOrders = [];
                 snapshot.forEach(d => { if(d.data().storeId === myStore.id) myOrders.push({id: d.id, ...d.data()}); });
                 renderOrders();
                 calculateStats();
+            });
+
+            // Listen to Categories (Dynamic from Admin)
+            onSnapshot(categoriesRef, (snapshot) => {
+                dbCategories = [];
+                snapshot.forEach(d => dbCategories.push({id: d.id, ...d.data()}));
+                // Kategoriler güncellendiğinde arayüzdeki filtreleri ve form seçeneklerini güncelle
+                initCategoryFilters();
+                updateCategoryDropdowns();
             });
         }
 
@@ -644,142 +665,73 @@
             document.getElementById('statPendingOrders').innerText = pending;
         }
 
-        function populateSettingsForm() {
-            document.getElementById('settingsName').value = myStore.name || '';
-            document.getElementById('settingsWhatsapp').value = myStore.whatsapp || '';
-            document.getElementById('settingsDistrict').value = myStore.district || 'Girne';
+        // Kategori Dropdown'larını Güncelleyen Fonksiyon (İlan Ekleme ve Toplu Fiyat için)
+        function updateCategoryDropdowns() {
+            // İçiçe Kategori Hiyerarşisini Düz Listeye Çevir (Seçim için)
+            let optionsHtml = '';
             
-            if(myStore.coverUrl) {
-                document.getElementById('settingsCoverPreview').src = myStore.coverUrl;
-                document.getElementById('settingsCoverPreview').classList.remove('hidden');
+            // Eğer kategori hiç yoksa varsayılan seçenek sun
+            if (dbCategories.length === 0) {
+                optionsHtml = '<option value="Diğer">Diğer (Kategori Bulunamadı)</option>';
+            } else {
+                // Sadece en alt seviye veya belirginleştirmek için tüm kategorileri ağaç yapısında listele
+                const tree = buildCategoryTree(dbCategories, "");
+                optionsHtml = generateDropdownOptions(tree, 0);
             }
-            if(myStore.logoUrl) {
-                document.getElementById('settingsLogoPreview').src = myStore.logoUrl;
-                document.getElementById('settingsLogoPreview').classList.remove('hidden');
+
+            // İlan Ekleme Formundaki Kategori Seçici
+            const pCategorySelect = document.getElementById('pCategory');
+            if (pCategorySelect) pCategorySelect.innerHTML = optionsHtml;
+
+            // Toplu Fiyat Güncelleme Formundaki Kategori Seçici
+            const bulkCategorySelect = document.getElementById('bulkCategory');
+            if (bulkCategorySelect) {
+                bulkCategorySelect.innerHTML = '<option value="ALL">Tüm Ürünlerim</option>' + optionsHtml;
             }
         }
 
-        window.previewImage = (input, previewId) => {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = document.getElementById(previewId);
-                    img.src = e.target.result;
-                    img.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-
-        window.saveStoreSettings = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnSaveSettings');
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Kaydediliyor...`;
-            btn.disabled = true;
-
-            try {
-                const updates = {
-                    name: document.getElementById('settingsName').value,
-                    whatsapp: document.getElementById('settingsWhatsapp').value,
-                    district: document.getElementById('settingsDistrict').value
-                };
-
-                const coverInput = document.getElementById('settingsCoverInput');
-                if (coverInput.files.length > 0) {
-                    updates.coverUrl = await compressImage(coverInput.files[0], 1200);
+        // Kategorileri Hiyerarşik Ağaca Çevirme Yardımcı Fonksiyonu
+        function buildCategoryTree(categories, parentId) {
+            let tree = [];
+            categories.forEach(cat => {
+                if ((cat.parentId || "") === parentId) {
+                    const children = buildCategoryTree(categories, cat.id);
+                    if (children.length > 0) cat.children = children;
+                    tree.push(cat);
                 }
-
-                const logoInput = document.getElementById('settingsLogoInput');
-                if (logoInput.files.length > 0) {
-                    updates.logoUrl = await compressImage(logoInput.files[0], 400);
-                }
-
-                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), updates);
-                window.showMessage("Mağaza ayarlarınız başarıyla güncellendi.");
-                
-                if(updates.name !== myStore.name || updates.district !== myStore.district || updates.whatsapp !== myStore.whatsapp) {
-                    const batch = writeBatch(db);
-                    myProducts.forEach(p => {
-                        const pRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id);
-                        batch.update(pRef, { storeName: updates.name, district: updates.district, storeWhatsapp: updates.whatsapp });
-                    });
-                    await batch.commit();
-                }
-
-            } catch (err) {
-                console.error(err);
-                window.showMessage("Ayarlar kaydedilirken hata oluştu.", "error");
-            }
-
-            btn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> Değişiklikleri Kaydet`;
-            btn.disabled = false;
-            lucide.createIcons();
-        };
-
-        function renderOrders() {
-            const tbody = document.getElementById('ordersTableBody');
-            if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-slate-400">Sipariş bulunmuyor.</td></tr>'; return; }
-            
-            const sortedOrders = [...myOrders].sort((a,b) => b.createdAt - a.createdAt);
-            let html = '';
-            
-            sortedOrders.forEach(o => {
-                const date = new Date(o.createdAt).toLocaleDateString('tr-TR', {hour: '2-digit', minute:'2-digit'});
-                let statusHtml = '';
-                if(o.status === 'pending') statusHtml = '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-[10px] font-bold">Yeni</span>';
-                else if(o.status === 'processing') statusHtml = '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold">Hazırlanıyor</span>';
-                else if(o.status === 'shipped') statusHtml = '<span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-[10px] font-bold">Kargoda</span>';
-                else if(o.status === 'delivered') statusHtml = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-bold">Teslim Edildi</span>';
-                else if(o.status === 'cancelled') statusHtml = '<span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[10px] font-bold">İptal</span>';
-
-                let itemsStr = o.items.map(i => `${i.qty}x ${i.product?.title || i.title}`).join(', ');
-
-                html += `
-                    <tr class="hover:bg-slate-50">
-                        <td class="px-6 py-4 font-mono text-xs text-slate-500">#${o.id.substring(0,6).toUpperCase()}</td>
-                        <td class="px-6 py-4"><div class="text-xs font-bold">${o.customerName}</div><div class="text-[10px] text-slate-400">${date}</div></td>
-                        <td class="px-6 py-4 text-xs max-w-[200px] truncate" title="${itemsStr}">${itemsStr}</td>
-                        <td class="px-6 py-4 font-black text-orange-600">${o.totalAmount.toLocaleString('tr-TR')} TL</td>
-                        <td class="px-6 py-4">${statusHtml}</td>
-                        <td class="px-6 py-4 text-right">
-                            <select onchange="window.updateOrderStatus('${o.id}', this.value)" class="text-xs border border-slate-200 rounded p-1 outline-none focus:ring-1 focus:ring-orange-500">
-                                <option value="" disabled selected>Durum Değiştir</option>
-                                <option value="processing">Hazırlanıyor</option>
-                                <option value="shipped">Kargoda</option>
-                                <option value="delivered">Teslim Edildi</option>
-                                <option value="cancelled">İptal Et</option>
-                            </select>
-                        </td>
-                    </tr>
-                `;
             });
-            tbody.innerHTML = html;
+            return tree.sort((a, b) => a.name.localeCompare(b.name));
         }
 
-        window.updateOrderStatus = async (orderId, newStatus) => {
-            try { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'orders', orderId), { status: newStatus }); window.showMessage("Sipariş durumu güncellendi."); }
-            catch(err) { window.showMessage("Hata oluştu.", "error"); }
-        };
-
-        window.createMockOrder = async () => {
-            if(myProducts.length === 0) { window.showMessage("Önce ürün eklemelisiniz.", "error"); return; }
-            const p = myProducts[0];
-            const mock = {
-                storeId: myStore.id, customerName: "Test Müşteri", customerPhone: "05330000000",
-                items: [{title: p.title, qty: 1, price: p.price}], totalAmount: p.price,
-                status: 'pending', createdAt: Date.now()
-            };
-            await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'orders')), mock);
-            window.showMessage("Test siparişi oluşturuldu.");
-        };
+        // Ağaç Yapısını Select Optin'larına (Tireli olarak) Çeviren Fonksiyon
+        function generateDropdownOptions(nodes, depth) {
+            let html = '';
+            const prefix = '- '.repeat(depth);
+            nodes.forEach(node => {
+                // Değer olarak kategori adını tutuyoruz ki ürünlerde temiz gözüksün. 
+                html += `<option value="${node.name}">${prefix}${node.name}</option>`;
+                if (node.children) {
+                    html += generateDropdownOptions(node.children, depth + 1);
+                }
+            });
+            return html;
+        }
 
         function initCategoryFilters() {
             const container = document.getElementById('vendorCategoryFilter');
             let html = `<button onclick="window.filterVendorProducts('')" class="px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-800 text-white filter-btn" data-cat="">Tümü</button>`;
-            categoriesList.forEach(cat => {
-                html += `<button onclick="window.filterVendorProducts('${cat}')" class="px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200 filter-btn" data-cat="${cat}">${cat}</button>`;
+            
+            // Filtreleri düz bir liste olarak sadece isimleriyle oluştur
+            const uniqueCategories = [...new Set(dbCategories.map(c => c.name))].sort();
+
+            uniqueCategories.forEach(catName => {
+                html += `<button onclick="window.filterVendorProducts('${catName}')" class="px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200 filter-btn whitespace-nowrap" data-cat="${catName}">${catName}</button>`;
             });
+            
+            if(uniqueCategories.length === 0) {
+                 html += `<span class="text-xs text-slate-400 py-1.5 px-2">Henüz kategori bulunmuyor.</span>`;
+            }
+
             container.innerHTML = html;
         }
 
@@ -814,7 +766,7 @@
                             ${p.video ? `<div class="absolute bottom-2 left-2 bg-emerald-500/90 text-white p-1 rounded shadow"><i data-lucide="play" class="w-3 h-3"></i></div>` : ''}
                         </div>
                         <div class="flex-1">
-                            <div class="text-[9px] font-bold text-slate-400 mb-1">${p.category}</div>
+                            <div class="text-[9px] font-bold text-slate-500 bg-slate-100 inline-block px-1.5 py-0.5 rounded mb-1 line-clamp-1" title="${p.category}">${p.category}</div>
                             <h4 class="text-xs font-bold line-clamp-2 mb-1 text-slate-800">${p.title}</h4>
                             ${hasVariants ? `<div class="text-[9px] text-orange-500 font-bold mb-1">${p.variants.length} Varyant</div>` : ''}
                         </div>
@@ -863,6 +815,9 @@
             document.getElementById('pPrice').value = "";
             document.getElementById('variantsContainer').innerHTML = ""; 
             
+            // Form açılırken en güncel kategorileri yüklediğinden emin ol
+            updateCategoryDropdowns();
+            
             const mediaLimitStr = pkg === 'free' ? "(1 Görsel, Video Yasak)" : (pkg === 'standard' ? "(3 Görsel, Video Serbest)" : "(Sınırsız Medya)");
             document.getElementById('mediaLimitText').innerText = mediaLimitStr;
 
@@ -880,8 +835,18 @@
             document.getElementById('pImages').value = ""; 
             document.getElementById('pTitle').value = p.title;
             document.getElementById('pDesc').value = p.description || "";
-            document.getElementById('pCategory').value = p.category;
             document.getElementById('pPrice').value = p.price;
+            
+            // Önce dropdownları güncelle, sonra satıcının önceden seçtiği kategoriyi (varsa) ata
+            updateCategoryDropdowns();
+            const catSelect = document.getElementById('pCategory');
+            // Eğer ürünün kategorisi mevcut dropdown'da varsa seçili yap
+            if([...catSelect.options].some(opt => opt.value === p.category)) {
+                 catSelect.value = p.category;
+            } else if (p.category) {
+                 // Kategori admin tarafından silinmişse veya değişmişse, uyarı olarak option ekle ve seç
+                 catSelect.innerHTML += `<option value="${p.category}" selected>${p.category} (Pasif Kategori)</option>`;
+            }
             
             document.getElementById('variantsContainer').innerHTML = "";
             if(p.variants) p.variants.forEach(v => window.addVariantRow(v.name, v.stock));
@@ -989,7 +954,64 @@
             });
         };
 
-        window.openBulkPriceModal = () => { document.getElementById('bulkPriceModal').classList.remove('hidden'); };
+        function renderOrders() {
+            const tbody = document.getElementById('ordersTableBody');
+            if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-slate-400">Sipariş bulunmuyor.</td></tr>'; return; }
+            
+            const sortedOrders = [...myOrders].sort((a,b) => b.createdAt - a.createdAt);
+            let html = '';
+            
+            sortedOrders.forEach(o => {
+                const date = new Date(o.createdAt).toLocaleDateString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+                let statusHtml = '';
+                if(o.status === 'pending') statusHtml = '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-[10px] font-bold">Yeni</span>';
+                else if(o.status === 'processing') statusHtml = '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold">Hazırlanıyor</span>';
+                else if(o.status === 'shipped') statusHtml = '<span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-[10px] font-bold">Kargoda</span>';
+                else if(o.status === 'delivered') statusHtml = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-bold">Teslim Edildi</span>';
+                else if(o.status === 'cancelled') statusHtml = '<span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[10px] font-bold">İptal</span>';
+
+                let itemsStr = o.items.map(i => `${i.qty}x ${i.product?.title || i.title}`).join(', ');
+
+                html += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-mono text-xs text-slate-500">#${o.id.substring(0,6).toUpperCase()}</td>
+                        <td class="px-6 py-4"><div class="text-xs font-bold">${o.customerName}</div><div class="text-[10px] text-slate-400">${date}</div></td>
+                        <td class="px-6 py-4 text-xs max-w-[200px] truncate" title="${itemsStr}">${itemsStr}</td>
+                        <td class="px-6 py-4 font-black text-orange-600">${o.totalAmount.toLocaleString('tr-TR')} TL</td>
+                        <td class="px-6 py-4">${statusHtml}</td>
+                        <td class="px-6 py-4 text-right">
+                            <select onchange="window.updateOrderStatus('${o.id}', this.value)" class="text-xs border border-slate-200 rounded p-1 outline-none focus:ring-1 focus:ring-orange-500">
+                                <option value="" disabled selected>Durum Değiştir</option>
+                                <option value="processing">Hazırlanıyor</option>
+                                <option value="shipped">Kargoda</option>
+                                <option value="delivered">Teslim Edildi</option>
+                                <option value="cancelled">İptal Et</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        window.updateOrderStatus = async (orderId, newStatus) => {
+            try { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'orders', orderId), { status: newStatus }); window.showMessage("Sipariş durumu güncellendi."); }
+            catch(err) { window.showMessage("Hata oluştu.", "error"); }
+        };
+
+        window.createMockOrder = async () => {
+            if(myProducts.length === 0) { window.showMessage("Önce ürün eklemelisiniz.", "error"); return; }
+            const p = myProducts[0];
+            const mock = {
+                storeId: myStore.id, customerName: "Test Müşteri", customerPhone: "05330000000",
+                items: [{title: p.title, qty: 1, price: p.price}], totalAmount: p.price,
+                status: 'pending', createdAt: Date.now()
+            };
+            await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'orders')), mock);
+            window.showMessage("Test siparişi oluşturuldu.");
+        };
+
+        window.openBulkPriceModal = () => { document.getElementById('bulkPriceModal').classList.remove('hidden'); updateCategoryDropdowns(); };
         window.executeBulkPriceUpdate = async (e) => {
             e.preventDefault();
             const cat = document.getElementById('bulkCategory').value;
@@ -1069,7 +1091,6 @@
             window.showMessage("Ürünleriniz Excel uyumlu CSV formatında indirildi.");
         };
 
-        // YENİ VE GÜÇLENDİRİLMİŞ İÇE AKTARMA (IMPORT) SİSTEMİ
         window.importFromCSV = (event) => {
             const file = event.target.files[0];
             if (!file) return;
@@ -1080,12 +1101,11 @@
             reader.onload = function(e) {
                 let text = e.target.result;
                 
-                // 1. BOM (Gizli Karakter) Temizliği
+                // BOM Temizliği
                 if (text.charCodeAt(0) === 0xFEFF) {
                     text = text.substring(1);
                 }
 
-                // 2. Ayracı (Delimiter) otomatik tespit et: İlk satırda noktalı virgül (Excel Türkiye) varsa onu kullan, yoksa virgül kullan.
                 const firstLine = text.split('\n')[0];
                 const detectedDelimiter = firstLine.includes(';') ? ';' : ',';
 
@@ -1100,12 +1120,9 @@
                         const data = results.data;
                         if(data.length === 0) { window.showMessage("Dosya boş veya format hatalı.", "error"); return; }
                         
-                        // 3. Esnek Sütun Eşleştirme (Büyük/Küçük harf duyarlılığını veya Türkçe karakter bozuluşunu tolere etmek için)
-                        // Önemli: Trim ve replace ile ekstra boşlukları veya gizli tırnakları siliyoruz.
                         const rawHeaders = Object.keys(data[0]);
                         const headers = rawHeaders.map(h => h.trim().replace(/['"]/g, '').toLowerCase());
                         
-                        // Sütunların dosyadaki indexlerini bul (Eşleştirme)
                         const baslikIndex = headers.findIndex(k => k.includes('baslik') || k.includes('başlık'));
                         const fiyatIndex = headers.findIndex(k => k.includes('fiyat'));
                         const kategoriIndex = headers.findIndex(k => k.includes('kategori'));
@@ -1114,13 +1131,11 @@
                         const varyantlarIndex = headers.findIndex(k => k.includes('varyantlar'));
 
                         if (baslikIndex === -1 || fiyatIndex === -1) {
-                            window.showMessage("Format hatası: 'Baslik' ve 'Fiyat' sütunları bulunamadı. Lütfen dışa aktardığınız şablonu bozmadan kullanın.", "error");
-                            console.error("Bulunan Sütunlar:", headers); // Sorun olursa F12 konsolunda görelim
+                            window.showMessage("Format hatası: 'Baslik' ve 'Fiyat' sütunları bulunamadı.", "error");
                             event.target.value = "";
                             return;
                         }
 
-                        // Orijinal anahtarları (key) alalım
                         const baslikKey = rawHeaders[baslikIndex];
                         const fiyatKey = rawHeaders[fiyatIndex];
                         const kategoriKey = kategoriIndex !== -1 ? rawHeaders[kategoriIndex] : null;
@@ -1147,7 +1162,6 @@
                             let addedCount = 0;
 
                             for (const row of data) {
-                                // Eğer satırda başlık veya fiyat yoksa atla
                                 if (!row[baslikKey] || !row[fiyatKey]) continue; 
                                 
                                 const newDocRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products'));
@@ -1164,9 +1178,7 @@
 
                                 const images = (gorsellerKey && row[gorsellerKey]) ? row[gorsellerKey].split('|').filter(u => u.trim() !== '' && u !== 'BASE64_Gorsel_Dısa_Aktarilamadi') : [];
 
-                                // Fiyatı temizle (boşlukları veya yabancı karakterleri at)
                                 let cleanPrice = row[fiyatKey].toString().replace(/[^0-9.,]/g, '');
-                                // Eğer hem virgül hem nokta varsa (binlik ayraç), virgülü noktaya çevir
                                 cleanPrice = cleanPrice.replace(',', '.');
 
                                 const productData = {
@@ -1187,7 +1199,6 @@
                                 opCount++;
                                 addedCount++;
                                 
-                                // Firestore Batch limiti 500'dür, 500'ü aşarsa yeni batch oluştur
                                 if (opCount === 500) {
                                     batches.push(currentBatch.commit());
                                     currentBatch = writeBatch(db);
@@ -1204,15 +1215,13 @@
                                 window.showMessage("Geçerli ürün bulunamadı. Lütfen CSV dosyanızı kontrol edin.", "error");
                             }
                         } catch (err) {
-                            console.error(err);
                             window.showMessage("İçe aktarma hatası: " + err.message, "error");
                         }
                         
                         showScreen('dashboardScreen');
-                        event.target.value = ""; // Inputu sıfırla
+                        event.target.value = ""; 
                     },
-                    error: function(err) {
-                        console.error("PapaParse Hatası:", err);
+                    error: function() {
                         window.showMessage("Dosya okuma hatası oluştu.", "error");
                         event.target.value = "";
                         showScreen('dashboardScreen');
@@ -1220,8 +1229,79 @@
                 });
             };
             
-            // Dosyayı Türkçe karakter uyumluluğu için UTF-8 formatında metin olarak okuyoruz
             reader.readAsText(file, 'UTF-8');
+        };
+
+        function populateSettingsForm() {
+            document.getElementById('settingsName').value = myStore.name || '';
+            document.getElementById('settingsWhatsapp').value = myStore.whatsapp || '';
+            document.getElementById('settingsDistrict').value = myStore.district || 'Girne';
+            
+            if(myStore.coverUrl) {
+                document.getElementById('settingsCoverPreview').src = myStore.coverUrl;
+                document.getElementById('settingsCoverPreview').classList.remove('hidden');
+            }
+            if(myStore.logoUrl) {
+                document.getElementById('settingsLogoPreview').src = myStore.logoUrl;
+                document.getElementById('settingsLogoPreview').classList.remove('hidden');
+            }
+        }
+
+        window.previewImage = (input, previewId) => {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.getElementById(previewId);
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.saveStoreSettings = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveSettings');
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Kaydediliyor...`;
+            btn.disabled = true;
+
+            try {
+                const updates = {
+                    name: document.getElementById('settingsName').value,
+                    whatsapp: document.getElementById('settingsWhatsapp').value,
+                    district: document.getElementById('settingsDistrict').value
+                };
+
+                const coverInput = document.getElementById('settingsCoverInput');
+                if (coverInput.files.length > 0) {
+                    updates.coverUrl = await compressImage(coverInput.files[0], 1200);
+                }
+
+                const logoInput = document.getElementById('settingsLogoInput');
+                if (logoInput.files.length > 0) {
+                    updates.logoUrl = await compressImage(logoInput.files[0], 400);
+                }
+
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), updates);
+                window.showMessage("Mağaza ayarlarınız başarıyla güncellendi.");
+                
+                if(updates.name !== myStore.name || updates.district !== myStore.district || updates.whatsapp !== myStore.whatsapp) {
+                    const batch = writeBatch(db);
+                    myProducts.forEach(p => {
+                        const pRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id);
+                        batch.update(pRef, { storeName: updates.name, district: updates.district, storeWhatsapp: updates.whatsapp });
+                    });
+                    await batch.commit();
+                }
+
+            } catch (err) {
+                window.showMessage("Ayarlar kaydedilirken hata oluştu.", "error");
+            }
+
+            btn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> Değişiklikleri Kaydet`;
+            btn.disabled = false;
+            lucide.createIcons();
         };
 
         window.requestPackageUpgrade = async (pkgType) => {
@@ -1230,10 +1310,8 @@
             
             window.customConfirm(`Yöneticiden ${pkgName} geçişi talep edilsin ve WhatsApp üzerinden iletişime geçilsin mi?`, async () => {
                 try {
-                    // Sisteme kaydet (Admin panelinde uyarı olarak düşmesi için)
                     await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), { upgradeRequest: pkgType });
                     
-                    // WhatsApp Yönlendirmesi
                     let message = `Merhaba, *${myStore.name}* mağazam için *${pkgName}* aboneliğine geçmek istiyorum.\n\nFiyat bilgisi alabilir miyim ve ödeme için IBAN numaranızı gönderebilir misiniz?`;
                     window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
                     
