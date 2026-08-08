@@ -409,25 +409,30 @@
                 }
 
                 let isAdmin = false;
+                const userEmail = user.email ? user.email.toLowerCase() : "";
                 
-                // Güvenlik 1: Firebase Custom Claims (Gelişmiş Rol Sistemi Kontrolü)
-                try { 
-                    const idTokenResult = await user.getIdTokenResult(); 
-                    if (idTokenResult.claims.admin) isAdmin = true; 
-                } catch(e) {}
-
-                // Güvenlik 2: Firestore Veritabanı Kontrolü ("admin_users" koleksiyonunda kullanıcının emaili var mı?)
-                if(!isAdmin) {
-                    try { 
-                        const adminSnap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'admin_users', user.email)); 
-                        if (adminSnap.exists()) isAdmin = true; 
-                    } catch(e) {}
+                // Güvenlik 1: Sabit Master Kurucu Hesabı (EN HIZLI VE KESİN KONTROL)
+                // Kendi mailinizi kontrol ederken veritabanı bağlantısı beklemez, anlık internet kopmalarında sizi atmaz.
+                const masterAdminEmail = "emirmob09@gmail.com".toLowerCase(); 
+                if (userEmail === masterAdminEmail) {
+                    isAdmin = true;
                 }
 
-                // Güvenlik 3: Sabit Master Kurucu Hesabı 
-                // DİKKAT: AŞAĞIDAKİ E-POSTA ADRESİNİ KENDİ GİRİŞ YAPACAĞINIZ GOOGLE MAİLİNİZ İLE DEĞİŞTİRİN!
-                const masterAdminEmail = "emirmob09@gmail.com"; 
-                if (user.email === masterAdminEmail) isAdmin = true;
+                // Güvenlik 2: Firebase Custom Claims (Eğer master hesap değilse kontrol et)
+                if(!isAdmin) {
+                    try { 
+                        const idTokenResult = await user.getIdTokenResult(); 
+                        if (idTokenResult.claims.admin) isAdmin = true; 
+                    } catch(e) { console.warn("Claim hatası", e); }
+                }
+
+                // Güvenlik 3: Firestore Veritabanı Kontrolü (Diğer adminler için)
+                if(!isAdmin) {
+                    try { 
+                        const adminSnap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'admin_users', userEmail)); 
+                        if (adminSnap.exists()) isAdmin = true; 
+                    } catch(e) { console.warn("Veritabanı kontrol hatası", e); }
+                }
 
                 if(isAdmin) {
                     // Kullanıcının yetkisi doğrulandı, içeri girebilir.
@@ -438,7 +443,7 @@
                     initData();
                     if(loginBtn) { loginBtn.innerHTML = originalBtnText; loginBtn.disabled = false; }
                 } else {
-                    // Kullanıcı giriş yaptı ama yetkisi yok (Örneğin bir satıcı veya müşteri girmeye çalıştı)
+                    // Kullanıcı giriş yaptı ama yetkisi yok
                     window.showMessage("Yetkisiz Giriş! Bu panele sadece sistem yöneticileri girebilir.", "error");
                     signOut(auth); // Saniyesinde sistemden at (Log out)
                     if(loginBtn) { loginBtn.innerHTML = originalBtnText; loginBtn.disabled = false; }
