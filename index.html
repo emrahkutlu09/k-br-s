@@ -502,11 +502,11 @@
         const settingsRef = doc(db, 'artifacts', APP_ID, 'public', 'settings');
         const reviewsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'reviews');
         const ordersRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'orders');
-        const categoriesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'); // YENİ REFERANS
+        const categoriesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'); 
 
         let dbProducts = [];
         let dbStores = [];
-        let dbCategories = []; // YENİ KATEGORİ LİSTESİ
+        let dbCategories = []; 
         
         let appSettings = {
             mainBanner: { tag: "Haftanın Fırsatı", title: "Seçili Ürünlerde<br><span class='text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400'>%50'ye Varan</span> İndirim", subtitle: "En sevdiğiniz yerel mağazalardan komisyonsuz, anında sipariş verin.", btnText: "Alışverişe Başla", linkType: "category", linkValue: "Moda", image: null },
@@ -525,11 +525,8 @@
         let isCatMenuOpen = false;
         let activeCategory = '';
         let activeDistrict = '';
-        let spMapInstance = null; // Leaflet Harita objesi
+        let spMapInstance = null; 
 
-        // ==========================================
-        // 🌍 DEV ÇOK DİLLİ SÖZLÜK (DICTIONARY)
-        // ==========================================
         const appTranslations = {
             tr: {
                 dir: "ltr",
@@ -1030,7 +1027,6 @@
             if(isUserMenuOpen) { document.getElementById('catDropdownMenu').classList.add('hidden'); isCatMenuOpen = false; }
         };
 
-        // Kategori Dropdown Toggle
         window.toggleCatDropdown = (e) => {
             e.stopPropagation();
             isCatMenuOpen = !isCatMenuOpen;
@@ -1131,7 +1127,6 @@
             }
         }
 
-        // ================= KATEGORİ AĞACI RENDERING =================
         function buildCategoryTree(categories, parentId) {
             let tree = [];
             categories.forEach(cat => {
@@ -1249,7 +1244,7 @@
             return `
                 <div class="bg-white rounded-2xl p-3 hover:shadow-xl hover:border-orange-200 border border-slate-200 transition-all group flex flex-col cursor-pointer shrink-0 w-[160px] sm:w-auto sm:min-w-0" onclick="window.openProductDetail('${p.id}')">
                     <div class="relative w-full aspect-[4/5] mb-3 overflow-hidden rounded-xl bg-slate-100">
-                        <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Product"/>
+                        <img loading="lazy" src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Product"/>
                         <button onclick="event.stopPropagation(); window.toggleFavorite('${p.id}')" class="absolute top-2 right-2 rtl:left-2 rtl:right-auto p-2 rounded-full bg-white/90 shadow hover:scale-110 z-10 transition">
                             <i data-lucide="heart" class="w-4 h-4 ${isFav ? 'fill-rose-500 text-rose-500' : 'text-slate-400 hover:text-rose-500'}"></i>
                         </button>
@@ -1351,10 +1346,9 @@
                     html += `</div></div>`;
                 }
 
-                // Sizin İçin Seçtiklerimiz: Premium ve Yeni Eklenenleri Karıştır
                 const premiumProds = displayProducts.filter(p => premiumStoreIds.includes(p.storeId));
                 const standardProds = displayProducts.filter(p => !premiumStoreIds.includes(p.storeId));
-                standardProds.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); // En yeniler
+                standardProds.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); 
                 
                 let mixedPool = [...premiumProds, ...standardProds.slice(0, 50)];
                 for (let i = mixedPool.length - 1; i > 0; i--) {
@@ -1468,14 +1462,12 @@
             reviewsContainer.innerHTML = '<div class="text-center py-4"><i data-lucide="loader-2" class="w-4 h-4 animate-spin inline text-orange-500"></i></div>';
             
             const rq = query(reviewsRef, where("productId", "==", id));
-            getDocs(rq).then(snap => {
+            getDocs(rq).then(async snap => {
                 let revHtml = '';
                 let approvedCount = 0;
                 let totalRating = 0;
 
-                if(snap.empty) {
-                    revHtml = `<p class="text-xs text-slate-500 font-bold bg-slate-50 p-4 rounded-xl text-center border border-slate-100">${window.t('no_reviews')}</p>`;
-                } else {
+                if(!snap.empty) {
                     snap.forEach(d => {
                         const r = d.data();
                         if (r.status !== 'approved') return; 
@@ -1495,28 +1487,145 @@
                             </div>
                         `;
                     });
-                    
-                    if(approvedCount === 0) {
-                         revHtml = `<p class="text-xs text-slate-500 font-bold bg-slate-50 p-4 rounded-xl text-center border border-slate-100">${window.t('no_approved_reviews')}</p>`;
-                    } else {
-                        const avg = (totalRating / approvedCount).toFixed(1);
-                        revHtml = `
-                            <div class="flex items-center gap-4 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                <div class="text-4xl font-black text-slate-900">${avg}</div>
-                                <div>
-                                    <div class="text-orange-500 text-sm tracking-widest">⭐⭐⭐⭐⭐</div>
-                                    <div class="text-[10px] font-bold text-slate-500 mt-1">${approvedCount} ${window.t('review_count')}</div>
-                                </div>
-                            </div>
-                        ` + revHtml;
-                    }
                 }
-                reviewsContainer.innerHTML = revHtml;
+                
+                if(approvedCount === 0) {
+                     revHtml = `<p class="text-xs text-slate-500 font-bold bg-slate-50 p-4 rounded-xl text-center border border-slate-100">${window.t('no_approved_reviews')}</p>`;
+                } else {
+                    const avg = (totalRating / approvedCount).toFixed(1);
+                    revHtml = `
+                        <div class="flex items-center gap-4 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            <div class="text-4xl font-black text-slate-900">${avg}</div>
+                            <div>
+                                <div class="text-orange-500 text-sm tracking-widest">⭐⭐⭐⭐⭐</div>
+                                <div class="text-[10px] font-bold text-slate-500 mt-1">${approvedCount} ${window.t('review_count')}</div>
+                            </div>
+                        </div>
+                    ` + revHtml;
+                }
+
+                // SIKIŞTIRILMIŞ KUSURSUZ GÜVENLİK DUVARI (YORUM YAPMA FORMU)
+                let reviewFormHtml = '';
+                if (auth.currentUser && !auth.currentUser.isAnonymous) {
+                    const buyerUid = auth.currentUser.uid;
+                    
+                    // 1. KONTROL: Satıcı kendi mağazasına ait bir ürüne yorum yapamaz!
+                    let isStoreOwner = false;
+                    const storeDoc = dbStores.find(s => s.id === product.storeId);
+                    if (storeDoc && storeDoc.ownerUid === buyerUid) {
+                        isStoreOwner = true;
+                    }
+
+                    if (isStoreOwner) {
+                        reviewFormHtml = `
+                            <div class="mt-6 bg-rose-50 p-4 rounded-2xl border border-rose-100 text-center">
+                                <p class="text-xs font-bold text-rose-600">🚫 Kendi mağazanıza ait ürünleri değerlendiremezsiniz.</p>
+                            </div>
+                        `;
+                    } else {
+                        // 2. KONTROL: Daha önce bu Google hesabı ile bu ürüne yorum yapmış mı?
+                        let alreadyReviewed = false;
+                        if(!snap.empty) {
+                            snap.forEach(d => {
+                                if (d.data().userId === buyerUid) alreadyReviewed = true;
+                            });
+                        }
+
+                        if (alreadyReviewed) {
+                            reviewFormHtml = `
+                                <div class="mt-6 bg-slate-100 p-4 rounded-2xl border border-slate-200 text-center">
+                                    <p class="text-xs font-bold text-slate-500">✨ Bu ürün için bu Google hesabı ile zaten bir değerlendirmeniz bulunuyor. Her hesap ürüne yalnızca 1 kez yorum yapabilir.</p>
+                                </div>
+                            `;
+                        } else {
+                            // 3. KONTROL: Ürünü gerçekten alıp "Teslim Aldım" onayını vermiş mi?
+                            const ordersQ = query(ordersRef, where("buyerUid", "==", buyerUid), where("status", "==", "delivered"));
+                            const ordersSnap = await getDocs(ordersQ);
+                            
+                            let hasBoughtAndReceived = false;
+                            ordersSnap.forEach(docSnap => {
+                                const ord = docSnap.data();
+                                if (ord.items && ord.items.some(item => (item.product?.id === id || item.productId === id))) {
+                                    hasBoughtAndReceived = true;
+                                }
+                            });
+
+                            if (hasBoughtAndReceived) {
+                                reviewFormHtml = `
+                                    <div class="mt-6 bg-orange-50/50 p-4 rounded-2xl border border-orange-100">
+                                        <h4 class="text-xs font-black text-slate-800 mb-2">Bu Ürünü Değerlendirin (Doğrulanmış Alım)</h4>
+                                        <form onsubmit="window.submitVerifiedReview(event, '${id}')" class="flex flex-col gap-3">
+                                            <select id="reviewRatingSelect" class="p-2 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none">
+                                                <option value="5">⭐⭐⭐⭐⭐ (5 Puan - Mükemmel)</option>
+                                                <option value="4">⭐⭐⭐⭐ (4 Puan - İyi)</option>
+                                                <option value="3">⭐⭐⭐ (3 Puan - Normal)</option>
+                                                <option value="2">⭐⭐ (2 Puan - Kötü)</option>
+                                                <option value="1">⭐ (1 Puan - Çok Kötü)</option>
+                                            </select>
+                                            <textarea id="reviewCommentText" required rows="2" placeholder="Ürün hakkındaki deneyimlerinizi yazın..." class="p-2 bg-white border border-slate-200 rounded-xl text-xs outline-none focus:border-orange-500"></textarea>
+                                            <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white font-black py-2.5 rounded-xl text-xs transition">Onaya Gönder</button>
+                                        </form>
+                                    </div>
+                                `;
+                            } else {
+                                reviewFormHtml = `
+                                    <div class="mt-6 bg-slate-100 p-4 rounded-2xl border border-slate-200 text-center">
+                                        <p class="text-xs font-bold text-slate-500">🔒 Bu ürüne yorum yapabilmek için ürünü satın alıp siparişlerimden <b>"Teslim Aldım"</b> olarak onaylamanız gerekmektedir.</p>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }
+                } else {
+                    reviewFormHtml = `
+                        <div class="mt-6 bg-slate-100 p-4 rounded-2xl border border-slate-200 text-center flex flex-col items-center gap-3">
+                            <p class="text-xs font-bold text-slate-600">Yorum yapabilmek için lütfen Google hesabınızla giriş yapın.</p>
+                            <button onclick="window.loginWithGoogle(event)" class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs shadow-sm flex items-center gap-2 transition">
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-4 h-4"> Google ile Giriş Yap
+                            </button>
+                        </div>
+                    `;
+                }
+
+                reviewsContainer.innerHTML = revHtml + reviewFormHtml;
             });
             
             document.getElementById('productDetailModal').classList.remove('hidden');
             setTimeout(() => { document.getElementById('productDetailPanel').classList.remove('scale-95', 'opacity-0'); }, 10);
             lucide.createIcons();
+        };
+
+        window.submitVerifiedReview = async (e, pId) => {
+            e.preventDefault();
+            if (!auth.currentUser || auth.currentUser.isAnonymous) {
+                window.showMessage("Yorum yapmak için Google ile giriş yapmalısınız.", "error");
+                return;
+            }
+
+            const rating = parseInt(document.getElementById('reviewRatingSelect').value);
+            const comment = document.getElementById('reviewCommentText').value;
+            
+            try {
+                const buyerUid = auth.currentUser.uid;
+                const rq = query(reviewsRef, where("productId", "==", pId), where("userId", "==", buyerUid));
+                const checkSnap = await getDocs(rq);
+                
+                if(!checkSnap.empty) {
+                    window.showMessage("Bu ürün için daha önce zaten bir değerlendirme yaptınız.", "error");
+                    window.closeProductDetail();
+                    return;
+                }
+
+                const userName = auth.currentUser.email ? auth.currentUser.email.split('@')[0] : 'Müşteri';
+                await addDoc(reviewsRef, {
+                    productId: pId, userId: buyerUid, userName: userName,
+                    rating: rating, comment: comment, status: 'pending', createdAt: Date.now()
+                });
+                window.showMessage("Yorumunuz başarıyla onaya gönderildi.");
+                window.closeProductDetail();
+            } catch(err) {
+                window.showMessage("Yorum gönderilemedi.", "error");
+            }
         };
 
         window.selectVariant = (idx) => {
@@ -1612,7 +1721,6 @@
                 waBtn.classList.add('hidden');
             }
 
-            // LEAFLET MAP RENDER
             const mapWrapper = document.getElementById('spMapContainerWrapper');
             if (store.lat && store.lng) {
                 mapWrapper.classList.remove('hidden');
@@ -2136,14 +2244,44 @@
             const btn = form.querySelector('button[type="submit"]');
             btn.disabled = true;
 
+            // SIKIŞTIRILMIŞ GÜVENLİK DUVARI:
+            if (!auth.currentUser || auth.currentUser.isAnonymous) {
+                window.showMessage("Yorum yapmak için Google ile giriş yapmalısınız.", "error");
+                btn.disabled = false;
+                return;
+            }
+
+            const buyerUid = auth.currentUser.uid;
+
+            // 1. Satıcı kendi ürününe yorum yapamaz
+            const product = dbProducts.find(p => p.id === pId);
+            if (product) {
+                const storeDoc = dbStores.find(s => s.id === product.storeId);
+                if (storeDoc && storeDoc.ownerUid === buyerUid) {
+                    window.showMessage("Kendi mağazanıza ait ürünleri değerlendiremezsiniz.", "error");
+                    form.innerHTML = `<div class="text-[10px] font-bold text-rose-500 bg-rose-50 border border-rose-100 p-3 rounded-lg text-center">Kendi ürününüze yorum yapamazsınız.</div>`;
+                    return;
+                }
+            }
+
+            // 2. Bir kullanıcı aynı ürüne sadece 1 yorum yapabilir
+            const rq = query(reviewsRef, where("productId", "==", pId), where("userId", "==", buyerUid));
+            const checkSnap = await getDocs(rq);
+            
+            if(!checkSnap.empty) {
+                window.showMessage("Bu ürün için daha önce değerlendirme yaptınız. Her ürüne 1 yorum yapılabilir.", "error");
+                form.innerHTML = `<div class="text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 p-3 rounded-lg text-center">Bu ürün değerlendirildi.</div>`;
+                return;
+            }
+
             const rating = parseInt(form.querySelector('select').value);
             const comment = form.querySelector('textarea').value; 
 
             try {
-                const userName = auth.currentUser.isAnonymous ? 'Guest' : (auth.currentUser.email ? auth.currentUser.email.split('@')[0] : 'User');
+                const userName = auth.currentUser.email ? auth.currentUser.email.split('@')[0] : 'User';
                 const reviewData = {
                     productId: pId,
-                    userId: auth.currentUser.uid,
+                    userId: buyerUid,
                     userName: userName,
                     rating: rating,
                     comment: comment,
@@ -2152,13 +2290,13 @@
                 };
                 
                 await addDoc(reviewsRef, reviewData);
-                window.showMessage("Success!");
+                window.showMessage("Yorumunuz onaya gönderildi.");
                 
                 form.innerHTML = `<div class="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 p-3 rounded-lg text-center flex flex-col items-center gap-1"><i data-lucide="check-circle" class="w-5 h-5"></i> Değerlendirmeniz onaya gönderildi</div>`;
                 lucide.createIcons();
             } catch (err) {
                 console.error(err);
-                window.showMessage("Error.", "error");
+                window.showMessage("Hata oluştu.", "error");
                 btn.disabled = false;
             }
         };
