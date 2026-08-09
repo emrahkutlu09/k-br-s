@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kıbrıs Çarşı | Süper Admin Kontrol Merkezi</title>
+    <title>Kıbrıs Bazar | Süper Admin Kontrol Merkezi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -139,6 +139,15 @@
                                 <button type="submit" id="btnSaveCategory" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-rose-500/30">Kategoriyi Kaydet</button>
                             </div>
                         </form>
+                        
+                        <!-- YENİ EKLENEN OTOMATİK YÜKLEME BUTONU -->
+                        <div class="pt-6 mt-6 border-t border-slate-700/50">
+                            <h4 class="text-xs font-bold text-slate-400 mb-3">Otomasyon</h4>
+                            <button type="button" id="btnLoadDefaults" onclick="window.loadDefaultRichCategories()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 text-xs">
+                                <i data-lucide="zap" class="w-4 h-4"></i> Zengin Kategorileri Otomatik Yükle
+                            </button>
+                            <p class="text-[10px] text-slate-500 mt-2 text-center">Tek tıkla 11 Ana, 70+ Alt kategori yükler. Sonrasında dilediğiniz gibi silebilir veya düzenleyebilirsiniz.</p>
+                        </div>
                     </div>
 
                     <div class="w-full md:w-2/3 bg-slate-800/30 border border-slate-700/50 p-6 rounded-3xl">
@@ -666,6 +675,49 @@
             } catch (err) {
                 window.showMessage("Silme işlemi başarısız.", "error");
             }
+        };
+
+        // YENİ EKLENEN OTOMATİK ZENGİN KATEGORİ YÜKLEYİCİ FONKSİYONU
+        window.loadDefaultRichCategories = async () => {
+            if(!confirm("DİKKAT: Bu işlem veri tabanınıza 80'e yakın kategori yükleyecektir. Onaylıyor musunuz?")) return;
+
+            const btn = document.getElementById('btnLoadDefaults');
+            if(btn) { btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Veri Tabanına Yazılıyor...`; btn.disabled = true; }
+
+            const defaultTree = [
+                { name: "Elektronik & Teknoloji", icon: "monitor", sub: ["Cep Telefonu & Aksesuar", "Bilgisayar & Tablet", "Beyaz Eşya", "Televizyon & Görüntü", "Ses Sistemleri & Kulaklık", "Küçük Ev Aletleri", "Oyun & Konsol", "Giyilebilir Teknoloji", "Fotoğraf & Kamera"] },
+                { name: "Moda & Giyim", icon: "shirt", sub: ["Kadın Giyim", "Erkek Giyim", "Çocuk & Bebek Giyim", "Ayakkabı", "Çanta & Cüzdan", "İç Giyim & Pijama", "Takı, Saat & Aksesuar", "Tesettür Giyim"] },
+                { name: "Ev, Mobilya & Yaşam", icon: "home", sub: ["Oturma Odası Mobilyası", "Yatak Odası Mobilyası", "Yemek Odası", "Ev Tekstili & Havlu", "Halı & Kilim", "Aydınlatma", "Banyo & Dekorasyon", "Mutfak Gereçleri", "Ev Düzenleme & Depolama"] },
+                { name: "Süpermarket & Gıda", icon: "shopping-basket", sub: ["Meyve & Sebze", "Et, Tavuk & Balık", "Süt & Süt Ürünleri", "Temel Gıda", "Atıştırmalık & Tatlı", "İçecekler", "Temizlik Ürünleri", "Kağıt Ürünleri"] },
+                { name: "Anne, Bebek & Oyuncak", icon: "baby", sub: ["Bebek Arabası & Puset", "Oto Koltuğu", "Bebek Giyim", "Bebek Beslenme", "Bebek Bezi & Islak Mendil", "Anne Bakım & Hamile", "Oyuncaklar", "Eğitici Kutu Oyunları"] },
+                { name: "Kozmetik & Kişisel Bakım", icon: "sparkles", sub: ["Parfüm & Deodorant", "Makyaj Ürünleri", "Cilt & Yüz Bakımı", "Saç Bakımı", "Tıraş & Erkek Bakım", "Ağız & Diş Bakımı", "Güneş Ürünleri"] },
+                { name: "Oto, Yapı Market & Bahçe", icon: "wrench", sub: ["Oto Aksesuar", "Oto Yedek Parça", "Elektrikli El Aletleri", "Hırdavat & Nalbur", "Boya & Dekorasyon", "Elektrik & Tesisat", "Bahçe Mobilyası", "Mangal & Barbekü"] },
+                { name: "Spor, Outdoor & Kamp", icon: "tent", sub: ["Spor Giyim & Ayakkabı", "Fitness & Kondisyon", "Sporcu Besinleri", "Kamp & Doğa Sporları", "Bisiklet & Scooter", "Balıkçılık & Avcılık"] },
+                { name: "Kırtasiye, Hobi & Ofis", icon: "book-open", sub: ["Kitap & Dergi", "Kırtasiye Malzemeleri", "Ofis Sarf Malzemeleri", "Sanat & El İşi", "Müzik Enstrümanları", "Koleksiyon Ürünleri"] },
+                { name: "Pet Shop", icon: "dog", sub: ["Kedi Maması & Kum", "Köpek Maması & Aksesuar", "Kuş Ürünleri", "Balık & Akvaryum", "Kemirgen & Sürüngen"] },
+                { name: "Yöresel & Kıbrıs", icon: "map-pin", sub: ["Yöresel Gıda (Hellim vb.)", "Kıbrıs El Sanatları", "Hediyelik Eşyalar", "Yöresel İçecekler"] }
+            ];
+
+            try {
+                for(let p of defaultTree) {
+                    // Ana Kategoriyi Ekle
+                    const pRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'));
+                    await setDoc(pRef, { name: p.name, icon: p.icon, parentId: "", createdAt: Date.now() });
+
+                    // Alt Kategorileri Ekle (Kendi İçinde Bağla)
+                    for(let s of p.sub) {
+                        const sRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'));
+                        await setDoc(sRef, { name: s, icon: "", parentId: pRef.id, createdAt: Date.now() });
+                    }
+                }
+                window.showMessage("Tüm zengin kategoriler başarıyla sisteme entegre edildi!");
+            } catch(e) {
+                console.error(e);
+                window.showMessage("Yükleme sırasında hata oluştu.", "error");
+            }
+
+            if(btn) { btn.innerHTML = `<i data-lucide="zap" class="w-4 h-4"></i> Zengin Kategorileri Otomatik Yükle`; btn.disabled = false; }
+            lucide.createIcons();
         };
 
         // --- MAĞAZALAR ---
