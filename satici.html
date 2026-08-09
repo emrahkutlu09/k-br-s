@@ -1398,13 +1398,13 @@
             btn.disabled = true;
 
             try {
-                let coverUrl = myStore.coverUrl;
+                let coverUrl = myStore.coverUrl || null;
                 const coverInput = document.getElementById('settingsCoverInput');
                 if (coverInput.files.length > 0) {
                     coverUrl = await uploadFileToCloudinary(coverInput.files[0], 'image');
                 }
 
-                let logoUrl = myStore.logoUrl;
+                let logoUrl = myStore.logoUrl || null;
                 const logoInput = document.getElementById('settingsLogoInput');
                 if (logoInput.files.length > 0) {
                     logoUrl = await uploadFileToCloudinary(logoInput.files[0], 'image');
@@ -1418,10 +1418,11 @@
                     lng: parseFloat(document.getElementById('settingsLng').value),
                     website: document.getElementById('settingsWebsite').value.trim(),
                     instagram: document.getElementById('settingsInstagram').value.trim().replace('@', ''),
-                    tiktok: document.getElementById('settingsTiktok').value.trim().replace('@', ''),
-                    coverUrl: coverUrl,
-                    logoUrl: logoUrl
+                    tiktok: document.getElementById('settingsTiktok').value.trim().replace('@', '')
                 };
+
+                if (coverUrl !== null) updates.coverUrl = coverUrl;
+                if (logoUrl !== null) updates.logoUrl = logoUrl;
 
                 await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), updates);
                 window.showMessage("Mağaza ayarları ve konumunuz başarıyla kaydedildi.");
