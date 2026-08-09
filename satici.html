@@ -1397,15 +1397,15 @@
 
             try {
                 let coverUrl = myStore.coverUrl || null;
-                const coverInput = document.getElementById('settingsCoverInput');
-                if (coverInput.files.length > 0) {
-                    coverUrl = await uploadFileToCloudinary(coverInput.files[0], 'image');
+                const coverInputEl = document.getElementById('settingsCoverInput');
+                if (coverInputEl.files.length > 0) {
+                    coverUrl = await uploadFileToCloudinary(coverInputEl.files[0], 'image');
                 }
 
                 let logoUrl = myStore.logoUrl || null;
-                const logoInput = document.getElementById('settingsLogoInput');
-                if (logoInput.files.length > 0) {
-                    logoUrl = await uploadFileToCloudinary(logoInput.files[0], 'image');
+                const logoInputEl = document.getElementById('settingsLogoInput');
+                if (logoInputEl.files.length > 0) {
+                    logoUrl = await uploadFileToCloudinary(logoInputEl.files[0], 'image');
                 }
 
                 const updates = {
@@ -1414,13 +1414,9 @@
                     district: document.getElementById('settingsDistrict').value,
                     lat: parseFloat(document.getElementById('settingsLat').value),
                     lng: parseFloat(document.getElementById('settingsLng').value),
-                    website: document.getElementById('settingsWebsite').value.trim(),
-                    instagram: document.getElementById('settingsInstagram').value.trim().replace('@', ''),
-                    facebook: document.getElementById('settingsFacebook').value.trim().replace('@', '')
+                    coverUrl: coverUrl,
+                    logoUrl: logoUrl
                 };
-
-                const coverInput = document.getElementById('settingsCoverInput');
-                if (coverInput.files.length > 0) {
 
                 await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), updates);
                 window.showMessage("Mağaza ayarları ve konumunuz başarıyla kaydedildi.");
