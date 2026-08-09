@@ -8,43 +8,6 @@
     <!-- GOOGLE SEARCH CONSOLE DOĞRULAMA KODU -->
     <meta name="google-site-verification" content="SEe85MWs4T_2cy0MrmCR487B4TdycD7iWbiE2YDGzVc" />
 
-    <!-- 🚀 DİNAMİK SEO VE ARAMA MOTORU OPTİMİZASYONU 🚀 -->
-    <meta name="description" id="metaDesc" content="Kuzey Kıbrıs'ın yeni nesil, komisyonsuz dijital pazar yeridir. Yüzlerce yerel mağazadan güvenle online alışveriş yapın veya ücretsiz kendi mağazanızı açın.">
-    <meta name="keywords" content="Kıbrıs Bazar, KKTC alışveriş, Kıbrıs e-ticaret, Kıbrıs online mağaza, Kıbrıs ilan, Lefkoşa alışveriş, Girne butik, komisyonsuz pazar yeri, Cyprus online shopping, KKTC pazar yeri">
-    <meta name="author" content="Kıbrıs Bazar">
-    <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#f97316">
-    <link rel="canonical" href="https://www.kibrisbazar.com">
-
-    <!-- Dinamik Sosyal Medya (Open Graph) Paylaşım Etiketleri -->
-    <meta property="og:title" id="ogTitle" content="Kıbrıs Bazar | Kıbrıs'ın Ücretsiz Dijital Pazar Yeri">
-    <meta property="og:description" id="ogDesc" content="Kuzey Kıbrıs'ın en büyük komisyonsuz online alışveriş platformu. Hemen alışverişe başla veya kendi mağazanı aç!">
-    <meta property="og:image" content="https://placehold.co/1200x630/0f172a/f97316?text=KIBRIS+BAZAR">
-    <meta property="og:url" content="https://www.kibrisbazar.com">
-    <meta property="og:type" content="website">
-
-    <!-- Dinamik Twitter Paylaşım Etiketleri -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" id="twitterTitle" content="Kıbrıs Bazar | Hızlı ve Güvenli Alışveriş">
-    <meta name="twitter:description" id="twitterDesc" content="Kuzey Kıbrıs'ın komisyonsuz dijital pazar yeri. Binlerce ürün bir tık uzağında.">
-    <meta name="twitter:image" content="https://placehold.co/1200x630/0f172a/f97316?text=KIBRIS+BAZAR">
-
-    <!-- Google İçin Kurumsal Şema (JSON-LD) Kimlik Kartı -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Kıbrıs Bazar",
-      "url": "https://www.kibrisbazar.com/",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://www.kibrisbazar.com/?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
-    <!-- 🚀 SEO SONU 🚀 -->
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -58,7 +21,7 @@
         .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* GOOGLE TRANSLATE GİZLEME CSS'LERİ */
+        /* GOOGLE TRANSLATE GİZLEME CSS'LERİ - KESİN ÇÖZÜM */
         iframe.goog-te-banner-frame { display: none !important; }
         .goog-te-banner-frame { display: none !important; }
         .skiptranslate > iframe { display: none !important; }
@@ -70,11 +33,14 @@
         .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
         .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
         .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
+
+        /* SAFARI (iPhone/iOS) ÇEVİRİ ZORLAMASI İÇİN EK KODLAR */
         * { -webkit-text-size-adjust: none; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased selection:bg-orange-500 selection:text-white">
 
+    <!-- TAM EKRAN AÇILIŞ YÜKLEME EKRANI (VERİLER İNENE KADAR BEKLER) -->
     <div id="initialLoader" class="fixed inset-0 z-[999] bg-slate-50 flex flex-col items-center justify-center transition-opacity duration-500">
         <i data-lucide="loader-2" class="w-12 h-12 text-orange-500 animate-spin mb-4"></i>
         <h2 id="loaderBrandName" class="text-2xl font-black text-slate-900 tracking-tighter animate-pulse">KIBRIS<span class="text-orange-500">BAZAR</span></h2>
@@ -134,6 +100,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16 gap-4">
                     
+                    <!-- Sol Kısım: Logo ve Yanında Kıbrıs Bazar Yazısı -->
                     <div class="flex items-center gap-3 cursor-pointer" onclick="window.renderHome()">
                         <img id="navLogo" src="" class="h-9 object-contain hidden" alt="Logo">
                         <span id="navBrandName" class="text-xl sm:text-2xl font-black tracking-tighter text-slate-900">KIBRIS<span class="text-orange-500">BAZAR</span></span>
@@ -149,6 +116,7 @@
                     </div>
 
                     <div class="flex items-center gap-5 sm:gap-6">
+                        <!-- Kullanıcı Menüsü -->
                         <div class="relative">
                             <button onclick="window.toggleUserMenu(event)" class="flex flex-col items-center text-slate-600 hover:text-orange-500 transition-colors">
                                 <i data-lucide="user" class="w-5 h-5"></i>
@@ -179,6 +147,7 @@
                             </div>
                         </div>
 
+                        <!-- Sepet -->
                         <button onclick="window.toggleCart()" class="flex flex-col items-center text-slate-600 hover:text-orange-500 transition-colors relative">
                             <div class="relative">
                                 <i data-lucide="shopping-cart" class="w-5 h-5"></i>
@@ -190,6 +159,7 @@
                 </div>
             </div>
             
+            <!-- MOBİL İÇİN ARAMA ÇUBUĞU -->
             <div class="p-3 border-t border-slate-100 bg-slate-50 md:hidden">
                 <div class="relative w-full">
                     <input type="text" id="searchInputMobile" data-i18n-placeholder="search_placeholder" placeholder="Aradığınız ürün, kategori veya markayı yazınız..." class="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-full text-sm font-medium focus:ring-2 focus:ring-orange-500 outline-none transition-all" onkeypress="if(event.key === 'Enter') window.handleSearch(true)"/>
@@ -202,10 +172,12 @@
             <div class="border-t border-slate-100 bg-white shadow-sm relative">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div id="categoryContainer" class="flex items-center gap-6 py-3 text-xs font-bold text-slate-600 relative">
+                        <!-- YENİ HAMBURGER MENÜ (KATEGORİ AĞACI) -->
                         <div class="relative group" id="catMenuWrapper">
                             <button class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition text-slate-700 whitespace-nowrap border border-slate-200" onclick="window.toggleCatDropdown(event)">
                                 <i data-lucide="menu" class="w-4 h-4"></i> <span data-i18n="all_categories">Tüm Kategoriler</span>
                             </button>
+                            <!-- Açılır Menü (JS İle Dolacak) -->
                             <div id="catDropdownMenu" class="absolute left-0 top-full mt-2 w-64 bg-white border border-slate-100 shadow-2xl rounded-2xl hidden z-50 overflow-hidden transform transition-all rtl:right-0 rtl:left-auto max-h-[70vh] overflow-y-auto">
                                 <ul id="catDropdownList" class="p-2 space-y-1">
                                     <li class="p-3 text-center text-slate-400"><i data-lucide="loader-2" class="w-4 h-4 animate-spin inline-block"></i></li>
@@ -213,7 +185,9 @@
                             </div>
                         </div>
 
+                        <!-- Hızlı Kategori Butonları -->
                         <div id="quickCategoryContainer" class="flex-1 flex items-center gap-5 overflow-x-auto no-scrollbar">
+                            <!-- Popüler kategoriler buraya basılacak -->
                         </div>
                     </div>
                 </div>
@@ -226,33 +200,9 @@
             </div>
         </main>
 
-        <!-- YENİ EKLENEN ÇOK DİLLİ SEO İÇERİK ALANI (SADECE ANA SAYFADA GÖRÜNÜR) -->
-        <section id="homeSeoSection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 mt-4 bg-white rounded-3xl shadow-sm border border-slate-100 mb-8 hidden">
-            <div class="max-w-4xl mx-auto text-center sm:text-left">
-                <h1 class="text-2xl sm:text-3xl font-black text-slate-900 mb-4 leading-tight" data-i18n="seo_h1">Kuzey Kıbrıs'ın Yeni Nesil Dijital Pazar Yeri: Kıbrıs Bazar</h1>
-                <p class="text-sm text-slate-600 mb-8 leading-relaxed" data-i18n="seo_p1">Kuzey Kıbrıs genelinde e-ticaret deneyimini yeniden tanımlayan Kıbrıs Bazar, adanın en büyük ve en kapsamlı dijital çarşısıdır. Girne'nin butiklerinden Lefkoşa'nın teknoloji mağazalarına kadar yüzlerce yerel işletmeyi tek bir platformda buluşturuyoruz.</p>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                    <div>
-                        <div class="flex items-center justify-center sm:justify-start gap-3 mb-3">
-                            <div class="w-10 h-10 bg-orange-100 text-orange-500 rounded-xl flex items-center justify-center shrink-0"><i data-lucide="percent" class="w-5 h-5"></i></div>
-                            <h2 class="text-lg font-black text-slate-800" data-i18n="seo_h2_1">On Binlerce Ürün, Komisyonsuz Alışveriş</h2>
-                        </div>
-                        <p class="text-xs text-slate-500 leading-relaxed" data-i18n="seo_p2_1">Kıbrıs Bazar, alıcı ile satıcı arasına giren komisyonları ortadan kaldırır. Platformumuz üzerinden beğendiğiniz bir ürün için satıcıyla doğrudan WhatsApp üzerinden iletişime geçebilirsiniz.</p>
-                    </div>
-                    <div>
-                        <div class="flex items-center justify-center sm:justify-start gap-3 mb-3">
-                            <div class="w-10 h-10 bg-emerald-100 text-emerald-500 rounded-xl flex items-center justify-center shrink-0"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
-                            <h2 class="text-lg font-black text-slate-800" data-i18n="seo_h2_2">Hızlı, Güvenli ve %100 Yerel E-Ticaret</h2>
-                        </div>
-                        <p class="text-xs text-slate-500 leading-relaxed" data-i18n="seo_p2_2">Kıbrıs Bazar'da yer alan tüm satıcılar KKTC sınırları içerisinde faaliyet gösterdiği için siparişleriniz hızlıca kapınıza ulaşır. Kıbrıs'ta alışverişin en kolay ve güvenilir yolu.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- SATICI OLMA ÇAĞRISI (CTA BANNER) -->
         <section class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-16 sm:py-20 border-y border-slate-700 relative overflow-hidden">
+            <!-- Cam Efekti (Glassmorphism) Süslemeleri -->
             <div class="absolute -right-20 -top-20 w-80 h-80 bg-orange-500 opacity-20 rounded-full blur-[80px] pointer-events-none"></div>
             <div class="absolute left-10 bottom-10 w-64 h-64 bg-rose-500 opacity-20 rounded-full blur-[80px] pointer-events-none"></div>
             <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] z-0"></div>
@@ -328,7 +278,7 @@
             </div>
         </footer>
 
-        <!-- WhatsApp Yönlendirme Modalı -->
+        <!-- WhatsApp Yönlendirme ve Sorumluluk Reddi (Disclaimer) Modalı -->
         <div id="checkoutConfirmModal" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="window.closeCheckoutConfirm()"></div>
             <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-8 transform scale-95 opacity-0 transition-all duration-300 flex flex-col" id="checkoutConfirmPanel">
@@ -355,6 +305,7 @@
             </div>
         </div>
 
+        <!-- Bilgi Sözleşme Modalı (Hakkımızda, Gizlilik vb.) -->
         <div id="infoModal" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="window.closeInfoModal()"></div>
             <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="infoPanel">
@@ -363,6 +314,7 @@
                     <button onclick="window.closeInfoModal()" class="p-2 text-slate-400 hover:bg-slate-200 rounded-full transition"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
                 <div class="p-6 overflow-y-auto text-sm text-slate-600 leading-relaxed space-y-4" id="infoModalContent">
+                    <!-- JS ile Doldurulacak -->
                 </div>
             </div>
         </div>
@@ -480,6 +432,7 @@
                                  <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-4 h-4 text-orange-400"></i> <span id="spDistrict"></span></span>
                                  <span class="flex items-center gap-1"><i data-lucide="heart" class="w-4 h-4 text-rose-400"></i> <span id="spFollowersCount">0</span> <span data-i18n="followers">Takipçi</span></span>
                              </p>
+                             <div id="spSocialLinks" class="flex items-center gap-3 mt-4 hidden"></div>
                          </div>
                          <div class="flex gap-2 w-full sm:w-auto">
                             <button id="spFollowBtn" class="w-full sm:w-auto bg-white text-slate-900 px-5 py-2.5 rounded-xl font-bold text-sm transition flex justify-center items-center gap-2 shadow-lg shadow-white/20 hover:bg-rose-50 hover:text-rose-600">
@@ -493,7 +446,7 @@
                 </div>
             </div>
 
-            <!-- MAĞAZA HARİTASI BÖLÜMÜ -->
+            <!-- MAĞAZA HARİTASI BÖLÜMÜ (YENİ EKLENDİ) -->
             <div id="spMapContainerWrapper" class="bg-white border-b border-slate-200 hidden">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div class="flex items-center justify-between mb-4">
@@ -579,7 +532,6 @@
         let activeDistrict = '';
         let spMapInstance = null; 
 
-        // 🔥 DİNAMİK SEO VE ÇOK DİLLİ ÇEVİRİ SÖZLÜĞÜ 🔥
         const appTranslations = {
             tr: {
                 dir: "ltr",
@@ -655,17 +607,7 @@
                 disclaimer_title: "Siparişi Tamamla",
                 disclaimer_text: "Siparişinizi tamamlamak için mağazanın WhatsApp hattına yönlendirileceksiniz.<br><br><b>Önemli:</b> Kıbrıs Bazar, alıcı ile satıcıyı doğrudan buluşturan bir platformdur. Ödeme, kargo ve iade gibi tüm süreçlerden <b>yalnızca satıcı sorumludur</b>. Platformumuzun bu aşamalarda yasal bir sorumluluğu bulunmamaktadır.",
                 disclaimer_checkbox: "Şartları okudum ve kabul ediyorum. Alışveriş sürecinde satıcıyla doğrudan muhatap olduğumu onaylıyorum.",
-                btn_go_whatsapp: "WhatsApp'a Git",
-                
-                // SEO METİNLERİ
-                seo_title: "Kıbrıs Bazar | Kıbrıs'ın Ücretsiz Dijital Pazar Yeri",
-                seo_desc: "Kuzey Kıbrıs'ın yeni nesil, komisyonsuz dijital pazar yeridir. Yüzlerce yerel mağazadan güvenle online alışveriş yapın veya ücretsiz kendi mağazanızı açın.",
-                seo_h1: "Kuzey Kıbrıs'ın Yeni Nesil Dijital Pazar Yeri: Kıbrıs Bazar",
-                seo_p1: "Kuzey Kıbrıs genelinde e-ticaret deneyimini yeniden tanımlayan Kıbrıs Bazar, adanın en büyük ve en kapsamlı dijital çarşısıdır. Girne'nin butiklerinden Lefkoşa'nın teknoloji mağazalarına kadar yüzlerce yerel işletmeyi tek bir platformda buluşturuyoruz.",
-                seo_h2_1: "On Binlerce Ürün, Komisyonsuz Alışveriş",
-                seo_p2_1: "Kıbrıs Bazar, alıcı ile satıcı arasına giren komisyonları ortadan kaldırır. Platformumuz üzerinden beğendiğiniz bir ürün için satıcıyla doğrudan WhatsApp üzerinden iletişime geçebilirsiniz.",
-                seo_h2_2: "Hızlı, Güvenli ve %100 Yerel E-Ticaret",
-                seo_p2_2: "Kıbrıs Bazar'da yer alan tüm satıcılar KKTC sınırları içerisinde faaliyet gösterdiği için siparişleriniz hızlıca kapınıza ulaşır. Kıbrıs'ta alışverişin en kolay ve güvenilir yolu."
+                btn_go_whatsapp: "WhatsApp'a Git"
             },
             en: {
                 dir: "ltr",
@@ -741,17 +683,7 @@
                 disclaimer_title: "Complete Order",
                 disclaimer_text: "You will be redirected to the store's WhatsApp to complete your order.<br><br><b>Important:</b> Kıbrıs Bazar is a platform that directly connects buyers and sellers. The seller is <b>solely responsible</b> for all processes such as payment, shipping, and returns. Our platform has no legal liability in these stages.",
                 disclaimer_checkbox: "I have read and agree to the terms. I confirm that I am dealing directly with the seller.",
-                btn_go_whatsapp: "Go to WhatsApp",
-                
-                // SEO METİNLERİ
-                seo_title: "Kibris Bazar | Cyprus' Free Digital Marketplace",
-                seo_desc: "Northern Cyprus' new generation, commission-free digital marketplace. Shop safely from hundreds of local stores or open your own store for free.",
-                seo_h1: "Northern Cyprus' New Generation Digital Marketplace: Kibris Bazar",
-                seo_p1: "Redefining the e-commerce experience across Northern Cyprus, Kibris Bazar is the island's largest digital market. We bring together hundreds of local businesses on a single platform.",
-                seo_h2_1: "Tens of Thousands of Products, Commission-Free Shopping",
-                seo_p2_1: "Kibris Bazar eliminates commissions between buyers and sellers. You can directly contact the seller via WhatsApp for any product you like.",
-                seo_h2_2: "Fast, Secure and 100% Local E-Commerce",
-                seo_p2_2: "Since all sellers operate within the TRNC, your orders arrive quickly. The easiest and most reliable way to shop in Cyprus."
+                btn_go_whatsapp: "Go to WhatsApp"
             },
             el: {
                 dir: "ltr",
@@ -827,17 +759,7 @@
                 disclaimer_title: "Ολοκλήρωση",
                 disclaimer_text: "Θα ανακατευθυνθείτε στο WhatsApp.<br><br><b>Σημαντικό:</b> Ο πωλητής είναι υπεύθυνος για πληρωμές και αποστολές. Δεν φέρουμε καμία νομική ευθύνη.",
                 disclaimer_checkbox: "Έχω διαβάσει και συμφωνώ με τους όρους.",
-                btn_go_whatsapp: "Μετάβαση στο WhatsApp",
-                
-                // SEO METİNLERİ
-                seo_title: "Kibris Bazar | Η Δωρεάν Ψηφιακή Αγορά της Κύπρου",
-                seo_desc: "Η νέας γενιάς ψηφιακή αγορά της Βόρειας Κύπρου χωρίς προμήθειες. Αγοράστε με ασφάλεια ή ανοίξτε το δικό σας κατάστημα δωρεάν.",
-                seo_h1: "Η Νέας Γενιάς Ψηφιακή Αγορά της Βόρειας Κύπρου: Kibris Bazar",
-                seo_p1: "Επαναπροσδιορίζοντας την εμπειρία ηλεκτρονικού εμπορίου σε όλη τη Βόρεια Κύπρο, το Kibris Bazar είναι η μεγαλύτερη ψηφιακή αγορά του νησιού. Φέρνουμε κοντά εκατοντάδες τοπικές επιχειρήσεις.",
-                seo_h2_1: "Δεκάδες Χιλιάδες Προϊόντα, Αγορές Χωρίς Προμήθεια",
-                seo_p2_1: "Το Kibris Bazar εξαλείφει τις προμήθειες μεταξύ αγοραστών και πωλητών. Μπορείτε να επικοινωνήσετε απευθείας με τον πωλητή μέσω WhatsApp.",
-                seo_h2_2: "Γρήγορο, Ασφαλές και 100% Τοπικό Ηλεκτρονικό Εμπόριο",
-                seo_p2_2: "Εφόσον όλοι οι πωλητές λειτουργούν εντός της ΤΔΒΚ, οι παραγγελίες σας φτάνουν γρήγορα. Ο ευκολότερος και πιο αξιόπιστος τρόπος για αγορές στην Κύπρο."
+                btn_go_whatsapp: "Μετάβαση στο WhatsApp"
             },
             ru: {
                 dir: "ltr",
@@ -868,7 +790,7 @@
                 no_reviews: "Пока нет отзывов. Будьте первым!",
                 no_approved_reviews: "Пока нет одобренных отзывов.",
                 review_count: "Отзывы",
-                go_back: "Назад",
+                go_data: "Назад",
                 follow: "Подписаться",
                 unfollow: "Отписаться",
                 followers: "Подписчики",
@@ -913,17 +835,7 @@
                 disclaimer_title: "Оформить заказ",
                 disclaimer_text: "Вы будете перенаправлены в WhatsApp магазина.<br><br><b>Важно:</b> Платформа не несет ответственности за оплату и доставку.",
                 disclaimer_checkbox: "Я согласен с условиями.",
-                btn_go_whatsapp: "Перейти в WhatsApp",
-                
-                // SEO METİNLERİ
-                seo_title: "Kibris Bazar | Бесплатная цифровая торговая площадка Кипра",
-                seo_desc: "Цифровая торговая площадка нового поколения на Северном Кипре без комиссий. Покупайте онлайн безопасно или откройте свой магазин бесплатно.",
-                seo_h1: "Цифровая торговая площадка нового поколения на Северном Кипре: Kibris Bazar",
-                seo_p1: "Переосмысливая опыт электронной коммерции на Северном Кипре, Kibris Bazar является крупнейшим цифровым рынком острова. Мы объединяем сотни местных предприятий.",
-                seo_h2_1: "Десятки тысяч товаров, покупки без комиссий",
-                seo_p2_1: "Kibris Bazar устраняет комиссии между покупателями и продавцами. Вы можете напрямую связаться с продавцом через WhatsApp.",
-                seo_h2_2: "Быстрая, безопасная и 100% местная электронная коммерция",
-                seo_p2_2: "Поскольку все продавцы работают на территории ТРСК, ваши заказы доставляются быстро. Самый простой и надежный способ делать покупки на Кипре."
+                btn_go_whatsapp: "Перейти в WhatsApp"
             },
             ar: {
                 dir: "rtl",
@@ -965,7 +877,7 @@
                 favorites_title: "مفضلاتك",
                 for_you: "مختارة لك",
                 no_products: "لم يتم العثور على منتجات.",
-                clear_filters: "مسح الفلاتر",
+                file-content: "مسح الفلاتر",
                 products_found: "المنتجات الموجودة",
                 search_results_for: "نتائج لـ",
                 filtered_products: "منتجات مصفاة",
@@ -999,17 +911,7 @@
                 disclaimer_title: "أكمل الطلب",
                 disclaimer_text: "سيتم توجيهك إلى WhatsApp الخاص بالمتجر.<br><br><b>مهم:</b> المنصة غير مسؤولة عن الدفع أو الشحن.",
                 disclaimer_checkbox: "لقد قرأت الشروط وأوافق عليها.",
-                btn_go_whatsapp: "الذهاب إلى الواتساب",
-                
-                // SEO METİNLERİ
-                seo_title: "Kibris Bazar | السوق الرقمي المجاني في قبرص",
-                seo_desc: "الجيل الجديد من الأسواق الرقمية الخالية من العمولات في شمال قبرص. تسوق بأمان أو افتح متجرك الخاص مجانًا.",
-                seo_h1: "الجيل الجديد من الأسواق الرقمية في شمال قبرص: Kibris Bazar",
-                seo_p1: "يعيد Kibris Bazar تعريف تجربة التجارة الإلكترونية في جميع أنحاء شمال قبرص، وهو أكبر سوق رقمي في الجزيرة. نجمع مئات الشركات المحلية.",
-                seo_h2_1: "عشرات الآلاف من المنتجات، تسوق بدون عمولة",
-                seo_p2_1: "يقضي Kibris Bazar على العمولات بين المشترين والبائعين. يمكنك الاتصال بالبائع مباشرة عبر WhatsApp.",
-                seo_h2_2: "تجارة إلكترونية سريعة وآمنة ومحلية 100٪",
-                seo_p2_2: "نظرًا لأن جميع البائعين يعملون داخل جمهورية شمال قبرص التركية، تصل طلباتك بسرعة. الطريقة الأسهل والأكثر موثوقية للتسوق في قبرص."
+                btn_go_whatsapp: "الذهاب إلى الواتساب"
             }
         };
 
@@ -1023,10 +925,12 @@
             return (appTranslations[lang] || appTranslations['tr'])[key] || key;
         };
 
+        // KATEGORİ ÇEVİRİ YARDIMCISI (EKSİK OLAN FONKSİYON EKLENDİ)
         window.getCategoryTranslation = (catName) => {
             if (!catName) return '';
             const lang = getCurrentLang();
             const tObj = appTranslations[lang] || appTranslations['tr'];
+            // Sözlükte varsa çevirisini, yoksa veritabanındaki orijinal (Türkçe) adını döndür
             return tObj[catName] || catName; 
         };
 
@@ -1071,23 +975,10 @@
                 if (tObj[key]) el.placeholder = tObj[key];
             });
 
-            // META ETİKETLERİNİ DİNAMİK OLARAK GÜNCELLE
-            const metaDesc = document.getElementById('metaDesc');
-            const ogTitle = document.getElementById('ogTitle');
-            const ogDesc = document.getElementById('ogDesc');
-            const twitterTitle = document.getElementById('twitterTitle');
-            const twitterDesc = document.getElementById('twitterDesc');
-
-            if(metaDesc && tObj.seo_desc) metaDesc.content = tObj.seo_desc;
-            if(ogTitle && tObj.seo_title) ogTitle.content = tObj.seo_title;
-            if(ogDesc && tObj.seo_desc) ogDesc.content = tObj.seo_desc;
-            if(twitterTitle && tObj.seo_title) twitterTitle.content = tObj.seo_title;
-            if(twitterDesc && tObj.seo_desc) twitterDesc.content = tObj.seo_desc;
-
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
             if(!document.getElementById('productDetailModal').classList.contains('hidden') || !document.getElementById('storeProfileModal').classList.contains('hidden')) {
             } else {
-                document.title = (tObj.seo_title) ? tObj.seo_title : `${pName} | ${tObj.homeTitle}`;
+                document.title = `${pName} | ${tObj.homeTitle}`;
             }
 
             if(typeof window.renderCategories === 'function') window.renderCategories();
@@ -1130,16 +1021,18 @@
                 document.getElementById('unauthMenu').classList.remove('hidden');
                 document.getElementById('authMenu').classList.add('hidden');
             }
+            // KULLANICI GİRİŞ YAPTIĞINDA VEYA ÇIKTIĞINDA SEPETİ ANINDA YENİLE
             if (typeof updateCartUI === 'function') updateCartUI();
         });
 
         window.loginWithGoogle = async (e) => {
-            if(e && typeof e.stopPropagation === 'function') e.stopPropagation(); 
+            if(e && typeof e.stopPropagation === 'function') e.stopPropagation(); // Event koruması eklendi
             try { 
                 await signInWithPopup(auth, googleProvider); 
                 window.showMessage("Giriş başarılı."); 
                 document.getElementById('userDropdown').classList.add('hidden'); 
                 isUserMenuOpen = false; 
+                // GİRİŞ BAŞARILI OLUNCA SEPETİ YENİLE
                 if (typeof updateCartUI === 'function') updateCartUI();
             } 
             catch(err) { 
@@ -1236,7 +1129,7 @@
                 snapshot.forEach(doc => { dbProducts.push({id: doc.id, ...doc.data()}); });
                 isProductsLoaded = true;
                 if(isStoresLoaded && isProductsLoaded) checkAdminRedirects(); 
-                window.renderHome(document.getElementById('searchInput').value);
+                window.renderHome(document.getElementById('searchInput'].value);
                 checkInitialLoadStatus();
             });
             
@@ -1250,7 +1143,7 @@
             const targetStoreId = urlParams.get('magaza') || localStorage.getItem('admin_redirect_store');
 
             if (targetProductId) {
-                const prod = dbProducts.find(p => p.id === targetProductId);
+                const prod = dbProducts.find(p =>.id === targetProductId);
                 if (prod) { localStorage.removeItem('admin_redirect_product'); setTimeout(() => window.openProductDetail(targetProductId), 500); } 
                 else { localStorage.removeItem('admin_redirect_product'); }
             } else if (targetStoreId) {
@@ -1281,18 +1174,19 @@
                 const isActive = activeCategory === node.name;
                 const activeClass = isActive ? 'bg-orange-50 text-orange-600' : 'hover:bg-slate-50 hover:text-orange-500';
 
+                // Eğer alt kategorisi varsa açılır/kapanır (accordion) menü oluştur
                 if (node.children && node.children.length > 0) {
                     const childPadding = depth === 0 ? 'pl-8' : 'pl-12';
                     html += `
                         <li>
                             <div class="w-full flex items-center justify-between py-2.5 ${paddingClass} ${fontClass} hover:bg-slate-50 transition-colors border-b border-slate-50 cursor-pointer select-none" onclick="window.toggleSubCat('${node.id}', event)">
-                                <div class="flex items-center gap-2 text-sm">${iconHtml} <span class="truncate">${window.getCategoryTranslation(node.name)}</span></div>
+                                <div class="flex items-center gap-2 text-sm">${iconHtml} <span class="truncate">${node.name}</span></div>
                                 <i data-lucide="chevron-down" id="icon-${node.id}" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
                             </div>
                             <ul id="sub-${node.id}" class="hidden bg-slate-50/50 border-y border-slate-100/50">
                                 <li>
                                     <button onclick="window.setCategory('${node.name}')" class="w-full text-left py-2 ${childPadding} pr-4 text-xs font-black text-orange-600 hover:text-orange-500 hover:bg-orange-50 transition-colors border-b border-slate-100/50">
-                                        Tüm ${window.getCategoryTranslation(node.name)}
+                                        Tüm ${node.name}
                                     </button>
                                 </li>
                                 ${generateDropdownHtml(node.children, depth + 1)}
@@ -1300,10 +1194,11 @@
                         </li>
                     `;
                 } else {
+                    // Alt kategorisi yoksa normal tıklanabilir link yap
                     html += `
                         <li>
                             <button onclick="window.setCategory('${node.name}')" class="w-full text-left py-2.5 ${paddingClass} ${fontClass} ${activeClass} transition-colors flex items-center gap-2 text-sm border-b border-slate-50 last:border-0">
-                                ${iconHtml} <span class="truncate">${window.getCategoryTranslation(node.name)}</span>
+                                ${iconHtml} <span class="truncate">${node.name}</span>
                             </button>
                         </li>
                     `;
@@ -1312,6 +1207,7 @@
             return html;
         }
 
+        // Açılır kapanır alt kategori (accordion) animasyonunu tetikleyen fonksiyon
         window.toggleSubCat = (id, e) => {
             if(e) e.stopPropagation();
             const sub = document.getElementById(`sub-${id}`);
@@ -1337,15 +1233,14 @@
             }
 
             const tree = buildCategoryTree(dbCategories, "");
-            let dropHtml = `<li><button onclick="window.setCategory('')" class="w-full text-left py-2.5 px-4 font-black ${activeCategory === '' ? 'bg-orange-50 text-orange-600' : 'text-slate-800 hover:bg-slate-50 hover:text-orange-500'} transition-colors border-b border-slate-100 text-sm" data-i18n="all_categories">Tüm Kategoriler</button></li>`;
+            let dropHtml = `<li><button onclick="window.setCategory('')" class="w-full text-left py-2.5 px-4 font-black ${activeCategory === '' ? 'bg-orange-50 text-orange-600' : 'text-slate-800 hover:bg-slate-50 hover:text-orange-500'} transition-colors border-b border-slate-100 text-sm">Tüm Ürünler</button></li>`;
             dropHtml += generateDropdownHtml(tree, 0);
             dropdownList.innerHTML = dropHtml;
 
             let quickHtml = '';
             tree.slice(0, 7).forEach(cat => {
                 const isActive = activeCategory === cat.name;
-                const translatedCat = window.getCategoryTranslation(cat.name);
-                quickHtml += `<button onclick="window.setCategory('${cat.name}')" class="whitespace-nowrap transition ${isActive ? 'text-orange-500 font-black border-b-2 border-orange-500 pb-1' : 'hover:text-orange-500 pb-1'}">${translatedCat}</button>`;
+                quickHtml += `<button onclick="window.setCategory('${cat.name}')" class="whitespace-nowrap transition ${isActive ? 'text-orange-500 font-black border-b-2 border-orange-500 pb-1' : 'hover:text-orange-500 pb-1'}">${cat.name}</button>`;
             });
             quickContainer.innerHTML = quickHtml;
 
@@ -1437,8 +1332,6 @@
 
         window.renderHome = (searchQuery = '') => {
             const mainContent = document.getElementById('mainContent');
-            const seoSection = document.getElementById('homeSeoSection');
-            if(seoSection) seoSection.classList.remove('hidden'); 
             
             const activeStoreIds = dbStores.filter(s => s.status === 'active' && (!s.expiryDate || s.expiryDate > Date.now())).map(s => s.id);
             let displayProducts = dbProducts.filter(p => activeStoreIds.includes(p.storeId));
@@ -1569,9 +1462,6 @@
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
             document.title = `${product.title} - ${product.storeName} | ${pName}`;
             
-            const seoSection = document.getElementById('homeSeoSection');
-            if(seoSection) seoSection.classList.add('hidden');
-
             const images = (product.images && product.images.length > 0) ? product.images : ['https://placehold.co/400x400/cbd5e1/475569?text=Gorsel+Yok'];
             document.getElementById('detailMainImage').src = images[0];
             document.getElementById('detailMainImage').classList.remove('hidden');
@@ -1673,10 +1563,12 @@
                     ` + revHtml;
                 }
 
+                // SIKIŞTIRILMIŞ KUSURSUZ GÜVENLİK DUVARI (YORUM YAPMA FORMU)
                 let reviewFormHtml = '';
                 if (auth.currentUser && !auth.currentUser.isAnonymous) {
                     const buyerUid = auth.currentUser.uid;
                     
+                    // 1. KONTROL: Satıcı kendi mağazasına ait bir ürüne yorum yapamaz!
                     let isStoreOwner = false;
                     const storeDoc = dbStores.find(s => s.id === product.storeId);
                     if (storeDoc && storeDoc.ownerUid === buyerUid) {
@@ -1690,6 +1582,7 @@
                             </div>
                         `;
                     } else {
+                        // 2. KONTROL: Daha önce bu Google hesabı ile bu ürüne yorum yapmış mı?
                         let alreadyReviewed = false;
                         if(!snap.empty) {
                             snap.forEach(d => {
@@ -1704,6 +1597,7 @@
                                 </div>
                             `;
                         } else {
+                            // 3. KONTROL: Ürünü gerçekten alıp "Teslim Aldım" onayını vermiş mi?
                             const ordersQ = query(ordersRef, where("buyerUid", "==", buyerUid), where("status", "==", "delivered"));
                             const ordersSnap = await getDocs(ordersQ);
                             
@@ -1818,12 +1712,7 @@
             applyTranslations(); 
 
             document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { 
-                document.getElementById('productDetailModal').classList.add('hidden'); 
-                document.getElementById('detailMainVideo').pause(); 
-                const seoSection = document.getElementById('homeSeoSection');
-                if(seoSection && !url.searchParams.has('magaza')) seoSection.classList.remove('hidden');
-            }, 300);
+            setTimeout(() => { document.getElementById('productDetailModal').classList.add('hidden'); document.getElementById('detailMainVideo').pause(); }, 300);
         };
 
         let spStoreProducts = [];
@@ -1832,7 +1721,9 @@
         window.openStoreProfileFromDetail = () => {
             const storeId = document.getElementById('detailStoreIdHidden').value;
             if(storeId) {
+                // Önce ürün detay panelini güvenle kapatıyoruz
                 window.closeProductDetail();
+                // Kapanma animasyonunun bitmesini (yaklaşık 350ms) bekleyip mağazayı açıyoruz.
                 setTimeout(() => { 
                     window.openStoreProfile(storeId); 
                 }, 350);
@@ -1852,9 +1743,6 @@
 
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
             document.title = `${store.name} | ${pName}`;
-
-            const seoSection = document.getElementById('homeSeoSection');
-            if(seoSection) seoSection.classList.add('hidden');
 
             spActiveCategory = '';
             spStoreProducts = dbProducts.filter(p => p.storeId === storeId);
@@ -1880,6 +1768,27 @@
             
             if(store.isPremium || store.packageType === 'premium') document.getElementById('spPremium').classList.remove('hidden');
             else document.getElementById('spPremium').classList.add('hidden');
+
+            const socialLinksContainer = document.getElementById('spSocialLinks');
+            let socialHtml = '';
+            
+            if(store.website) {
+                let url = store.website.startsWith('http') ? store.website : 'https://' + store.website;
+                socialHtml += `<a href="${url}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-orange-500 border border-white/20 flex items-center justify-center text-white transition backdrop-blur-md shadow-lg" title="Web Sitesine Git"><i data-lucide="globe" class="w-4 h-4"></i></a>`;
+            }
+            if(store.instagram) {
+                socialHtml += `<a href="https://instagram.com/${store.instagram}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-[#E1306C] border border-white/20 flex items-center justify-center text-white transition backdrop-blur-md shadow-lg" title="Instagram Profiline Git"><i data-lucide="instagram" class="w-4 h-4"></i></a>`;
+            }
+            if(store.tiktok) {
+                socialHtml += `<a href="https://tiktok.com/@${store.tiktok}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-[#000000] border border-white/20 flex items-center justify-center text-white transition backdrop-blur-md shadow-lg" title="TikTok Profiline Git"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg></a>`;
+            }
+
+            if (socialHtml !== '') {
+                socialLinksContainer.innerHTML = socialHtml;
+                socialLinksContainer.classList.remove('hidden');
+            } else {
+                socialLinksContainer.classList.add('hidden');
+            }
 
             const coverEl = document.getElementById('spCover');
             if(store.coverUrl) { coverEl.src = store.coverUrl; coverEl.classList.remove('hidden'); }
@@ -1974,9 +1883,6 @@
 
             document.getElementById('storeProfileModal').classList.add('hidden');
             document.body.style.overflow = 'auto'; 
-            
-            const seoSection = document.getElementById('homeSeoSection');
-            if(seoSection && !url.searchParams.has('urun')) seoSection.classList.remove('hidden');
         };
 
         window.renderStoreProfileCategories = () => {
@@ -2143,7 +2049,7 @@
             }
             document.getElementById('cartHeaderCount').innerText = totalQty;
             document.getElementById('cartCountBadge').innerText = totalQty;
-            document.getElementById('cartCountBadge').classList.toggle('hidden', totalQty === 0);
+            document.getElementById('cartCountBadge'].classList.toggle('hidden', totalQty === 0);
             lucide.createIcons();
         }
 
