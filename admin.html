@@ -16,10 +16,25 @@
 </head>
 <body class="bg-slate-900 text-slate-100 antialiased min-h-screen flex flex-col selection:bg-rose-500 selection:text-white">
 
+    <!-- Özel Onay Modalı (TEHLİKELİ İŞLEMLER İÇİN) -->
+    <div id="customConfirmModal" class="fixed inset-0 bg-slate-950/80 z-[400] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-700 p-6 rounded-3xl max-w-sm w-full shadow-2xl text-center transform transition-all">
+            <div class="w-16 h-16 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-rose-500/20">
+                <i data-lucide="alert-triangle" class="w-8 h-8 text-rose-500"></i>
+            </div>
+            <h3 class="text-xl font-black text-white mb-2">Emin misiniz?</h3>
+            <p id="confirmMessage" class="text-sm text-slate-400 mb-6 leading-relaxed"></p>
+            <div class="flex gap-3">
+                <button onclick="window.closeConfirm(false)" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 rounded-xl transition">İptal</button>
+                <button onclick="window.closeConfirm(true)" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-rose-500/30">Evet, Sil</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Tam Ekran Yükleyici -->
     <div id="fullScreenLoader" class="fixed inset-0 bg-slate-950 z-[200] flex flex-col items-center justify-center gap-4">
         <i data-lucide="loader-2" class="w-12 h-12 text-rose-500 animate-spin"></i>
-        <p class="text-white font-bold animate-pulse text-sm">Sistem Kontrol Ediliyor...</p>
+        <p class="text-white font-bold animate-pulse text-sm" id="loaderText">Sistem Kontrol Ediliyor...</p>
     </div>
 
     <!-- Giriş Ekranı -->
@@ -404,6 +419,21 @@
             window.showMessage("Kopyalandı: " + text);
         };
 
+        // GÜVENLİ ONAY SİSTEMİ
+        let confirmCallback = null;
+        window.customConfirm = (msg, callback) => {
+            document.getElementById('confirmMessage').innerHTML = msg;
+            document.getElementById('customConfirmModal').classList.remove('hidden');
+            document.getElementById('customConfirmModal').classList.add('flex');
+            confirmCallback = callback;
+        };
+
+        window.closeConfirm = (result) => {
+            document.getElementById('customConfirmModal').classList.add('hidden');
+            document.getElementById('customConfirmModal').classList.remove('flex');
+            if (result && confirmCallback) confirmCallback();
+        };
+
         onAuthStateChanged(auth, async (user) => {
             if(user && !user.isAnonymous) {
                 let isAdmin = false;
@@ -667,57 +697,55 @@
                 return;
             }
 
-            if(!confirm("Bu kategoriyi kalıcı olarak silmek istediğinize emin misiniz?")) return;
-
-            try {
-                await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categories', id));
-                window.showMessage("Kategori başarıyla silindi.");
-            } catch (err) {
-                window.showMessage("Silme işlemi başarısız.", "error");
-            }
+            window.customConfirm("Bu kategoriyi kalıcı olarak silmek istediğinize emin misiniz?", async () => {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categories', id));
+                    window.showMessage("Kategori başarıyla silindi.");
+                } catch (err) {
+                    window.showMessage("Silme işlemi başarısız.", "error");
+                }
+            });
         };
 
         // YENİ EKLENEN OTOMATİK ZENGİN KATEGORİ YÜKLEYİCİ FONKSİYONU
         window.loadDefaultRichCategories = async () => {
-            if(!confirm("DİKKAT: Bu işlem veri tabanınıza 80'e yakın kategori yükleyecektir. Onaylıyor musunuz?")) return;
+            window.customConfirm("DİKKAT: Bu işlem veri tabanınıza 80'e yakın kategori yükleyecektir. Onaylıyor musunuz?", async () => {
+                const btn = document.getElementById('btnLoadDefaults');
+                if(btn) { btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Veri Tabanına Yazılıyor...`; btn.disabled = true; }
 
-            const btn = document.getElementById('btnLoadDefaults');
-            if(btn) { btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Veri Tabanına Yazılıyor...`; btn.disabled = true; }
+                const defaultTree = [
+                    { name: "Elektronik & Teknoloji", icon: "monitor", sub: ["Cep Telefonu & Aksesuar", "Bilgisayar & Tablet", "Beyaz Eşya", "Televizyon & Görüntü", "Ses Sistemleri & Kulaklık", "Küçük Ev Aletleri", "Oyun & Konsol", "Giyilebilir Teknoloji", "Fotoğraf & Kamera"] },
+                    { name: "Moda & Giyim", icon: "shirt", sub: ["Kadın Giyim", "Erkek Giyim", "Çocuk & Bebek Giyim", "Ayakkabı", "Çanta & Cüzdan", "İç Giyim & Pijama", "Takı, Saat & Aksesuar", "Tesettür Giyim"] },
+                    { name: "Ev, Mobilya & Yaşam", icon: "home", sub: ["Oturma Odası Mobilyası", "Yatak Odası Mobilyası", "Yemek Odası", "Ev Tekstili & Havlu", "Halı & Kilim", "Aydınlatma", "Banyo & Dekorasyon", "Mutfak Gereçleri", "Ev Düzenleme & Depolama"] },
+                    { name: "Süpermarket & Gıda", icon: "shopping-basket", sub: ["Meyve & Sebze", "Et, Tavuk & Balık", "Süt & Süt Ürünleri", "Temel Gıda", "Atıştırmalık & Tatlı", "İçecekler", "Temizlik Ürünleri", "Kağıt Ürünleri"] },
+                    { name: "Anne, Bebek & Oyuncak", icon: "baby", sub: ["Bebek Arabası & Puset", "Oto Koltuğu", "Bebek Giyim", "Bebek Beslenme", "Bebek Bezi & Islak Mendil", "Anne Bakım & Hamile", "Oyuncaklar", "Eğitici Kutu Oyunları"] },
+                    { name: "Kozmetik & Kişisel Bakım", icon: "sparkles", sub: ["Parfüm & Deodorant", "Makyaj Ürünleri", "Cilt & Yüz Bakımı", "Saç Bakımı", "Tıraş & Erkek Bakım", "Ağız & Diş Bakımı", "Güneş Ürünleri"] },
+                    { name: "Oto, Yapı Market & Bahçe", icon: "wrench", sub: ["Oto Aksesuar", "Oto Yedek Parça", "Elektrikli El Aletleri", "Hırdavat & Nalbur", "Boya & Dekorasyon", "Elektrik & Tesisat", "Bahçe Mobilyası", "Mangal & Barbekü"] },
+                    { name: "Spor, Outdoor & Kamp", icon: "tent", sub: ["Spor Giyim & Ayakkabı", "Fitness & Kondisyon", "Sporcu Besinleri", "Kamp & Doğa Sporları", "Bisiklet & Scooter", "Balıkçılık & Avcılık"] },
+                    { name: "Kırtasiye, Hobi & Ofis", icon: "book-open", sub: ["Kitap & Dergi", "Kırtasiye Malzemeleri", "Ofis Sarf Malzemeleri", "Sanat & El İşi", "Müzik Enstrümanları", "Koleksiyon Ürünleri"] },
+                    { name: "Pet Shop", icon: "dog", sub: ["Kedi Maması & Kum", "Köpek Maması & Aksesuar", "Kuş Ürünleri", "Balık & Akvaryum", "Kemirgen & Sürüngen"] },
+                    { name: "Yöresel & Kıbrıs", icon: "map-pin", sub: ["Yöresel Gıda (Hellim vb.)", "Kıbrıs El Sanatları", "Hediyelik Eşyalar", "Yöresel İçecekler"] }
+                ];
 
-            const defaultTree = [
-                { name: "Elektronik & Teknoloji", icon: "monitor", sub: ["Cep Telefonu & Aksesuar", "Bilgisayar & Tablet", "Beyaz Eşya", "Televizyon & Görüntü", "Ses Sistemleri & Kulaklık", "Küçük Ev Aletleri", "Oyun & Konsol", "Giyilebilir Teknoloji", "Fotoğraf & Kamera"] },
-                { name: "Moda & Giyim", icon: "shirt", sub: ["Kadın Giyim", "Erkek Giyim", "Çocuk & Bebek Giyim", "Ayakkabı", "Çanta & Cüzdan", "İç Giyim & Pijama", "Takı, Saat & Aksesuar", "Tesettür Giyim"] },
-                { name: "Ev, Mobilya & Yaşam", icon: "home", sub: ["Oturma Odası Mobilyası", "Yatak Odası Mobilyası", "Yemek Odası", "Ev Tekstili & Havlu", "Halı & Kilim", "Aydınlatma", "Banyo & Dekorasyon", "Mutfak Gereçleri", "Ev Düzenleme & Depolama"] },
-                { name: "Süpermarket & Gıda", icon: "shopping-basket", sub: ["Meyve & Sebze", "Et, Tavuk & Balık", "Süt & Süt Ürünleri", "Temel Gıda", "Atıştırmalık & Tatlı", "İçecekler", "Temizlik Ürünleri", "Kağıt Ürünleri"] },
-                { name: "Anne, Bebek & Oyuncak", icon: "baby", sub: ["Bebek Arabası & Puset", "Oto Koltuğu", "Bebek Giyim", "Bebek Beslenme", "Bebek Bezi & Islak Mendil", "Anne Bakım & Hamile", "Oyuncaklar", "Eğitici Kutu Oyunları"] },
-                { name: "Kozmetik & Kişisel Bakım", icon: "sparkles", sub: ["Parfüm & Deodorant", "Makyaj Ürünleri", "Cilt & Yüz Bakımı", "Saç Bakımı", "Tıraş & Erkek Bakım", "Ağız & Diş Bakımı", "Güneş Ürünleri"] },
-                { name: "Oto, Yapı Market & Bahçe", icon: "wrench", sub: ["Oto Aksesuar", "Oto Yedek Parça", "Elektrikli El Aletleri", "Hırdavat & Nalbur", "Boya & Dekorasyon", "Elektrik & Tesisat", "Bahçe Mobilyası", "Mangal & Barbekü"] },
-                { name: "Spor, Outdoor & Kamp", icon: "tent", sub: ["Spor Giyim & Ayakkabı", "Fitness & Kondisyon", "Sporcu Besinleri", "Kamp & Doğa Sporları", "Bisiklet & Scooter", "Balıkçılık & Avcılık"] },
-                { name: "Kırtasiye, Hobi & Ofis", icon: "book-open", sub: ["Kitap & Dergi", "Kırtasiye Malzemeleri", "Ofis Sarf Malzemeleri", "Sanat & El İşi", "Müzik Enstrümanları", "Koleksiyon Ürünleri"] },
-                { name: "Pet Shop", icon: "dog", sub: ["Kedi Maması & Kum", "Köpek Maması & Aksesuar", "Kuş Ürünleri", "Balık & Akvaryum", "Kemirgen & Sürüngen"] },
-                { name: "Yöresel & Kıbrıs", icon: "map-pin", sub: ["Yöresel Gıda (Hellim vb.)", "Kıbrıs El Sanatları", "Hediyelik Eşyalar", "Yöresel İçecekler"] }
-            ];
+                try {
+                    for(let p of defaultTree) {
+                        const pRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'));
+                        await setDoc(pRef, { name: p.name, icon: p.icon, parentId: "", createdAt: Date.now() });
 
-            try {
-                for(let p of defaultTree) {
-                    // Ana Kategoriyi Ekle
-                    const pRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'));
-                    await setDoc(pRef, { name: p.name, icon: p.icon, parentId: "", createdAt: Date.now() });
-
-                    // Alt Kategorileri Ekle (Kendi İçinde Bağla)
-                    for(let s of p.sub) {
-                        const sRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'));
-                        await setDoc(sRef, { name: s, icon: "", parentId: pRef.id, createdAt: Date.now() });
+                        for(let s of p.sub) {
+                            const sRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'));
+                            await setDoc(sRef, { name: s, icon: "", parentId: pRef.id, createdAt: Date.now() });
+                        }
                     }
+                    window.showMessage("Tüm zengin kategoriler başarıyla sisteme entegre edildi!");
+                } catch(e) {
+                    console.error(e);
+                    window.showMessage("Yükleme sırasında hata oluştu.", "error");
                 }
-                window.showMessage("Tüm zengin kategoriler başarıyla sisteme entegre edildi!");
-            } catch(e) {
-                console.error(e);
-                window.showMessage("Yükleme sırasında hata oluştu.", "error");
-            }
 
-            if(btn) { btn.innerHTML = `<i data-lucide="zap" class="w-4 h-4"></i> Zengin Kategorileri Otomatik Yükle`; btn.disabled = false; }
-            lucide.createIcons();
+                if(btn) { btn.innerHTML = `<i data-lucide="zap" class="w-4 h-4"></i> Zengin Kategorileri Otomatik Yükle`; btn.disabled = false; }
+                lucide.createIcons();
+            });
         };
 
         // --- MAĞAZALAR ---
@@ -770,12 +798,17 @@
                             </div>
                             <div class="text-[9px] text-slate-500 mt-1">Bitiş: ${s.expiryDate ? new Date(s.expiryDate).toLocaleDateString('tr-TR') : 'Belirtilmedi'}</div>
                         </td>
-                        <td class="px-6 py-4 text-right space-x-1">
+                        <td class="px-6 py-4 text-right space-x-1 flex justify-end">
                             <button onclick="window.manageStoreAsAdmin('${s.id}')" class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 p-2 rounded-xl transition" title="Satıcı Paneline Gir (Destek Modu)"><i data-lucide="user-cog" class="w-4 h-4"></i></button>
                             ${s.status !== 'active' ? `<button onclick="window.updateStoreStatus('${s.id}', 'active')" class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-xl" title="Aktif Et"><i data-lucide="check" class="w-4 h-4"></i></button>` : `<button onclick="window.updateStoreStatus('${s.id}', 'suspended')" class="bg-amber-600 hover:bg-amber-500 text-white p-2 rounded-xl" title="Askıya Al"><i data-lucide="pause" class="w-4 h-4"></i></button>`}
                             <button onclick="window.setPackageDirectly('${s.id}', 'free')" class="bg-slate-700 text-white p-2 rounded-xl" title="Ücretsize Çek">Ü</button>
                             <button onclick="window.setPackageDirectly('${s.id}', 'standard')" class="bg-blue-600 text-white p-2 rounded-xl" title="Standart Paket">S</button>
                             <button onclick="window.setPackageDirectly('${s.id}', 'premium')" class="bg-purple-600 text-white p-2 rounded-xl" title="Premium Yap">P</button>
+                            
+                            <!-- MAĞAZAYI KOMPLE SİL BUTONU -->
+                            <button onclick="window.completelyDeleteStore('${s.id}')" class="bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-500 p-2 rounded-xl transition ml-2 border border-rose-500/20" title="Mağazayı ve İçindeki Her Şeyi Sil">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -783,6 +816,72 @@
             tbody.innerHTML = html;
             lucide.createIcons();
         }
+
+        // MAĞAZAYI TÜM VERİLERİYLE SİLEN FONKSİYON
+        window.completelyDeleteStore = (storeId) => {
+            const store = dbStores.find(s => s.id === storeId);
+            if(!store) return;
+
+            const warningMsg = `<b>${store.name}</b> adlı mağazayı kalıcı olarak silmek üzeresiniz.<br><br><span class="text-rose-400 font-bold text-xs">DİKKAT: Bu işlem mağazayı, mağazaya ait ${dbProducts.filter(p => p.storeId === storeId).length} ilanı, o ilanlara ait yorumları ve tüm geçmiş siparişleri silecektir. İşlem geri alınamaz!</span>`;
+
+            window.customConfirm(warningMsg, async () => {
+                document.getElementById('fullScreenLoader').classList.remove('hidden');
+                document.getElementById('loaderText').innerText = "Mağaza ve tüm verileri siliniyor...";
+
+                try {
+                    import { writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+                    let batches = [];
+                    let currentBatch = writeBatch(db);
+                    let opCount = 0;
+
+                    // 1. ÜRÜNLERİ BUL VE SİL
+                    const storeProducts = dbProducts.filter(p => p.storeId === storeId);
+                    const productIds = storeProducts.map(p => p.id);
+                    
+                    storeProducts.forEach(p => {
+                        currentBatch.delete(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id));
+                        opCount++;
+                        if(opCount === 490) { batches.push(currentBatch.commit()); currentBatch = writeBatch(db); opCount = 0; }
+                    });
+
+                    // 2. O ÜRÜNLERE AİT YORUMLARI BUL VE SİL
+                    if(productIds.length > 0) {
+                        const storeReviews = dbReviews.filter(r => productIds.includes(r.productId));
+                        storeReviews.forEach(r => {
+                            currentBatch.delete(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', r.id));
+                            opCount++;
+                            if(opCount === 490) { batches.push(currentBatch.commit()); currentBatch = writeBatch(db); opCount = 0; }
+                        });
+                    }
+
+                    // 3. MAĞAZAYA AİT SİPARİŞLERİ BUL VE SİL (Siparişleri Firestore'dan sorgulamalıyız)
+                    import { query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+                    const ordersRefAdmin = collection(db, 'artifacts', APP_ID, 'public', 'data', 'orders');
+                    const qOrders = query(ordersRefAdmin, where("storeId", "==", storeId));
+                    const ordersSnap = await getDocs(qOrders);
+                    
+                    ordersSnap.forEach(o => {
+                        currentBatch.delete(doc(db, 'artifacts', APP_ID, 'public', 'data', 'orders', o.id));
+                        opCount++;
+                        if(opCount === 490) { batches.push(currentBatch.commit()); currentBatch = writeBatch(db); opCount = 0; }
+                    });
+
+                    // 4. SON OLARAK MAĞAZANIN KENDİSİNİ SİL
+                    currentBatch.delete(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', storeId));
+                    batches.push(currentBatch.commit());
+
+                    // Tüm toplu silme işlemlerinin bitmesini bekle
+                    await Promise.all(batches);
+
+                    window.showMessage("Mağaza, tüm ilanları, yorumları ve siparişleriyle birlikte veritabanından tamamen silindi.");
+                } catch (error) {
+                    console.error("Silme Hatası:", error);
+                    window.showMessage("Silme işlemi sırasında bir hata oluştu.", "error");
+                } finally {
+                    document.getElementById('fullScreenLoader').classList.add('hidden');
+                }
+            });
+        };
 
         function renderRequests() {
             const container = document.getElementById('requestsContainer');
@@ -965,9 +1064,10 @@
         };
 
         window.deleteReview = async (id) => {
-            if(!confirm("Bu yorumu tamamen silmek istediğinize emin misiniz?")) return;
-            try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', id)); window.showMessage("Yorum silindi."); }
-            catch(e) { window.showMessage("Silme işlemi başarısız.", "error"); }
+            window.customConfirm("Bu yorumu tamamen silmek istediğinize emin misiniz?", async () => {
+                try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', id)); window.showMessage("Yorum silindi."); }
+                catch(e) { window.showMessage("Silme işlemi başarısız.", "error"); }
+            });
         };
 
         window.updateReviewStatus = async (id, newStatus) => {
@@ -1018,9 +1118,10 @@
         };
 
         window.deleteProductDirectly = async (id) => {
-            if(!confirm("Bu ilanı yayından kaldırmak istediğinize emin misiniz?")) return;
-            try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id)); window.showMessage("Ürün başarıyla silindi."); } 
-            catch(e) { window.showMessage("Ürün silinemedi.", "error"); }
+            window.customConfirm("Bu ilanı yayından kaldırmak istediğinize emin misiniz?", async () => {
+                try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id)); window.showMessage("Ürün başarıyla silindi."); } 
+                catch(e) { window.showMessage("Ürün silinemedi.", "error"); }
+            });
         };
 
         function populateSettingsForm() {
