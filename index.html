@@ -1007,13 +1007,24 @@
                 document.getElementById('unauthMenu').classList.remove('hidden');
                 document.getElementById('authMenu').classList.add('hidden');
             }
+            // KULLANICI GİRİŞ YAPTIĞINDA VEYA ÇIKTIĞINDA SEPETİ ANINDA YENİLE
             if (typeof updateCartUI === 'function') updateCartUI();
         });
 
         window.loginWithGoogle = async (e) => {
-            e.stopPropagation();
-            try { await signInWithPopup(auth, googleProvider); window.showMessage("Giriş başarılı."); document.getElementById('userDropdown').classList.add('hidden'); isUserMenuOpen = false; } 
-            catch(err) { window.showMessage("Giriş iptal edildi.", "error"); }
+            if(e && typeof e.stopPropagation === 'function') e.stopPropagation(); // Event koruması eklendi
+            try { 
+                await signInWithPopup(auth, googleProvider); 
+                window.showMessage("Giriş başarılı."); 
+                document.getElementById('userDropdown').classList.add('hidden'); 
+                isUserMenuOpen = false; 
+                // GİRİŞ BAŞARILI OLUNCA SEPETİ YENİLE
+                if (typeof updateCartUI === 'function') updateCartUI();
+            } 
+            catch(err) { 
+                console.error("Firebase Giriş Hatası:", err);
+                window.showMessage("Giriş iptal edildi veya başarısız oldu.", "error"); 
+            }
         };
 
         window.logoutUser = (e) => {
@@ -1950,8 +1961,8 @@
                                     ? `<button onclick="window.openCheckoutConfirm('${storeId}')" class="w-full bg-[#25D366] hover:bg-[#1DA851] text-white font-bold py-3 rounded-xl transition shadow-lg shadow-green-500/20 flex items-center justify-center gap-2 mt-1">
                                         <i data-lucide="message-circle" class="w-5 h-5"></i> ${window.t('order_from_store')}
                                        </button>`
-                                    : `<button onclick="window.loginWithGoogle(event)" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2 mt-1">
-                                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 bg-white rounded-full p-0.5"> <span data-i18n="login_google">${window.t('login_google')}</span>
+                                    : `<button onclick="window.loginWithGoogle(event)" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl transition shadow-lg flex items-center justify-center gap-2 mt-1">
+                                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 bg-white rounded-full p-0.5"> <span class="text-xs sm:text-sm">Sipariş Vermek İçin Giriş Yap</span>
                                        </button>`
                                 }
                             </div>
