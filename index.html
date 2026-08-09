@@ -920,6 +920,15 @@
             return (appTranslations[lang] || appTranslations['tr'])[key] || key;
         };
 
+        // KATEGORİ ÇEVİRİ YARDIMCISI (EKSİK OLAN FONKSİYON EKLENDİ)
+        window.getCategoryTranslation = (catName) => {
+            if (!catName) return '';
+            const lang = getCurrentLang();
+            const tObj = appTranslations[lang] || appTranslations['tr'];
+            // Sözlükte varsa çevirisini, yoksa veritabanındaki orijinal (Türkçe) adını döndür
+            return tObj[catName] || catName; 
+        };
+
         window.setLanguage = (lang) => {
             const currentLang = getCurrentLang();
             if (lang === 'tr' && currentLang !== 'tr') {
