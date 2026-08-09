@@ -1160,20 +1160,53 @@
                 const isActive = activeCategory === node.name;
                 const activeClass = isActive ? 'bg-orange-50 text-orange-600' : 'hover:bg-slate-50 hover:text-orange-500';
 
-                html += `
-                    <li>
-                        <button onclick="window.setCategory('${node.name}')" class="w-full text-left py-2.5 ${paddingClass} ${fontClass} ${activeClass} transition-colors flex items-center gap-2 text-sm border-b border-slate-50 last:border-0">
-                            ${iconHtml} <span class="truncate">${node.name}</span>
-                        </button>
-                    </li>
-                `;
-                
-                if(node.children) {
-                    html += generateDropdownHtml(node.children, depth + 1);
+                // Eğer alt kategorisi varsa açılır/kapanır (accordion) menü oluştur
+                if (node.children && node.children.length > 0) {
+                    const childPadding = depth === 0 ? 'pl-8' : 'pl-12';
+                    html += `
+                        <li>
+                            <div class="w-full flex items-center justify-between py-2.5 ${paddingClass} ${fontClass} hover:bg-slate-50 transition-colors border-b border-slate-50 cursor-pointer select-none" onclick="window.toggleSubCat('${node.id}', event)">
+                                <div class="flex items-center gap-2 text-sm">${iconHtml} <span class="truncate">${node.name}</span></div>
+                                <i data-lucide="chevron-down" id="icon-${node.id}" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
+                            </div>
+                            <ul id="sub-${node.id}" class="hidden bg-slate-50/50 border-y border-slate-100/50">
+                                <li>
+                                    <button onclick="window.setCategory('${node.name}')" class="w-full text-left py-2 ${childPadding} pr-4 text-xs font-black text-orange-600 hover:text-orange-500 hover:bg-orange-50 transition-colors border-b border-slate-100/50">
+                                        Tüm ${node.name}
+                                    </button>
+                                </li>
+                                ${generateDropdownHtml(node.children, depth + 1)}
+                            </ul>
+                        </li>
+                    `;
+                } else {
+                    // Alt kategorisi yoksa normal tıklanabilir link yap
+                    html += `
+                        <li>
+                            <button onclick="window.setCategory('${node.name}')" class="w-full text-left py-2.5 ${paddingClass} ${fontClass} ${activeClass} transition-colors flex items-center gap-2 text-sm border-b border-slate-50 last:border-0">
+                                ${iconHtml} <span class="truncate">${node.name}</span>
+                            </button>
+                        </li>
+                    `;
                 }
             });
             return html;
         }
+
+        // Açılır kapanır alt kategori (accordion) animasyonunu tetikleyen fonksiyon
+        window.toggleSubCat = (id, e) => {
+            if(e) e.stopPropagation();
+            const sub = document.getElementById(`sub-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+            
+            if (sub && sub.classList.contains('hidden')) {
+                sub.classList.remove('hidden');
+                if(icon) icon.classList.add('rotate-180');
+            } else if (sub) {
+                sub.classList.add('hidden');
+                if(icon) icon.classList.remove('rotate-180');
+            }
+        };
 
         window.renderCategories = () => {
             const dropdownList = document.getElementById('catDropdownList');
