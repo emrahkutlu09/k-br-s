@@ -16,10 +16,25 @@
 </head>
 <body class="bg-slate-900 text-slate-100 antialiased min-h-screen flex flex-col selection:bg-rose-500 selection:text-white">
 
+    <!-- Özel Onay Modalı (TEHLİKELİ İŞLEMLER İÇİN) -->
+    <div id="customConfirmModal" class="fixed inset-0 bg-slate-950/80 z-[400] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-700 p-6 rounded-3xl max-w-sm w-full shadow-2xl text-center transform transition-all">
+            <div class="w-16 h-16 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-rose-500/20">
+                <i data-lucide="alert-triangle" class="w-8 h-8 text-rose-500"></i>
+            </div>
+            <h3 class="text-xl font-black text-white mb-2">Emin misiniz?</h3>
+            <p id="confirmMessage" class="text-sm text-slate-400 mb-6 leading-relaxed"></p>
+            <div class="flex gap-3">
+                <button onclick="window.closeConfirm(false)" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 rounded-xl transition">İptal</button>
+                <button onclick="window.closeConfirm(true)" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-rose-500/30">Evet, Sil</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Tam Ekran Yükleyici -->
     <div id="fullScreenLoader" class="fixed inset-0 bg-slate-950 z-[200] flex flex-col items-center justify-center gap-4">
         <i data-lucide="loader-2" class="w-12 h-12 text-rose-500 animate-spin"></i>
-        <p class="text-white font-bold animate-pulse text-sm">Sistem Kontrol Ediliyor...</p>
+        <p class="text-white font-bold animate-pulse text-sm" id="loaderText">Sistem Kontrol Ediliyor...</p>
     </div>
 
     <!-- Giriş Ekranı -->
@@ -140,13 +155,11 @@
                             </div>
                         </form>
                         
-                        <!-- YENİ EKLENEN OTOMATİK YÜKLEME BUTONU -->
                         <div class="pt-6 mt-6 border-t border-slate-700/50">
                             <h4 class="text-xs font-bold text-slate-400 mb-3">Otomasyon</h4>
                             <button type="button" id="btnLoadDefaults" onclick="window.loadDefaultRichCategories()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 text-xs">
                                 <i data-lucide="zap" class="w-4 h-4"></i> Zengin Kategorileri Otomatik Yükle
                             </button>
-                            <p class="text-[10px] text-slate-500 mt-2 text-center">Tek tıkla 11 Ana, 70+ Alt kategori yükler. Sonrasında dilediğiniz gibi silebilir veya düzenleyebilirsiniz.</p>
                         </div>
                     </div>
 
@@ -184,7 +197,6 @@
                     <div class="flex items-center justify-between mb-6">
                         <div>
                             <h3 class="font-black text-lg text-white flex items-center gap-2"><i data-lucide="message-square" class="w-5 h-5 text-orange-400"></i> Platform Değerlendirmeleri</h3>
-                            <p class="text-xs text-slate-400 mt-1">Müşterilerin yaptığı yorumları buradan inceleyebilir, kural ihlali yapanları silebilir veya düzenleyebilirsiniz.</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="reviewsContainer"></div>
@@ -199,7 +211,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-xs font-bold text-slate-400 mb-2">Platform Adı</label>
-                                <input type="text" id="setPlatformName" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Örn: PAZARYERİ">
+                                <input type="text" id="setPlatformName" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-400 mb-2">Platform Logosu</label>
@@ -213,104 +225,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-6 sm:p-8">
-                        <h3 class="text-lg font-black text-white flex items-center gap-2 mb-6"><i data-lucide="monitor" class="w-5 h-5 text-rose-500"></i> Ana Sayfa Dev Afiş (Vitrin)</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div class="sm:col-span-2">
-                                <label class="block text-xs font-bold text-slate-400 mb-2">Arka Plan Kampanya Görseli</label>
-                                <div class="flex items-center gap-4">
-                                    <img id="setMainImagePreview" src="" class="w-32 h-16 object-cover rounded-xl bg-slate-900 border border-slate-700 hidden">
-                                    <input type="file" id="setMainImageInput" accept="image/*" onchange="window.previewAdminImage(this, 'setMainImagePreview')" class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:font-bold file:bg-rose-500/10 file:text-rose-400 hover:file:bg-rose-500/20 cursor-pointer">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 mb-1">Küçük Etiket (Badge)</label>
-                                <input type="text" id="setMainTag" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 mb-1">Büyük Başlık</label>
-                                <input type="text" id="setMainTitle" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none">
-                            </div>
-                            <div class="sm:col-span-2">
-                                <label class="block text-xs font-bold text-slate-400 mb-1">Alt Metin (Açıklama)</label>
-                                <textarea id="setMainSubtitle" rows="2" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none"></textarea>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 mb-1">Buton Metni</label>
-                                <input type="text" id="setMainBtnText" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none">
-                            </div>
-                            <div></div>
-                            
-                            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-400 mb-1">Yönlendirme Türü</label>
-                                    <select id="setMainLinkType" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-rose-500">
-                                        <option value="category">Kategori Filtresi</option>
-                                        <option value="store">Mağaza Profili (Mağaza ID)</option>
-                                        <option value="product">Ürün Detayı (Ürün ID)</option>
-                                        <option value="url">Özel Dış Bağlantı (URL)</option>
-                                        <option value="none">Tıklanamaz</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-400 mb-1">Hedef Değer</label>
-                                    <input type="text" id="setMainLinkValue" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-rose-500">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-6">
-                            <h3 class="text-sm font-black text-white flex items-center gap-2 mb-4"><i data-lucide="sidebar" class="w-4 h-4 text-orange-500"></i> Yan Afiş 1</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 mb-1">Kapak Görseli</label>
-                                    <input type="file" id="setSide1ImageInput" accept="image/*" onchange="window.previewAdminImage(this, 'setSide1ImagePreview')" class="w-full text-xs file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-slate-700 file:text-white cursor-pointer">
-                                    <img id="setSide1ImagePreview" src="" class="mt-2 w-full h-16 object-cover rounded-lg hidden">
-                                </div>
-                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Başlık</label><input type="text" id="setSide1Title" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
-                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Alt Metin</label><input type="text" id="setSide1Subtitle" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
-                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Lucide İkon Adı</label><input type="text" id="setSide1Icon" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
-                                <div class="grid grid-cols-2 gap-2 bg-slate-900/50 p-2 rounded-lg border border-slate-700/50">
-                                    <div>
-                                        <label class="block text-[9px] font-bold text-slate-400 mb-1">Tür</label>
-                                        <select id="setSide1LinkType" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white outline-none"><option value="category">Kategori</option><option value="store">Mağaza ID</option><option value="product">Ürün ID</option><option value="url">Link URL</option></select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-[9px] font-bold text-slate-400 mb-1">Değer</label>
-                                        <input type="text" id="setSide1LinkValue" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white outline-none">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-6">
-                            <h3 class="text-sm font-black text-white flex items-center gap-2 mb-4"><i data-lucide="sidebar" class="w-4 h-4 text-emerald-500"></i> Yan Afiş 2</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 mb-1">Kapak Görseli</label>
-                                    <input type="file" id="setSide2ImageInput" accept="image/*" onchange="window.previewAdminImage(this, 'setSide2ImagePreview')" class="w-full text-xs file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-slate-700 file:text-white cursor-pointer">
-                                    <img id="setSide2ImagePreview" src="" class="mt-2 w-full h-16 object-cover rounded-lg hidden">
-                                </div>
-                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Başlık</label><input type="text" id="setSide2Title" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
-                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Alt Metin</label><input type="text" id="setSide2Subtitle" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
-                                <div><label class="block text-[10px] font-bold text-slate-400 mb-1">Lucide İkon Adı</label><input type="text" id="setSide2Icon" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white outline-none"></div>
-                                <div class="grid grid-cols-2 gap-2 bg-slate-900/50 p-2 rounded-lg border border-slate-700/50">
-                                    <div>
-                                        <label class="block text-[9px] font-bold text-slate-400 mb-1">Tür</label>
-                                        <select id="setSide2LinkType" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white outline-none"><option value="category">Kategori</option><option value="store">Mağaza ID</option><option value="product">Ürün ID</option><option value="url">Link URL</option></select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-[9px] font-bold text-slate-400 mb-1">Değer</label>
-                                        <input type="text" id="setSide2LinkValue" class="w-full p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white outline-none">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="flex justify-end">
                         <button type="submit" id="btnSaveSettings" class="bg-rose-600 hover:bg-rose-500 text-white font-black py-4 px-10 rounded-2xl transition shadow-lg shadow-rose-500/30 flex items-center gap-2">
                             <i data-lucide="save" class="w-5 h-5"></i> Değişiklikleri Yayına Al
@@ -353,7 +267,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, setDoc, getDoc, writeBatch, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -375,6 +289,7 @@
         const settingsRef = doc(db, 'artifacts', APP_ID, 'public', 'settings');
         const reviewsRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'reviews');
         const categoriesRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories');
+        const ordersRef = collection(db, 'artifacts', APP_ID, 'public', 'data', 'orders');
 
         let dbStores = [];
         let dbProducts = [];
@@ -402,6 +317,20 @@
             document.execCommand('copy');
             document.body.removeChild(input);
             window.showMessage("Kopyalandı: " + text);
+        };
+
+        let confirmCallback = null;
+        window.customConfirm = (msg, callback) => {
+            document.getElementById('confirmMessage').innerHTML = msg;
+            document.getElementById('customConfirmModal').classList.remove('hidden');
+            document.getElementById('customConfirmModal').classList.add('flex');
+            confirmCallback = callback;
+        };
+
+        window.closeConfirm = (result) => {
+            document.getElementById('customConfirmModal').classList.add('hidden');
+            document.getElementById('customConfirmModal').classList.remove('flex');
+            if (result && confirmCallback) confirmCallback();
         };
 
         onAuthStateChanged(auth, async (user) => {
@@ -667,60 +596,57 @@
                 return;
             }
 
-            if(!confirm("Bu kategoriyi kalıcı olarak silmek istediğinize emin misiniz?")) return;
-
-            try {
-                await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categories', id));
-                window.showMessage("Kategori başarıyla silindi.");
-            } catch (err) {
-                window.showMessage("Silme işlemi başarısız.", "error");
-            }
-        };
-
-        // YENİ EKLENEN OTOMATİK ZENGİN KATEGORİ YÜKLEYİCİ FONKSİYONU
-        window.loadDefaultRichCategories = async () => {
-            if(!confirm("DİKKAT: Bu işlem veri tabanınıza 80'e yakın kategori yükleyecektir. Onaylıyor musunuz?")) return;
-
-            const btn = document.getElementById('btnLoadDefaults');
-            if(btn) { btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Veri Tabanına Yazılıyor...`; btn.disabled = true; }
-
-            const defaultTree = [
-                { name: "Elektronik & Teknoloji", icon: "monitor", sub: ["Cep Telefonu & Aksesuar", "Bilgisayar & Tablet", "Beyaz Eşya", "Televizyon & Görüntü", "Ses Sistemleri & Kulaklık", "Küçük Ev Aletleri", "Oyun & Konsol", "Giyilebilir Teknoloji", "Fotoğraf & Kamera"] },
-                { name: "Moda & Giyim", icon: "shirt", sub: ["Kadın Giyim", "Erkek Giyim", "Çocuk & Bebek Giyim", "Ayakkabı", "Çanta & Cüzdan", "İç Giyim & Pijama", "Takı, Saat & Aksesuar", "Tesettür Giyim"] },
-                { name: "Ev, Mobilya & Yaşam", icon: "home", sub: ["Oturma Odası Mobilyası", "Yatak Odası Mobilyası", "Yemek Odası", "Ev Tekstili & Havlu", "Halı & Kilim", "Aydınlatma", "Banyo & Dekorasyon", "Mutfak Gereçleri", "Ev Düzenleme & Depolama"] },
-                { name: "Süpermarket & Gıda", icon: "shopping-basket", sub: ["Meyve & Sebze", "Et, Tavuk & Balık", "Süt & Süt Ürünleri", "Temel Gıda", "Atıştırmalık & Tatlı", "İçecekler", "Temizlik Ürünleri", "Kağıt Ürünleri"] },
-                { name: "Anne, Bebek & Oyuncak", icon: "baby", sub: ["Bebek Arabası & Puset", "Oto Koltuğu", "Bebek Giyim", "Bebek Beslenme", "Bebek Bezi & Islak Mendil", "Anne Bakım & Hamile", "Oyuncaklar", "Eğitici Kutu Oyunları"] },
-                { name: "Kozmetik & Kişisel Bakım", icon: "sparkles", sub: ["Parfüm & Deodorant", "Makyaj Ürünleri", "Cilt & Yüz Bakımı", "Saç Bakımı", "Tıraş & Erkek Bakım", "Ağız & Diş Bakımı", "Güneş Ürünleri"] },
-                { name: "Oto, Yapı Market & Bahçe", icon: "wrench", sub: ["Oto Aksesuar", "Oto Yedek Parça", "Elektrikli El Aletleri", "Hırdavat & Nalbur", "Boya & Dekorasyon", "Elektrik & Tesisat", "Bahçe Mobilyası", "Mangal & Barbekü"] },
-                { name: "Spor, Outdoor & Kamp", icon: "tent", sub: ["Spor Giyim & Ayakkabı", "Fitness & Kondisyon", "Sporcu Besinleri", "Kamp & Doğa Sporları", "Bisiklet & Scooter", "Balıkçılık & Avcılık"] },
-                { name: "Kırtasiye, Hobi & Ofis", icon: "book-open", sub: ["Kitap & Dergi", "Kırtasiye Malzemeleri", "Ofis Sarf Malzemeleri", "Sanat & El İşi", "Müzik Enstrümanları", "Koleksiyon Ürünleri"] },
-                { name: "Pet Shop", icon: "dog", sub: ["Kedi Maması & Kum", "Köpek Maması & Aksesuar", "Kuş Ürünleri", "Balık & Akvaryum", "Kemirgen & Sürüngen"] },
-                { name: "Yöresel & Kıbrıs", icon: "map-pin", sub: ["Yöresel Gıda (Hellim vb.)", "Kıbrıs El Sanatları", "Hediyelik Eşyalar", "Yöresel İçecekler"] }
-            ];
-
-            try {
-                for(let p of defaultTree) {
-                    // Ana Kategoriyi Ekle
-                    const pRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'));
-                    await setDoc(pRef, { name: p.name, icon: p.icon, parentId: "", createdAt: Date.now() });
-
-                    // Alt Kategorileri Ekle (Kendi İçinde Bağla)
-                    for(let s of p.sub) {
-                        const sRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'));
-                        await setDoc(sRef, { name: s, icon: "", parentId: pRef.id, createdAt: Date.now() });
-                    }
+            window.customConfirm("Bu kategoriyi kalıcı olarak silmek istediğinize emin misiniz?", async () => {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categories', id));
+                    window.showMessage("Kategori başarıyla silindi.");
+                } catch (err) {
+                    window.showMessage("Silme işlemi başarısız.", "error");
                 }
-                window.showMessage("Tüm zengin kategoriler başarıyla sisteme entegre edildi!");
-            } catch(e) {
-                console.error(e);
-                window.showMessage("Yükleme sırasında hata oluştu.", "error");
-            }
-
-            if(btn) { btn.innerHTML = `<i data-lucide="zap" class="w-4 h-4"></i> Zengin Kategorileri Otomatik Yükle`; btn.disabled = false; }
-            lucide.createIcons();
+            });
         };
 
-        // --- MAĞAZALAR ---
+        window.loadDefaultRichCategories = async () => {
+            window.customConfirm("DİKKAT: Bu işlem veri tabanınıza 80'e yakın kategori yükleyecektir. Onaylıyor musunuz?", async () => {
+                const btn = document.getElementById('btnLoadDefaults');
+                if(btn) { btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Veri Tabanına Yazılıyor...`; btn.disabled = true; }
+
+                const defaultTree = [
+                    { name: "Elektronik & Teknoloji", icon: "monitor", sub: ["Cep Telefonu & Aksesuar", "Bilgisayar & Tablet", "Beyaz Eşya", "Televizyon & Görüntü", "Ses Sistemleri & Kulaklık", "Küçük Ev Aletleri", "Oyun & Konsol", "Giyilebilir Teknoloji", "Fotoğraf & Kamera"] },
+                    { name: "Moda & Giyim", icon: "shirt", sub: ["Kadın Giyim", "Erkek Giyim", "Çocuk & Bebek Giyim", "Ayakkabı", "Çanta & Cüzdan", "İç Giyim & Pijama", "Takı, Saat & Aksesuar", "Tesettür Giyim"] },
+                    { name: "Ev, Mobilya & Yaşam", icon: "home", sub: ["Oturma Odası Mobilyası", "Yatak Odası Mobilyası", "Yemek Odası", "Ev Tekstili & Havlu", "Halı & Kilim", "Aydınlatma", "Banyo & Dekorasyon", "Mutfak Gereçleri", "Ev Düzenleme & Depolama"] },
+                    { name: "Süpermarket & Gıda", icon: "shopping-basket", sub: ["Meyve & Sebze", "Et, Tavuk & Balık", "Süt & Süt Ürünleri", "Temel Gıda", "Atıştırmalık & Tatlı", "İçecekler", "Temizlik Ürünleri", "Kağıt Ürünleri"] },
+                    { name: "Anne, Bebek & Oyuncak", icon: "baby", sub: ["Bebek Arabası & Puset", "Oto Koltuğu", "Bebek Giyim", "Bebek Beslenme", "Bebek Bezi & Islak Mendil", "Anne Bakım & Hamile", "Oyuncaklar", "Eğitici Kutu Oyunları"] },
+                    { name: "Kozmetik & Kişisel Bakım", icon: "sparkles", sub: ["Parfüm & Deodorant", "Makyaj Ürünleri", "Cilt & Yüz Bakımı", "Saç Bakımı", "Tıraş & Erkek Bakım", "Ağız & Diş Bakımı", "Güneş Ürünleri"] },
+                    { name: "Oto, Yapı Market & Bahçe", icon: "wrench", sub: ["Oto Aksesuar", "Oto Yedek Parça", "Elektrikli El Aletleri", "Hırdavat & Nalbur", "Boya & Dekorasyon", "Elektrik & Tesisat", "Bahçe Mobilyası", "Mangal & Barbekü"] },
+                    { name: "Spor, Outdoor & Kamp", icon: "tent", sub: ["Spor Giyim & Ayakkabı", "Fitness & Kondisyon", "Sporcu Besinleri", "Kamp & Doğa Sporları", "Bisiklet & Scooter", "Balıkçılık & Avcılık"] },
+                    { name: "Kırtasiye, Hobi & Ofis", icon: "book-open", sub: ["Kitap & Dergi", "Kırtasiye Malzemeleri", "Ofis Sarf Malzemeleri", "Sanat & El İşi", "Müzik Enstrümanları", "Koleksiyon Ürünleri"] },
+                    { name: "Pet Shop", icon: "dog", sub: ["Kedi Maması & Kum", "Köpek Maması & Aksesuar", "Kuş Ürünleri", "Balık & Akvaryum", "Kemirgen & Sürüngen"] },
+                    { name: "Yöresel & Kıbrıs", icon: "map-pin", sub: ["Yöresel Gıda (Hellim vb.)", "Kıbrıs El Sanatları", "Hediyelik Eşyalar", "Yöresel İçecekler"] }
+                ];
+
+                try {
+                    for(let p of defaultTree) {
+                        const pRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'));
+                        await setDoc(pRef, { name: p.name, icon: p.icon, parentId: "", createdAt: Date.now() });
+
+                        for(let s of p.sub) {
+                            const sRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'categories'));
+                            await setDoc(sRef, { name: s, icon: "", parentId: pRef.id, createdAt: Date.now() });
+                        }
+                    }
+                    window.showMessage("Tüm zengin kategoriler başarıyla sisteme entegre edildi!");
+                } catch(e) {
+                    console.error(e);
+                    window.showMessage("Yükleme sırasında hata oluştu.", "error");
+                }
+
+                if(btn) { btn.innerHTML = `<i data-lucide="zap" class="w-4 h-4"></i> Zengin Kategorileri Otomatik Yükle`; btn.disabled = false; }
+                lucide.createIcons();
+            });
+        };
+
+        // --- MAĞAZALAR VE KOMPLE SİLME (BÜTÜN VERİLERİYLE) ---
         function renderStores() {
             const tbody = document.getElementById('storesTableBody');
             if(!tbody) return;
@@ -770,12 +696,17 @@
                             </div>
                             <div class="text-[9px] text-slate-500 mt-1">Bitiş: ${s.expiryDate ? new Date(s.expiryDate).toLocaleDateString('tr-TR') : 'Belirtilmedi'}</div>
                         </td>
-                        <td class="px-6 py-4 text-right space-x-1">
+                        <td class="px-6 py-4 text-right space-x-1 flex justify-end items-center">
                             <button onclick="window.manageStoreAsAdmin('${s.id}')" class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 p-2 rounded-xl transition" title="Satıcı Paneline Gir (Destek Modu)"><i data-lucide="user-cog" class="w-4 h-4"></i></button>
                             ${s.status !== 'active' ? `<button onclick="window.updateStoreStatus('${s.id}', 'active')" class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-xl" title="Aktif Et"><i data-lucide="check" class="w-4 h-4"></i></button>` : `<button onclick="window.updateStoreStatus('${s.id}', 'suspended')" class="bg-amber-600 hover:bg-amber-500 text-white p-2 rounded-xl" title="Askıya Al"><i data-lucide="pause" class="w-4 h-4"></i></button>`}
                             <button onclick="window.setPackageDirectly('${s.id}', 'free')" class="bg-slate-700 text-white p-2 rounded-xl" title="Ücretsize Çek">Ü</button>
                             <button onclick="window.setPackageDirectly('${s.id}', 'standard')" class="bg-blue-600 text-white p-2 rounded-xl" title="Standart Paket">S</button>
                             <button onclick="window.setPackageDirectly('${s.id}', 'premium')" class="bg-purple-600 text-white p-2 rounded-xl" title="Premium Yap">P</button>
+                            
+                            <!-- MAĞAZAYI TÜM VERİLERİYLE KOMPLE SİL BUTONU -->
+                            <button onclick="window.completelyDeleteStore('${s.id}')" class="bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-500 p-2 rounded-xl transition ml-2 border border-rose-500/20" title="Mağazayı ve İçindeki Her Şeyi Sil">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -783,6 +714,66 @@
             tbody.innerHTML = html;
             lucide.createIcons();
         }
+
+        window.completelyDeleteStore = (storeId) => {
+            const store = dbStores.find(s => s.id === storeId);
+            if(!store) return;
+
+            const warningMsg = `<b>${store.name}</b> adlı mağazayı kalıcı olarak silmek üzeresiniz.<br><br><span class="text-rose-400 font-bold text-xs">DİKKAT: Bu işlem mağazayı, mağazaya ait ${dbProducts.filter(p => p.storeId === storeId).length} ilanı, o ilanlara ait yorumları ve tüm geçmiş siparişleri tamamen silecektir. İşlem geri alınamaz!</span>`;
+
+            window.customConfirm(warningMsg, async () => {
+                document.getElementById('fullScreenLoader').classList.remove('hidden');
+                document.getElementById('loaderText').innerText = "Mağaza ve tüm verileri siliniyor...";
+
+                try {
+                    let batches = [];
+                    let currentBatch = writeBatch(db);
+                    let opCount = 0;
+
+                    // 1. Ürünleri Bul ve Sil
+                    const storeProducts = dbProducts.filter(p => p.storeId === storeId);
+                    const productIds = storeProducts.map(p => p.id);
+                    
+                    storeProducts.forEach(p => {
+                        currentBatch.delete(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id));
+                        opCount++;
+                        if(opCount === 490) { batches.push(currentBatch.commit()); currentBatch = writeBatch(db); opCount = 0; }
+                    });
+
+                    // 2. O Ürünlere Ait Yorumları Bul ve Sil
+                    if(productIds.length > 0) {
+                        const storeReviews = dbReviews.filter(r => productIds.includes(r.productId));
+                        storeReviews.forEach(r => {
+                            currentBatch.delete(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', r.id));
+                            opCount++;
+                            if(opCount === 490) { batches.push(currentBatch.commit()); currentBatch = writeBatch(db); opCount = 0; }
+                        });
+                    }
+
+                    // 3. Mağazaya Ait Siparişleri Bul ve Sil
+                    const qOrders = query(ordersRef, where("storeId", "==", storeId));
+                    const ordersSnap = await getDocs(qOrders);
+                    
+                    ordersSnap.forEach(o => {
+                        currentBatch.delete(doc(db, 'artifacts', APP_ID, 'public', 'data', 'orders', o.id));
+                        opCount++;
+                        if(opCount === 490) { batches.push(currentBatch.commit()); currentBatch = writeBatch(db); opCount = 0; }
+                    });
+
+                    // 4. Mağazanın Kendisini Sil
+                    currentBatch.delete(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', storeId));
+                    batches.push(currentBatch.commit());
+
+                    await Promise.all(batches);
+                    window.showMessage("Mağaza ve ilişkili tüm veriler kalıcı olarak silindi.");
+                } catch (error) {
+                    console.error("Silme Hatası:", error);
+                    window.showMessage("Silme işlemi sırasında hata oluştu.", "error");
+                } finally {
+                    document.getElementById('fullScreenLoader').classList.add('hidden');
+                }
+            });
+        };
 
         function renderRequests() {
             const container = document.getElementById('requestsContainer');
@@ -965,9 +956,10 @@
         };
 
         window.deleteReview = async (id) => {
-            if(!confirm("Bu yorumu tamamen silmek istediğinize emin misiniz?")) return;
-            try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', id)); window.showMessage("Yorum silindi."); }
-            catch(e) { window.showMessage("Silme işlemi başarısız.", "error"); }
+            window.customConfirm("Bu yorumu tamamen silmek istediğinize emin misiniz?", async () => {
+                try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'reviews', id)); window.showMessage("Yorum silindi."); }
+                catch(e) { window.showMessage("Silme işlemi başarısız.", "error"); }
+            });
         };
 
         window.updateReviewStatus = async (id, newStatus) => {
@@ -1018,9 +1010,10 @@
         };
 
         window.deleteProductDirectly = async (id) => {
-            if(!confirm("Bu ilanı yayından kaldırmak istediğinize emin misiniz?")) return;
-            try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id)); window.showMessage("Ürün başarıyla silindi."); } 
-            catch(e) { window.showMessage("Ürün silinemedi.", "error"); }
+            window.customConfirm("Bu ilanı yayından kaldırmak istediğinize emin misiniz?", async () => {
+                try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id)); window.showMessage("Ürün başarıyla silindi."); } 
+                catch(e) { window.showMessage("Ürün silinemedi.", "error"); }
+            });
         };
 
         function populateSettingsForm() {
@@ -1029,43 +1022,6 @@
                 document.getElementById('setLogoPreview').src = systemSettings.platformLogo;
                 document.getElementById('setLogoPreview').classList.remove('hidden');
                 if(document.getElementById('setLogoFallback')) document.getElementById('setLogoFallback').classList.add('hidden');
-            }
-
-            if(systemSettings.mainBanner) {
-                document.getElementById('setMainTag').value = systemSettings.mainBanner.tag || '';
-                document.getElementById('setMainTitle').value = systemSettings.mainBanner.title || '';
-                document.getElementById('setMainSubtitle').value = systemSettings.mainBanner.subtitle || '';
-                document.getElementById('setMainBtnText').value = systemSettings.mainBanner.btnText || '';
-                document.getElementById('setMainLinkType').value = systemSettings.mainBanner.linkType || 'category';
-                document.getElementById('setMainLinkValue').value = systemSettings.mainBanner.linkValue || '';
-                if(systemSettings.mainBanner.image) {
-                    document.getElementById('setMainImagePreview').src = systemSettings.mainBanner.image;
-                    document.getElementById('setMainImagePreview').classList.remove('hidden');
-                }
-            }
-
-            if(systemSettings.sideBanner1) {
-                document.getElementById('setSide1Title').value = systemSettings.sideBanner1.title || '';
-                document.getElementById('setSide1Subtitle').value = systemSettings.sideBanner1.subtitle || '';
-                document.getElementById('setSide1Icon').value = systemSettings.sideBanner1.icon || '';
-                document.getElementById('setSide1LinkType').value = systemSettings.sideBanner1.linkType || 'category';
-                document.getElementById('setSide1LinkValue').value = systemSettings.sideBanner1.linkValue || '';
-                if(systemSettings.sideBanner1.image) {
-                    document.getElementById('setSide1ImagePreview').src = systemSettings.sideBanner1.image;
-                    document.getElementById('setSide1ImagePreview').classList.remove('hidden');
-                }
-            }
-
-            if(systemSettings.sideBanner2) {
-                document.getElementById('setSide2Title').value = systemSettings.sideBanner2.title || '';
-                document.getElementById('setSide2Subtitle').value = systemSettings.sideBanner2.subtitle || '';
-                document.getElementById('setSide2Icon').value = systemSettings.sideBanner2.icon || '';
-                document.getElementById('setSide2LinkType').value = systemSettings.sideBanner2.linkType || 'category';
-                document.getElementById('setSide2LinkValue').value = systemSettings.sideBanner2.linkValue || '';
-                if(systemSettings.sideBanner2.image) {
-                    document.getElementById('setSide2ImagePreview').src = systemSettings.sideBanner2.image;
-                    document.getElementById('setSide2ImagePreview').classList.remove('hidden');
-                }
             }
         }
 
@@ -1111,48 +1067,14 @@
 
             try {
                 let updates = {
-                    platformName: document.getElementById('setPlatformName').value,
-                    mainBanner: {
-                        tag: document.getElementById('setMainTag').value,
-                        title: document.getElementById('setMainTitle').value,
-                        subtitle: document.getElementById('setMainSubtitle').value,
-                        btnText: document.getElementById('setMainBtnText').value,
-                        linkType: document.getElementById('setMainLinkType').value,
-                        linkValue: document.getElementById('setMainLinkValue').value,
-                        image: systemSettings.mainBanner?.image || null
-                    },
-                    sideBanner1: {
-                        title: document.getElementById('setSide1Title').value,
-                        subtitle: document.getElementById('setSide1Subtitle').value,
-                        icon: document.getElementById('setSide1Icon').value,
-                        linkType: document.getElementById('setSide1LinkType').value,
-                        linkValue: document.getElementById('setSide1LinkValue').value,
-                        image: systemSettings.sideBanner1?.image || null
-                    },
-                    sideBanner2: {
-                        title: document.getElementById('setSide2Title').value,
-                        subtitle: document.getElementById('setSide2Subtitle').value,
-                        icon: document.getElementById('setSide2Icon').value,
-                        linkType: document.getElementById('setSide2LinkType').value,
-                        linkValue: document.getElementById('setSide2LinkValue').value,
-                        image: systemSettings.sideBanner2?.image || null
-                    }
+                    platformName: document.getElementById('setPlatformName').value
                 };
 
                 const logoInput = document.getElementById('setLogoInput');
                 if (logoInput.files.length > 0) updates.platformLogo = await compressAdminImage(logoInput.files[0], 400); 
-                
-                const mainImgInput = document.getElementById('setMainImageInput');
-                if (mainImgInput.files.length > 0) updates.mainBanner.image = await compressAdminImage(mainImgInput.files[0], 1600);
-
-                const side1ImgInput = document.getElementById('setSide1ImageInput');
-                if (side1ImgInput.files.length > 0) updates.sideBanner1.image = await compressAdminImage(side1ImgInput.files[0], 800);
-
-                const side2ImgInput = document.getElementById('setSide2ImageInput');
-                if (side2ImgInput.files.length > 0) updates.sideBanner2.image = await compressAdminImage(side2ImgInput.files[0], 800);
 
                 await setDoc(settingsRef, updates, { merge: true });
-                window.showMessage("Sistem ve Vitrin ayarları başarıyla güncellendi.");
+                window.showMessage("Sistem ayarları başarıyla güncellendi.");
             } catch(err) {
                 console.error(err);
                 window.showMessage("Ayarlar kaydedilirken hata oluştu.", "error");
