@@ -378,7 +378,7 @@
             </div>
         </div>
 
-        <div id="cartDrawer" class="fixed inset-0 z-[70] hidden">
+        <div id="cartDrawer" class="fixed inset-0 z-[120] hidden">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="window.toggleCart()"></div>
             <div class="absolute inset-y-0 right-0 rtl:left-0 rtl:right-auto w-full max-w-md bg-slate-50 shadow-2xl flex flex-col transform translate-x-full rtl:-translate-x-full transition-transform duration-300" id="cartPanel">
                 <div class="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-white shadow-sm z-10">
@@ -396,7 +396,7 @@
             </div>
         </div>
 
-        <div id="productDetailModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 sm:p-6">
+        <div id="productDetailModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4 sm:p-6">
             <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="window.closeProductDetail()"></div>
             <div class="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh]" id="productDetailPanel">
                 <button onclick="window.closeProductDetail()" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto z-10 bg-white/50 backdrop-blur-md p-2 rounded-full shadow-sm hover:bg-white text-slate-600 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -1249,14 +1249,15 @@
             const targetProductId = urlParams.get('urun') || localStorage.getItem('admin_redirect_product');
             const targetStoreId = urlParams.get('magaza') || localStorage.getItem('admin_redirect_store');
 
+            if (targetStoreId) {
+                const store = dbStores.find(s => s.id === targetStoreId);
+                if (store) { localStorage.removeItem('admin_redirect_store'); setTimeout(() => window.openStoreProfile(targetStoreId), 200); } 
+                else { localStorage.removeItem('admin_redirect_store'); }
+            }
             if (targetProductId) {
                 const prod = dbProducts.find(p => p.id === targetProductId);
-                if (prod) { localStorage.removeItem('admin_redirect_product'); setTimeout(() => window.openProductDetail(targetProductId), 500); } 
+                if (prod) { localStorage.removeItem('admin_redirect_product'); setTimeout(() => window.openProductDetail(targetProductId), 600); } 
                 else { localStorage.removeItem('admin_redirect_product'); }
-            } else if (targetStoreId) {
-                const store = dbStores.find(s => s.id === targetStoreId);
-                if (store) { localStorage.removeItem('admin_redirect_store'); setTimeout(() => window.openStoreProfile(targetStoreId), 500); } 
-                else { localStorage.removeItem('admin_redirect_store'); }
             }
         }
 
@@ -1563,7 +1564,6 @@
             
             const url = new URL(window.location);
             url.searchParams.set('urun', id);
-            url.searchParams.delete('magaza');
             window.history.pushState({}, '', url);
 
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
@@ -1886,8 +1886,8 @@
             if(store.instagram) {
                 socialHtml += `<a href="https://instagram.com/${store.instagram}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-[#E1306C] border border-white/20 flex items-center justify-center text-white transition backdrop-blur-md shadow-lg" title="Instagram Profiline Git"><i data-lucide="instagram" class="w-4 h-4"></i></a>`;
             }
-            if(store.tiktok) {
-                socialHtml += `<a href="https://tiktok.com/@${store.tiktok}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-[#000000] border border-white/20 flex items-center justify-center text-white transition backdrop-blur-md shadow-lg" title="TikTok Profiline Git"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg></a>`;
+            if(store.facebook) {
+                socialHtml += `<a href="https://facebook.com/${store.facebook}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-[#1877F2] border border-white/20 flex items-center justify-center text-white transition backdrop-blur-md shadow-lg" title="Facebook Profiline Git"><i data-lucide="facebook" class="w-4 h-4"></i></a>`;
             }
 
             if (socialHtml !== '') {
