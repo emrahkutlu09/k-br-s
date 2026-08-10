@@ -1673,12 +1673,36 @@
                 }
                 
                 if (activeCategory) {
-                    const targetCat = activeCategory.toLocaleLowerCase('tr-TR').trim();
-                    displayProducts = displayProducts.filter(p => 
-                        p.category && p.category.toLocaleLowerCase('tr-TR').includes(targetCat)
-                    );
+                    let validCategoryNames = [activeCategory]; // Aranacak kategoriler havuzu
+                    
+                    // Aktif kategorinin veritabanındaki objesini bul
+                    const activeCatLower = activeCategory.toLocaleLowerCase('tr-TR').trim();
+                    const parentCatObj = dbCategories.find(c => c.name.toLocaleLowerCase('tr-TR').trim().includes(activeCatLower));
+                    
+                    // Eğer bir üst kategoriyse, tüm alt kategorilerini de havuza ekle
+                    if (parentCatObj) {
+                        const getChildren = (parentId) => {
+                            const children = dbCategories.filter(c => c.parentId === parentId);
+                            children.forEach(child => {
+                                validCategoryNames.push(child.name);
+                                getChildren(child.id); // Daha da alt kategoriler varsa onları da bulur
+                            });
+                        };
+                        getChildren(parentCatObj.id);
+                    }
+                    
+                    // Havuzdaki tüm isimleri küçük harfe çevir
+                    const validCatsLower = validCategoryNames.map(c => c.toLocaleLowerCase('tr-TR').trim());
+                    
+                    // Ürünleri bu geniş havuza göre filtrele
+                    displayProducts = displayProducts.filter(p => {
+                        if (!p.category) return false;
+                        const pCatLower = p.category.toLocaleLowerCase('tr-TR').trim();
+                        // Ürünün kategorisi bu listedeki (üst veya alt kategori) herhangi bir isimle eşleşiyor mu?
+                        return validCatsLower.some(validCat => pCatLower.includes(validCat) || validCat.includes(pCatLower));
+                    });
                 }
-                
+
                 if (activeDistrict) displayProducts = displayProducts.filter(p => p.district === activeDistrict);
 
                 const translatedActiveCat = activeCategory ? window.getCategoryTranslation(activeCategory) : '';
