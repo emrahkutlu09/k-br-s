@@ -71,15 +71,10 @@
         .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
         .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
         * { -webkit-text-size-adjust: none; }
-        
-        /* Modal Geçişleri */
-        .modal-enter { transform: scale(0.95); opacity: 0; }
-        .modal-enter-active { transform: scale(1); opacity: 1; transition: all 300ms ease-out; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased selection:bg-orange-500 selection:text-white">
 
-    <!-- Başlangıç Yükleyicisi (z-[999]) -->
     <div id="initialLoader" class="fixed inset-0 z-[999] bg-slate-50 flex flex-col items-center justify-center transition-opacity duration-500">
         <i data-lucide="loader-2" class="w-12 h-12 text-orange-500 animate-spin mb-4"></i>
         <h2 id="loaderBrandName" class="text-2xl font-black text-slate-900 tracking-tighter animate-pulse">KIBRIS<span class="text-orange-500">BAZAR</span></h2>
@@ -97,7 +92,6 @@
 
     <div id="app" class="flex flex-col min-h-screen relative">
         
-        <!-- Üst Bar -->
         <div class="bg-slate-900 text-slate-300 text-[11px] py-1.5 px-4 font-medium border-b border-slate-800">
             <div class="max-w-7xl mx-auto flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -136,7 +130,6 @@
             </div>
         </div>
 
-        <!-- Ana Navigasyon -->
         <nav class="bg-white border-b sticky top-0 z-40 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16 gap-4">
@@ -227,14 +220,13 @@
             </div>
         </nav>
 
-        <!-- İçerik Alanı -->
         <main id="mainContent" class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
             <div class="flex items-center justify-center py-20">
                 <i data-lucide="loader-2" class="w-8 h-8 text-orange-500 animate-spin"></i>
             </div>
         </main>
 
-        <!-- ÇOK DİLLİ SEO İÇERİK ALANI -->
+        <!-- YENİ EKLENEN ÇOK DİLLİ SEO İÇERİK ALANI (SADECE ANA SAYFADA GÖRÜNÜR) -->
         <section id="homeSeoSection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 mt-4 bg-white rounded-3xl shadow-sm border border-slate-100 mb-8 hidden">
             <div class="max-w-4xl mx-auto text-center sm:text-left">
                 <h1 class="text-2xl sm:text-3xl font-black text-slate-900 mb-4 leading-tight" data-i18n="seo_h1">Kuzey Kıbrıs'ın Yeni Nesil Dijital Pazar Yeri: Kıbrıs Bazar</h1>
@@ -294,12 +286,9 @@
                     <h4 class="font-black text-slate-900 text-2xl tracking-tighter mb-4">KIBRIS<span class="text-orange-500">BAZAR</span></h4>
                     <p class="text-sm text-slate-500 leading-relaxed mb-4" data-i18n="footer_about_desc">Kıbrıs'ın yeni nesil, komisyonsuz dijital pazar yeri. Alıcılar ve yerel satıcılar güvenle buluşuyor.</p>
                     <div class="flex gap-3">
-                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-orange-500 hover:text-white transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                        </a>
-                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-orange-500 hover:text-white transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-orange-500 hover:text-white transition"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-orange-500 hover:text-white transition"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-orange-500 hover:text-white transition"><i data-lucide="twitter" class="w-4 h-4"></i></a>
                     </div>
                 </div>
 
@@ -339,9 +328,7 @@
             </div>
         </footer>
 
-        <!-- MODALLAR (Z-Index Sıralamasıyla) -->
-
-        <!-- WhatsApp Yönlendirme Modalı (z-[150]) -->
+        <!-- WhatsApp Yönlendirme Modalı -->
         <div id="checkoutConfirmModal" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="window.closeCheckoutConfirm()"></div>
             <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-8 transform scale-95 opacity-0 transition-all duration-300 flex flex-col" id="checkoutConfirmPanel">
@@ -368,7 +355,7 @@
             </div>
         </div>
 
-        <!-- Bilgi Modalı (z-[150]) -->
+        <!-- Info Modals (Hakkımızda, Sözleşmeler) -->
         <div id="infoModal" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="window.closeInfoModal()"></div>
             <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="infoPanel">
@@ -381,7 +368,7 @@
             </div>
         </div>
 
-        <!-- Siparişlerim Modalı (z-[100]) -->
+        <!-- Siparişlerim Modalı -->
         <div id="myOrdersModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="window.closeMyOrders()"></div>
             <div class="relative w-full max-w-3xl bg-slate-50 rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="myOrdersPanel">
@@ -393,7 +380,7 @@
             </div>
         </div>
 
-        <!-- Sepet Çekmecesi (z-[120]) -->
+        <!-- Sepet Çekmecesi -->
         <div id="cartDrawer" class="fixed inset-0 z-[120] hidden">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="window.toggleCart()"></div>
             <div class="absolute inset-y-0 right-0 rtl:left-0 rtl:right-auto w-full max-w-md bg-slate-50 shadow-2xl flex flex-col transform translate-x-full rtl:-translate-x-full transition-transform duration-300" id="cartPanel">
@@ -412,7 +399,7 @@
             </div>
         </div>
 
-        <!-- Ürün Detay Modalı (z-[110]) -->
+        <!-- Ürün Detay Modalı -->
         <div id="productDetailModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4 sm:p-6">
             <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="window.closeProductDetail()"></div>
             <div class="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh]" id="productDetailPanel">
@@ -451,7 +438,7 @@
                             </div>
                             <div>
                                 <div class="text-[10px] font-bold text-slate-400 uppercase group-hover:text-orange-500 transition-colors" data-i18n="seller_profile_btn">Satıcı Profili & Tüm Ürünleri</div>
-                                <div class="font-black text-slate-800 text-lg flex items-center gap-1"><span id="detailStoreName"></span><i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i></div>
+                                <div class="font-black text-slate-800 text-lg flex items-center gap-1"><span id="detailStoreName"></span><i id="detailStoreShield" data-lucide="shield-check" class="w-4 h-4 text-emerald-500 hidden" title="Güvenilir Premium Satıcı"></i></div>
                                 <div class="text-xs font-bold text-slate-500 flex items-center gap-1 mt-0.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-orange-400"></i> <span id="detailDistrict"></span></div>
                             </div>
                         </div>
@@ -474,7 +461,7 @@
             </div>
         </div>
 
-        <!-- Mağaza Profili Modalı (z-[95]) -->
+        <!-- Mağaza Profili Ekranı -->
         <div id="storeProfileModal" class="fixed inset-0 z-[95] hidden bg-slate-50 overflow-y-auto">
             <div class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center shadow-sm">
                  <!-- Sol Taraf: Geri Butonu -->
@@ -507,11 +494,13 @@
                      <div class="pb-1 w-full flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 z-10">
                          <div>
                              <h1 class="text-3xl sm:text-4xl font-black text-white flex items-center gap-2 tracking-tight"><span id="spName"></span> <span id="spPremium" class="hidden"><i data-lucide="award" class="w-6 h-6 text-purple-400"></i></span></h1>
-                             <p class="text-slate-300 text-sm font-bold flex items-center gap-4 mt-2">
+                             <p class="text-slate-300 text-sm font-bold flex items-center gap-4 mt-2 mb-3">
                                  <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-4 h-4 text-orange-400"></i> <span id="spDistrict"></span></span>
                                  <span class="flex items-center gap-1"><i data-lucide="heart" class="w-4 h-4 text-rose-400"></i> <span id="spFollowersCount">0</span> <span data-i18n="followers">Takipçi</span></span>
                              </p>
-                             <div id="spSocialLinks" class="flex items-center gap-3 mt-4 hidden"></div>
+                             
+                             <!-- Sosyal Medya İkonları (Otomatik Gizlenip/Açılacak) -->
+                             <div id="spSocialLinks" class="flex items-center gap-3 hidden"></div>
                          </div>
                          <div class="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0">
                             <button id="spFollowBtn" class="w-full sm:w-auto bg-white text-slate-900 px-5 py-2.5 rounded-xl font-bold text-sm transition flex justify-center items-center gap-2 shadow-lg shadow-white/20 hover:bg-rose-50 hover:text-rose-600">
@@ -649,7 +638,7 @@
                 ask_seller: "Satıcıya Sor",
                 store_products: "Mağaza Ürünleri",
                 browse_categories: "Kategorilere Göz At",
-                premium_listings: "Premium İlanlar",
+                premium_listings: "Premium Ürünler", // DEĞİŞTİRİLDİ
                 favorites_title: "Favorileriniz",
                 for_you: "Sizin İçin Seçtiklerimiz",
                 no_products: "Kriterlere uygun ürün bulunamadı.",
@@ -735,7 +724,7 @@
                 ask_seller: "Ask Seller",
                 store_products: "Store Products",
                 browse_categories: "Browse Categories",
-                premium_listings: "Premium Listings",
+                premium_listings: "Premium Products",
                 favorites_title: "Your Favorites",
                 for_you: "Selected For You",
                 no_products: "No products found matching the criteria.",
@@ -821,7 +810,7 @@
                 ask_seller: "Ρωτήστε τον Πωλητή",
                 store_products: "Προϊόντα Καταστήματος",
                 browse_categories: "Περιήγηση Κατηγοριών",
-                premium_listings: "Premium Καταχωρήσεις",
+                premium_listings: "Premium Προϊόντα",
                 favorites_title: "Τα Αγαπημένα σας",
                 for_you: "Επιλεγμένα για εσάς",
                 no_products: "Δεν βρέθηκαν προϊόντα που να ταιριάζουν.",
@@ -907,7 +896,7 @@
                 ask_seller: "Спросить продавца",
                 store_products: "Товары магазина",
                 browse_categories: "Просмотр категорий",
-                premium_listings: "Премиум объявления",
+                premium_listings: "Премиум товары",
                 favorites_title: "Ваши избранные",
                 for_you: "Выбрано для вас",
                 no_products: "Товары не найдены.",
@@ -993,7 +982,7 @@
                 ask_seller: "اسأل البائع",
                 store_products: "منتجات المتجر",
                 browse_categories: "تصفح الفئات",
-                premium_listings: "إعلانات مميزة",
+                premium_listings: "المنتجات المتميزة",
                 favorites_title: "مفضلاتك",
                 for_you: "مختارة لك",
                 no_products: "لم يتم العثور على منتجات.",
@@ -1220,6 +1209,16 @@
             }
         }
 
+        // Fisher-Yates Karıştırma (Shuffle) Algoritması - Rastgeleliği Garantiler
+        const shuffleArray = (array) => {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        };
+
         async function initApp() {
             lucide.createIcons();
             updateCartUI();
@@ -1268,7 +1267,7 @@
                 snapshot.forEach(doc => { dbProducts.push({id: doc.id, ...doc.data()}); });
                 isProductsLoaded = true;
                 if(isStoresLoaded && isProductsLoaded) checkAdminRedirects(); 
-                window.renderHome(document.getElementById('searchInput').value);
+                window.renderHome(document.getElementById('searchInput').value); 
                 checkInitialLoadStatus();
             });
             
@@ -1428,6 +1427,7 @@
             window.renderHome(document.getElementById('searchInput').value);
         };
 
+        // KART OLUŞTURUCU (Tüm kartlar standart bir şekilde kutuyu doldurur w-full h-full)
         window.createProductCard = (p) => {
             const discount = p.originalPrice > p.price ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
             const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500/cbd5e1/475569?text=Gorsel';
@@ -1436,6 +1436,10 @@
             
             const storeObj = dbStores.find(s => s.id === p.storeId);
             const followerCount = storeObj && storeObj.followers ? storeObj.followers.length : 0;
+            
+            // Satıcı VIP Paket ise Rozet Gösterimi İçin
+            const isPremiumStore = storeObj && (storeObj.isPremium || storeObj.packageType === 'premium');
+            
             const variantsText = window.t('variants_label');
             
             return `
@@ -1448,8 +1452,12 @@
                         ${discount > 0 ? `<div class="absolute top-2 left-2 rtl:right-2 rtl:left-auto bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded shadow">-%${discount}</div>` : ''}
                     </div>
                     <div class="flex-1 flex flex-col">
-                        <div class="text-[10px] text-slate-500 font-bold mb-1 flex items-center justify-between">
-                            <span class="truncate pr-2 rtl:pl-2 rtl:pr-0 cursor-pointer hover:text-orange-500 transition-colors z-20" onclick="event.stopPropagation(); window.openStoreProfile('${p.storeId}')" title="Mağazaya Git">${p.storeName} | ${p.district}</span>
+                        <div class="text-[10px] text-slate-500 font-bold mb-1 flex items-center justify-between gap-1">
+                            <span class="flex items-center gap-1 truncate cursor-pointer hover:text-orange-500 transition-colors z-20" onclick="event.stopPropagation(); window.openStoreProfile('${p.storeId}')" title="Mağazaya Git">
+                                <span class="truncate">${p.storeName}</span>
+                                ${isPremiumStore ? `<i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500 shrink-0" title="Güvenilir Premium Satıcı"></i>` : ''}
+                                <span class="shrink-0 text-slate-400">| ${p.district}</span>
+                            </span>
                             <span class="flex items-center gap-0.5 text-rose-500 shrink-0" title="Followers"><i data-lucide="heart" class="w-3 h-3 fill-rose-500"></i> ${followerCount}</span>
                         </div>
                         <h3 class="text-xs font-bold text-slate-800 mb-1 line-clamp-2">${p.title}</h3>
@@ -1476,11 +1484,15 @@
             const activeStoreIds = dbStores.filter(s => s.status === 'active' && (!s.expiryDate || s.expiryDate > Date.now())).map(s => s.id);
             let displayProducts = dbProducts.filter(p => activeStoreIds.includes(p.storeId));
             
+            // Satıcı paketlerine göre mağaza ID'lerini ayırma
             const premiumStoreIds = dbStores.filter(s => s.isPremium || s.packageType === 'premium').map(s => s.id);
+            const standardStoreIds = dbStores.filter(s => s.packageType === 'standard' && !s.isPremium).map(s => s.id);
+            const freeStoreIds = dbStores.filter(s => s.packageType === 'free' && !s.isPremium).map(s => s.id);
 
             let html = '';
 
             if (!searchQuery && !activeCategory && !activeDistrict) {
+                // Afiş Bölümleri
                 const mainBgContent = appSettings.mainBanner.image ? `<img src="${appSettings.mainBanner.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 z-0"></div>`;
                 const side1BgContent = appSettings.sideBanner1.image ? `<img src="${appSettings.sideBanner1.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-rose-400 z-0"></div>`;
                 const side2BgContent = appSettings.sideBanner2.image ? `<img src="${appSettings.sideBanner2.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 z-0"></div>`;
@@ -1524,7 +1536,13 @@
                     </div>
                 `;
 
-                const featuredProducts = displayProducts.filter(p => premiumStoreIds.includes(p.storeId)).slice(0, 10);
+                // ÜRÜN HAVUZLARINI OLUŞTURMA (En yeniden eskiye)
+                let premiumProds = displayProducts.filter(p => premiumStoreIds.includes(p.storeId)).sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+                let standardProds = displayProducts.filter(p => standardStoreIds.includes(p.storeId)).sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+                let freeProds = displayProducts.filter(p => freeStoreIds.includes(p.storeId)).sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+                // 1. PREMIUM ÜRÜNLER VİTRİNİ (Sadece VIP, Karıştırılmış, Max 10)
+                const featuredProducts = shuffleArray([...premiumProds]).slice(0, 10);
                 if (featuredProducts.length > 0) {
                     html += `
                         <div class="mb-12">
@@ -1534,38 +1552,40 @@
                             </div>
                             <div id="featuredContainer" class="flex gap-4 sm:gap-5 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth snap-x">
                     `;
-                    featuredProducts.forEach(p => { html += `<div class="snap-start shrink-0 w-[160px] sm:w-[200px] lg:w-[220px] flex">` + window.createProductCard(p) + `</div>`; });
+                    featuredProducts.forEach(p => { 
+                        // Kartları yatay kaydırma için belirli bir genişliğe hapsediyoruz ki devasa büyümesin
+                        html += `<div class="snap-start shrink-0 w-[160px] sm:w-[200px] lg:w-[220px]">` + window.createProductCard(p) + `</div>`; 
+                    });
                     html += `</div></div>`;
                 }
 
+                // FAVORİLER BÖLÜMÜ
                 const favProducts = displayProducts.filter(p => favorites.includes(p.id));
                 if (favProducts.length > 0) {
                     html += `<div class="mb-12 bg-rose-50 rounded-3xl p-6 border border-rose-100"><h2 class="text-xl font-black text-rose-900 mb-5">${window.t('favorites_title')}</h2><div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">`;
-                    favProducts.forEach(p => { html += window.createProductCard(p); });
+                    favProducts.forEach(p => { html += `<div>` + window.createProductCard(p) + `</div>`; });
                     html += `</div></div>`;
                 }
 
-                const premiumProds = displayProducts.filter(p => premiumStoreIds.includes(p.storeId));
-                const standardProds = displayProducts.filter(p => !premiumStoreIds.includes(p.storeId));
-                standardProds.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); 
+                // 2. SİZİN İÇİN SEÇTİKLERİMİZ (Akıllı Karma Algoritması)
+                // Her paketin en yeni 30 ürünü içinden rastgele (10 Premium, 8 Standart, 2 Free) çekiliyor ve tekrar karıştırılıyor.
+                let poolPremium = shuffleArray(premiumProds.slice(0, 30)).slice(0, 10);
+                let poolStandard = shuffleArray(standardProds.slice(0, 30)).slice(0, 8);
+                let poolFree = shuffleArray(freeProds.slice(0, 30)).slice(0, 2);
                 
-                let mixedPool = [...premiumProds, ...standardProds.slice(0, 50)];
-                for (let i = mixedPool.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [mixedPool[i], mixedPool[j]] = [mixedPool[j], mixedPool[i]];
-                }
-                const finalForYou = mixedPool.slice(0, 20);
+                let finalForYou = shuffleArray([...poolPremium, ...poolStandard, ...poolFree]);
 
                 html += `<div class="mb-5"><h2 class="text-xl font-black text-slate-900">${window.t('for_you')}</h2></div>`;
                 if(finalForYou.length > 0) {
                     html += `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">`;
-                    finalForYou.forEach(p => { html += window.createProductCard(p); });
+                    finalForYou.forEach(p => { html += `<div>` + window.createProductCard(p) + `</div>`; });
                     html += `</div>`;
                 } else {
                     html += `<div class="text-center py-12 bg-white rounded-3xl border"><p class="text-slate-500 font-bold">${window.t('no_products')}</p></div>`;
                 }
 
             } else {
+                // FİLTRELEME & ARAMA ALANI
                 if (searchQuery) {
                     const q = searchQuery.toLocaleLowerCase('tr-TR');
                     displayProducts = displayProducts.filter(p => p.title.toLocaleLowerCase('tr-TR').includes(q) || p.storeName.toLocaleLowerCase('tr-TR').includes(q));
@@ -1582,7 +1602,7 @@
                     html += `<div class="text-center py-16 bg-white rounded-3xl border"><p class="text-slate-500 font-bold text-lg">${window.t('no_products')}</p><button onclick="window.setCategory(''); document.getElementById('searchInput').value=''; if(document.getElementById('searchInputMobile')) document.getElementById('searchInputMobile').value=''; window.renderHome();" class="mt-4 text-orange-500 font-bold hover:underline">${window.t('clear_filters')}</button></div>`;
                 } else {
                     html += `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">`;
-                    displayProducts.forEach(p => { html += window.createProductCard(p); });
+                    displayProducts.forEach(p => { html += `<div>` + window.createProductCard(p) + `</div>`; });
                     html += `</div>`;
                 }
             }
@@ -1593,9 +1613,6 @@
         window.openProductDetail = (id) => {
             const product = dbProducts.find(p => p.id === id);
             if(!product) return;
-            
-            // Aktif ürünü hafızaya alıyoruz ki varyant değişince bilgilere erişebilelim
-            window.currentActiveProduct = product;
             
             const url = new URL(window.location);
             url.searchParams.set('urun', id);
@@ -1632,8 +1649,17 @@
             document.getElementById('detailStoreName').innerText = product.storeName;
             document.getElementById('detailDistrict').innerText = product.district;
             document.getElementById('detailStoreIdHidden').value = product.storeId;
+            document.getElementById('detailProductId').value = product.id; // Varyant seçimi için ID'yi tuttuk
             
+            // Satıcı Premium ise Güven Rozetini Göster
             const storeObj = dbStores.find(s => s.id === product.storeId);
+            const isPremiumStore = storeObj && (storeObj.isPremium || storeObj.packageType === 'premium');
+            const shieldIcon = document.getElementById('detailStoreShield');
+            if(shieldIcon) {
+                if(isPremiumStore) shieldIcon.classList.remove('hidden');
+                else shieldIcon.classList.add('hidden');
+            }
+
             if(storeObj && storeObj.logoUrl) {
                 document.getElementById('detailStoreLogo').src = storeObj.logoUrl;
                 document.getElementById('detailStoreLogo').classList.remove('hidden');
@@ -1643,6 +1669,7 @@
                 document.getElementById('detailStoreLogoIcon').classList.remove('hidden');
             }
 
+            // Gelişmiş Varyant İşlemleri
             const variantContainer = document.getElementById('detailVariantContainer');
             if (product.variants && product.variants.length > 0) {
                 let varHtml = `<label class="block text-xs font-bold text-slate-500 mb-2">${window.t('variants_label')}</label><div class="flex flex-wrap gap-2">`;
@@ -1826,7 +1853,13 @@
             }
         };
 
+        // Gelişmiş Varyant Seçimi (Anında Fiyat ve Resim Değişimi)
         window.selectVariant = (idx) => {
+            const productId = document.getElementById('detailProductId').value;
+            const product = dbProducts.find(p => p.id === productId);
+            if(!product) return;
+            const variant = product.variants[idx];
+
             document.querySelectorAll('.var-btn').forEach(b => {
                 b.classList.remove('border-orange-500', 'text-orange-600', 'bg-orange-50');
                 b.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
@@ -1836,23 +1869,17 @@
             btn.classList.add('border-orange-500', 'text-orange-600', 'bg-orange-50');
             document.getElementById('selectedVariantIndex').value = idx;
 
-            if (window.currentActiveProduct && window.currentActiveProduct.variants) {
-                const variant = window.currentActiveProduct.variants[idx];
-                if (variant) {
-                    if (variant.price) {
-                        document.getElementById('detailPrice').innerText = variant.price.toLocaleString('tr-TR') + ' TL';
-                        document.getElementById('detailOriginalPrice').classList.add('hidden');
-                        document.getElementById('detailDiscountBadge').classList.add('hidden');
-                    } else {
-                        document.getElementById('detailPrice').innerText = window.currentActiveProduct.price.toLocaleString('tr-TR') + ' TL';
-                    }
-                    
-                    if (variant.image && variant.image.trim() !== '') {
-                        document.getElementById('detailMainImage').src = variant.image;
-                    } else if (window.currentActiveProduct.images && window.currentActiveProduct.images.length > 0) {
-                        document.getElementById('detailMainImage').src = window.currentActiveProduct.images[0];
-                    }
-                }
+            // Fiyatı Değiştir (Varyanta özel fiyat varsa onu, yoksa ürünün ana fiyatını gösterir)
+            const varPrice = variant.price || product.price;
+            document.getElementById('detailPrice').innerText = varPrice.toLocaleString('tr-TR') + ' TL';
+            
+            // Varyant seçildiğinde eski indirim etiketini gizler
+            document.getElementById('detailOriginalPrice').classList.add('hidden');
+            document.getElementById('detailDiscountBadge').classList.add('hidden');
+
+            // Resmi Değiştir (Varyanta özel fotoğraf eklenmişse ana resim o olur)
+            if(variant.image) {
+                document.getElementById('detailMainImage').src = variant.image;
             }
         };
 
@@ -1929,26 +1956,30 @@
             if(store.isPremium || store.packageType === 'premium') document.getElementById('spPremium').classList.remove('hidden');
             else document.getElementById('spPremium').classList.add('hidden');
 
+            // Sosyal Medya İkonları (SVG Olarak Garantili Gösterim)
             const socialLinksContainer = document.getElementById('spSocialLinks');
             let socialHtml = '';
             
             if(store.website) {
-                let linkUrl = store.website.startsWith('http') ? store.website : 'https://' + store.website;
-                socialHtml += `<a href="${linkUrl}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-orange-500 border border-white/20 flex items-center justify-center text-white transition backdrop-blur-md shadow-lg" title="Web Sitesine Git">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                </a>`;
+                let webUrl = store.website.startsWith('http') ? store.website : 'https://' + store.website;
+                socialHtml += `
+                    <a href="${webUrl}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-orange-500 border border-white/20 flex items-center justify-center text-white transition backdrop-blur-md shadow-lg" title="Web Sitesine Git">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                    </a>`;
             }
             if(store.instagram) {
                 let ig = store.instagram.replace('@', '').trim();
-                socialHtml += `<a href="https://instagram.com/${ig}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-[#E1306C] border border-white/20 flex items-center justify-center text-white transition backdrop-blur-md shadow-lg" title="Instagram Profiline Git">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                </a>`;
+                socialHtml += `
+                    <a href="https://instagram.com/${ig}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-[#E1306C] border border-white/20 flex items-center justify-center text-white transition backdrop-blur-md shadow-lg" title="Instagram Profiline Git">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                    </a>`;
             }
             if(store.facebook) {
                 let fb = store.facebook.trim();
-                socialHtml += `<a href="https://facebook.com/${fb}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-[#1877F2] border border-white/20 flex items-center justify-center text-white transition backdrop-blur-md shadow-lg" title="Facebook Profiline Git">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                </a>`;
+                socialHtml += `
+                    <a href="https://facebook.com/${fb}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-[#1877F2] border border-white/20 flex items-center justify-center text-white transition backdrop-blur-md shadow-lg" title="Facebook Profiline Git">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                    </a>`;
             }
 
             if (socialHtml !== '') {
@@ -2084,7 +2115,7 @@
             }
 
             let html = '';
-            displayList.forEach(p => { html += window.createProductCard(p); });
+            displayList.forEach(p => { html += `<div>` + window.createProductCard(p) + `</div>`; });
             container.innerHTML = html;
             lucide.createIcons();
         };
@@ -2104,14 +2135,11 @@
 
             const exist = cart.find(i => i.cartItemId === id);
             
-            if(exist) {
-                exist.quantity++;
-            } else { 
-                cart.push({ cartItemId: id, product: product, variant: null, variantPrice: product.price, quantity: 1 });
-            }
+            if(exist) exist.quantity++;
+            else cart.push({ cartItemId: id, product: product, variant: null, quantity: 1, dynamicPrice: product.price, dynamicImage: (product.images ? product.images[0] : '') });
             
             saveCart(); 
-            window.showMessage("Sepete Eklendi!", "success"); 
+            window.showMessage("Sepete eklendi!"); 
             updateCartUI();
         };
 
@@ -2120,26 +2148,32 @@
             if(!product) return;
 
             let selectedVariantName = null;
-            let variantPrice = product.price;
+            let finalPrice = product.price;
+            let finalImage = (product.images && product.images.length > 0) ? product.images[0] : '';
 
             if (product.variants && product.variants.length > 0) {
                 const vIdx = document.getElementById('selectedVariantIndex')?.value;
                 if (!vIdx) { window.showMessage("Lütfen bir seçenek (varyant) belirleyin.", "error"); return; }
-                const variant = product.variants[parseInt(vIdx)];
-                selectedVariantName = variant.name;
-                if (variant.price) variantPrice = variant.price;
+                const variantData = product.variants[parseInt(vIdx)];
+                selectedVariantName = variantData.name;
+                finalPrice = variantData.price || product.price;
+                if(variantData.image) finalImage = variantData.image;
             }
 
             const cartItemId = selectedVariantName ? `${id}-${selectedVariantName}` : id;
             const exist = cart.find(i => i.cartItemId === cartItemId);
             
-            if(exist) {
-                exist.quantity++;
-            } else { 
-                cart.push({ cartItemId: cartItemId, product: product, variant: selectedVariantName, variantPrice: variantPrice, quantity: 1 });
-            }
+            if(exist) exist.quantity++;
+            else cart.push({ 
+                cartItemId: cartItemId, 
+                product: product, 
+                variant: selectedVariantName, 
+                quantity: 1, 
+                dynamicPrice: finalPrice, 
+                dynamicImage: finalImage 
+            });
             
-            saveCart(); window.showMessage("Sepete Eklendi!", "success"); updateCartUI();
+            saveCart(); window.showMessage("Sepete eklendi!"); updateCartUI();
             window.closeProductDetail();
             if(!isCartOpen) window.toggleCart();
         };
@@ -2168,7 +2202,9 @@
                         ordersByStore[sId] = { storeName: item.product.storeName, storePhone: storePhone, items: [], total: 0 };
                     }
                     ordersByStore[sId].items.push(item);
-                    ordersByStore[sId].total += ((item.variantPrice || item.product.price) * item.quantity);
+                    
+                    const itemPrice = item.dynamicPrice || item.product.price;
+                    ordersByStore[sId].total += (itemPrice * item.quantity);
                 });
 
                 let html = '';
@@ -2182,18 +2218,20 @@
                     `;
                     orderData.items.forEach(item => {
                         totalQty += item.quantity;
-                        const img = (item.product.images && item.product.images.length > 0) ? item.product.images[0] : 'https://placehold.co/100x100';
+                        const itemImage = item.dynamicImage || ((item.product.images && item.product.images.length > 0) ? item.product.images[0] : 'https://placehold.co/100x100');
+                        const itemPrice = item.dynamicPrice || item.product.price;
+
                         html += `
                             <div class="flex gap-4 relative">
                                 <button onclick="window.removeFromCart('${item.cartItemId}')" class="absolute top-0 right-0 rtl:left-0 rtl:right-auto p-1 text-slate-300 hover:text-rose-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                <img src="${img}" class="w-20 h-20 object-cover rounded-xl bg-slate-50 shrink-0"/>
+                                <img src="${itemImage}" class="w-20 h-20 object-cover rounded-xl bg-slate-50 shrink-0"/>
                                 <div class="flex-1 flex flex-col justify-between">
                                     <div>
                                         <h4 class="text-sm font-bold text-slate-800 line-clamp-2 pr-6 rtl:pr-0 rtl:pl-6">${item.product.title}</h4>
                                         ${item.variant ? `<span class="text-[10px] font-bold text-orange-500 mt-1 bg-orange-50 px-1.5 py-0.5 rounded inline-block">${item.variant}</span>` : ''}
                                     </div>
                                     <div class="flex items-center justify-between mt-2">
-                                        <span class="font-black text-orange-600">${(item.variantPrice || item.product.price).toLocaleString('tr-TR')} TL</span>
+                                        <span class="font-black text-orange-600">${itemPrice.toLocaleString('tr-TR')} TL</span>
                                         <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-lg p-1">
                                             <button onclick="window.updateCartQuantity('${item.cartItemId}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-600 hover:bg-slate-200 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button>
                                             <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
@@ -2282,7 +2320,9 @@
                     ordersByStore[sId] = { storeName: item.product.storeName, storePhone: storePhone, items: [], total: 0 };
                 }
                 ordersByStore[sId].items.push(item);
-                ordersByStore[sId].total += ((item.variantPrice || item.product.price) * item.quantity);
+                
+                const itemPrice = item.dynamicPrice || item.product.price;
+                ordersByStore[sId].total += (itemPrice * item.quantity);
             });
 
             const orderData = ordersByStore[storeId];
@@ -2292,13 +2332,19 @@
                 const buyerUid = auth.currentUser ? auth.currentUser.uid : 'misafir';
                 const buyerEmail = (auth.currentUser && !auth.currentUser.isAnonymous) ? auth.currentUser.email : 'Misafir';
                 
+                // Siparişi veritabanına kaydederken varyant özel fiyatı korunsun
                 const newOrder = {
                     storeId: storeId,
                     storeName: orderData.storeName,
                     buyerUid: buyerUid,
                     buyerEmail: buyerEmail,
                     customerName: buyerEmail === 'Misafir' ? 'Misafir Müşteri' : buyerEmail.split('@')[0],
-                    items: orderData.items, 
+                    items: orderData.items.map(i => ({
+                        product: i.product,
+                        variant: i.variant,
+                        quantity: i.quantity,
+                        price: i.dynamicPrice || i.product.price // özel fiyat
+                    })), 
                     totalAmount: orderData.total,
                     status: 'pending',
                     createdAt: Date.now()
@@ -2317,7 +2363,8 @@
 
             let message = `Merhaba *${orderData.storeName}*, Kıbrıs Bazar üzerinden sipariş vermek istiyorum:\n\n`;
             orderData.items.forEach((item, index) => {
-                message += `${index+1}. ${item.product.title} ${item.variant ? `(Seçim: ${item.variant})` : ''} - ${item.quantity} Adet x ${item.variantPrice || item.product.price} TL\n`;
+                const iPrice = item.dynamicPrice || item.product.price;
+                message += `${index+1}. ${item.product.title} ${item.variant ? `(Seçim: ${item.variant})` : ''} - ${item.quantity} Adet x ${iPrice} TL\n`;
             });
             message += `\n*Ödenecek Tutar: ${orderData.total.toLocaleString('tr-TR')} TL*`;
 
@@ -2468,7 +2515,8 @@
                         actionBtn = `<span class="text-xs text-slate-400 font-bold w-full text-center block bg-slate-50 py-2 rounded-lg">${window.t('order_closed')}</span>`;
                     }
 
-                    let itemsHtml = order.items.map(i => `<li class="text-sm text-slate-600 border-b border-slate-100 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0">${i.quantity}x ${i.product?.title || i.title} ${i.variant ? `<span class="text-xs text-orange-500">(${i.variant})</span>` : ''} <span class="font-black text-slate-800 rtl:mr-2 rtl:ml-0 ml-2 float-right rtl:float-left">${(i.variantPrice || i.product?.price || i.price).toLocaleString('tr-TR')} TL</span></li>`).join('');
+                    // Fiyat hesaplamasında varyant fiyatını (i.price) da hesaba katar
+                    let itemsHtml = order.items.map(i => `<li class="text-sm text-slate-600 border-b border-slate-100 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0">${i.quantity}x ${i.product?.title || i.title} ${i.variant ? `<span class="text-xs text-orange-500">(${i.variant})</span>` : ''} <span class="font-black text-slate-800 rtl:mr-2 rtl:ml-0 ml-2 float-right rtl:float-left">${(i.price || i.product?.price).toLocaleString('tr-TR')} TL</span></li>`).join('');
 
                     ordersHtml += `
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-4 mb-4 last:mb-0">
@@ -2522,11 +2570,11 @@
             if(!confirm("Ürünü sorunsuz bir şekilde teslim aldığınızı onaylıyor musunuz?")) return;
             try {
                 await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'orders', orderId), { status: 'delivered' });
-                window.showMessage("Success!");
+                window.showMessage("Sipariş başarıyla tamamlandı!");
                 window.openMyOrders(); 
             } catch (err) {
                 console.error(err);
-                window.showMessage("Error.", "error");
+                window.showMessage("Hata oluştu.", "error");
             }
         };
 
