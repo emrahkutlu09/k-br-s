@@ -309,10 +309,10 @@
                 <div>
                     <h4 class="font-black text-slate-900 mb-4" data-i18n="footer_categories">Kategoriler</h4>
                     <ul class="space-y-2 text-sm text-slate-500 font-medium">
-                        <li><button onclick="window.setCategory('Elektronik'); window.scrollTo(0,0);" class="hover:text-orange-500 transition">Elektronik</button></li>
-                        <li><button onclick="window.setCategory('Moda'); window.scrollTo(0,0);" class="hover:text-orange-500 transition">Moda</button></li>
-                        <li><button onclick="window.setCategory('Ev & Yaşam'); window.scrollTo(0,0);" class="hover:text-orange-500 transition">Ev & Yaşam</button></li>
-                        <li><button onclick="window.setCategory('Süpermarket'); window.scrollTo(0,0);" class="hover:text-orange-500 transition">Süpermarket</button></li>
+                        <li><button onclick="window.setCategory('Elektronik & Teknoloji'); window.scrollTo(0,0);" class="hover:text-orange-500 transition">Elektronik</button></li>
+                        <li><button onclick="window.setCategory('Moda & Giyim'); window.scrollTo(0,0);" class="hover:text-orange-500 transition">Moda</button></li>
+                        <li><button onclick="window.setCategory('Ev, Mobilya & Yaşam'); window.scrollTo(0,0);" class="hover:text-orange-500 transition">Ev & Yaşam</button></li>
+                        <li><button onclick="window.setCategory('Süpermarket & Gıda'); window.scrollTo(0,0);" class="hover:text-orange-500 transition">Süpermarket</button></li>
                     </ul>
                 </div>
 
@@ -1671,7 +1671,14 @@
                     const q = searchQuery.toLocaleLowerCase('tr-TR');
                     displayProducts = displayProducts.filter(p => p.title.toLocaleLowerCase('tr-TR').includes(q) || p.storeName.toLocaleLowerCase('tr-TR').includes(q));
                 }
-                if (activeCategory) displayProducts = displayProducts.filter(p => p.category === activeCategory);
+                
+                if (activeCategory) {
+                    const targetCat = activeCategory.toLocaleLowerCase('tr-TR').trim();
+                    displayProducts = displayProducts.filter(p => 
+                        p.category && p.category.toLocaleLowerCase('tr-TR').includes(targetCat)
+                    );
+                }
+                
                 if (activeDistrict) displayProducts = displayProducts.filter(p => p.district === activeDistrict);
 
                 const translatedActiveCat = activeCategory ? window.getCategoryTranslation(activeCategory) : '';
