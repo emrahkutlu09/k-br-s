@@ -278,6 +278,7 @@
             </div>
         </section>
 
+        <!-- KAPSAMLI E-TİCARET FOOTER -->
         <footer class="bg-white border-t border-slate-200 mt-auto pt-12 pb-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
                 
@@ -637,7 +638,7 @@
                 ask_seller: "Satıcıya Sor",
                 store_products: "Mağaza Ürünleri",
                 browse_categories: "Kategorilere Göz At",
-                premium_listings: "Premium Ürünler",
+                premium_listings: "Premium Ürünler", // DEĞİŞTİRİLDİ
                 favorites_title: "Favorileriniz",
                 for_you: "Sizin İçin Seçtiklerimiz",
                 no_products: "Kriterlere uygun ürün bulunamadı.",
@@ -677,6 +678,7 @@
                 disclaimer_checkbox: "Şartları okudum ve kabul ediyorum. Alışveriş sürecinde satıcıyla doğrudan muhatap olduğumu onaylıyorum.",
                 btn_go_whatsapp: "WhatsApp'a Git",
                 
+                // SEO METİNLERİ
                 seo_title: "Kıbrıs Bazar | Kıbrıs'ın Ücretsiz Dijital Pazar Yeri",
                 seo_desc: "Kuzey Kıbrıs'ın yeni nesil, komisyonsuz dijital pazar yeridir. Yüzlerce yerel mağazadan güvenle online alışveriş yapın veya ücretsiz kendi mağazanızı açın.",
                 seo_h1: "Kuzey Kıbrıs'ın Yeni Nesil Dijital Pazar Yeri: Kıbrıs Bazar",
@@ -762,6 +764,7 @@
                 disclaimer_checkbox: "I have read and agree to the terms. I confirm that I am dealing directly with the seller.",
                 btn_go_whatsapp: "Go to WhatsApp",
                 
+                // SEO METİNLERİ
                 seo_title: "Kibris Bazar | Cyprus' Free Digital Marketplace",
                 seo_desc: "Northern Cyprus' new generation, commission-free digital marketplace. Shop safely from hundreds of local stores or open your own store for free.",
                 seo_h1: "Northern Cyprus' New Generation Digital Marketplace: Kibris Bazar",
@@ -847,6 +850,7 @@
                 disclaimer_checkbox: "Έχω διαβάσει και συμφωνώ με τους όρους.",
                 btn_go_whatsapp: "Μετάβαση στο WhatsApp",
                 
+                // SEO METİNLERİ
                 seo_title: "Kibris Bazar | Η Δωρεάν Ψηφιακή Αγορά της Κύπρου",
                 seo_desc: "Η νέας γενιάς ψηφιακή αγορά της Βόρειας Κύπρου χωρίς προμήθειες. Αγοράστε με ασφάλεια ή ανοίξτε το δικό σας κατάστημα δωρεάν.",
                 seo_h1: "Η Νέας Γενιάς Ψηφιακή Αγορά της Βόρειας Κύπρου: Kibris Bazar",
@@ -932,6 +936,7 @@
                 disclaimer_checkbox: "Я согласен с условиями.",
                 btn_go_whatsapp: "Перейти в WhatsApp",
                 
+                // SEO METİNLERİ
                 seo_title: "Kibris Bazar | Бесплатная цифровая торговая площадка Кипра",
                 seo_desc: "Цифровая торговая площадка нового поколения на Северном Кипре без комиссий. Покупайте онлайн безопасно или откройте свой магазин бесплатно.",
                 seo_h1: "Цифровая торговая площадка нового поколения на Северном Кипре: Kibris Bazar",
@@ -1017,6 +1022,7 @@
                 disclaimer_checkbox: "لقد قرأت الشروط وأوافق عليها.",
                 btn_go_whatsapp: "الذهاب إلى الواتساب",
                 
+                // SEO METİNLERİ
                 seo_title: "Kibris Bazar | السوق الرقمي المجاني في قبرص",
                 seo_desc: "الجيل الجديد من الأسواق الرقمية الخالية من العمولات في شمال قبرص. تسوق بأمان أو افتح متجرك الخاص مجانًا.",
                 seo_h1: "الجيل الجديد من الأسواق الرقمية في شمال قبرص: Kibris Bazar",
@@ -1086,6 +1092,7 @@
                 if (tObj[key]) el.placeholder = tObj[key];
             });
 
+            // META ETİKETLERİNİ DİNAMİK OLARAK GÜNCELLE
             const metaDesc = document.getElementById('metaDesc');
             const ogTitle = document.getElementById('ogTitle');
             const ogDesc = document.getElementById('ogDesc');
@@ -1202,7 +1209,7 @@
             }
         }
 
-        // Fisher-Yates Karıştırma Algoritması
+        // Fisher-Yates Karıştırma (Shuffle) Algoritması - Rastgeleliği Garantiler
         const shuffleArray = (array) => {
             let arr = [...array];
             for (let i = arr.length - 1; i > 0; i--) {
@@ -1420,7 +1427,7 @@
             window.renderHome(document.getElementById('searchInput').value);
         };
 
-        // KART OLUŞTURUCU (Trust Badge / Güven Rozeti Desteği ve w-full h-full uyumu)
+        // KART OLUŞTURUCU (Tüm kartlar standart bir şekilde kutuyu doldurur w-full h-full)
         window.createProductCard = (p) => {
             const discount = p.originalPrice > p.price ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
             const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500/cbd5e1/475569?text=Gorsel';
@@ -1429,6 +1436,8 @@
             
             const storeObj = dbStores.find(s => s.id === p.storeId);
             const followerCount = storeObj && storeObj.followers ? storeObj.followers.length : 0;
+            
+            // Satıcı VIP Paket ise Rozet Gösterimi İçin
             const isPremiumStore = storeObj && (storeObj.isPremium || storeObj.packageType === 'premium');
             
             const variantsText = window.t('variants_label');
@@ -1475,6 +1484,7 @@
             const activeStoreIds = dbStores.filter(s => s.status === 'active' && (!s.expiryDate || s.expiryDate > Date.now())).map(s => s.id);
             let displayProducts = dbProducts.filter(p => activeStoreIds.includes(p.storeId));
             
+            // Satıcı paketlerine göre mağaza ID'lerini ayırma
             const premiumStoreIds = dbStores.filter(s => s.isPremium || s.packageType === 'premium').map(s => s.id);
             const standardStoreIds = dbStores.filter(s => s.packageType === 'standard' && !s.isPremium).map(s => s.id);
             const freeStoreIds = dbStores.filter(s => s.packageType === 'free' && !s.isPremium).map(s => s.id);
@@ -1482,6 +1492,7 @@
             let html = '';
 
             if (!searchQuery && !activeCategory && !activeDistrict) {
+                // Afiş Bölümleri
                 const mainBgContent = appSettings.mainBanner.image ? `<img src="${appSettings.mainBanner.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 z-0"></div>`;
                 const side1BgContent = appSettings.sideBanner1.image ? `<img src="${appSettings.sideBanner1.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-rose-400 z-0"></div>`;
                 const side2BgContent = appSettings.sideBanner2.image ? `<img src="${appSettings.sideBanner2.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 z-0"></div>`;
@@ -1525,11 +1536,12 @@
                     </div>
                 `;
 
+                // ÜRÜN HAVUZLARINI OLUŞTURMA (En yeniden eskiye)
                 let premiumProds = displayProducts.filter(p => premiumStoreIds.includes(p.storeId)).sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
                 let standardProds = displayProducts.filter(p => standardStoreIds.includes(p.storeId)).sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
                 let freeProds = displayProducts.filter(p => freeStoreIds.includes(p.storeId)).sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-                // 1. Premium Ürünler (VIP) Vitrini
+                // 1. PREMIUM ÜRÜNLER VİTRİNİ (Sadece VIP, Karıştırılmış, Max 10)
                 const featuredProducts = shuffleArray([...premiumProds]).slice(0, 10);
                 if (featuredProducts.length > 0) {
                     html += `
@@ -1541,12 +1553,13 @@
                             <div id="featuredContainer" class="flex gap-4 sm:gap-5 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth snap-x">
                     `;
                     featuredProducts.forEach(p => { 
+                        // Kartları yatay kaydırma için belirli bir genişliğe hapsediyoruz ki devasa büyümesin
                         html += `<div class="snap-start shrink-0 w-[160px] sm:w-[200px] lg:w-[220px]">` + window.createProductCard(p) + `</div>`; 
                     });
                     html += `</div></div>`;
                 }
 
-                // Favoriler
+                // FAVORİLER BÖLÜMÜ
                 const favProducts = displayProducts.filter(p => favorites.includes(p.id));
                 if (favProducts.length > 0) {
                     html += `<div class="mb-12 bg-rose-50 rounded-3xl p-6 border border-rose-100"><h2 class="text-xl font-black text-rose-900 mb-5">${window.t('favorites_title')}</h2><div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">`;
@@ -1554,7 +1567,8 @@
                     html += `</div></div>`;
                 }
 
-                // 2. Sizin İçin Seçtiklerimiz (10 Premium, 8 Standard, 2 Free = 20 Ürün Karma Sistem)
+                // 2. SİZİN İÇİN SEÇTİKLERİMİZ (Akıllı Karma Algoritması)
+                // Her paketin en yeni 30 ürünü içinden rastgele (10 Premium, 8 Standart, 2 Free) çekiliyor ve tekrar karıştırılıyor.
                 let poolPremium = shuffleArray(premiumProds.slice(0, 30)).slice(0, 10);
                 let poolStandard = shuffleArray(standardProds.slice(0, 30)).slice(0, 8);
                 let poolFree = shuffleArray(freeProds.slice(0, 30)).slice(0, 2);
@@ -1571,6 +1585,7 @@
                 }
 
             } else {
+                // FİLTRELEME & ARAMA ALANI
                 if (searchQuery) {
                     const q = searchQuery.toLocaleLowerCase('tr-TR');
                     displayProducts = displayProducts.filter(p => p.title.toLocaleLowerCase('tr-TR').includes(q) || p.storeName.toLocaleLowerCase('tr-TR').includes(q));
@@ -1634,8 +1649,9 @@
             document.getElementById('detailStoreName').innerText = product.storeName;
             document.getElementById('detailDistrict').innerText = product.district;
             document.getElementById('detailStoreIdHidden').value = product.storeId;
-            document.getElementById('detailProductId').value = product.id;
+            document.getElementById('detailProductId').value = product.id; // Varyant seçimi için ID'yi tuttuk
             
+            // Satıcı Premium ise Güven Rozetini Göster
             const storeObj = dbStores.find(s => s.id === product.storeId);
             const isPremiumStore = storeObj && (storeObj.isPremium || storeObj.packageType === 'premium');
             const shieldIcon = document.getElementById('detailStoreShield');
@@ -1653,6 +1669,7 @@
                 document.getElementById('detailStoreLogoIcon').classList.remove('hidden');
             }
 
+            // Gelişmiş Varyant İşlemleri
             const variantContainer = document.getElementById('detailVariantContainer');
             if (product.variants && product.variants.length > 0) {
                 let varHtml = `<label class="block text-xs font-bold text-slate-500 mb-2">${window.t('variants_label')}</label><div class="flex flex-wrap gap-2">`;
@@ -1852,12 +1869,15 @@
             btn.classList.add('border-orange-500', 'text-orange-600', 'bg-orange-50');
             document.getElementById('selectedVariantIndex').value = idx;
 
+            // Fiyatı Değiştir (Varyanta özel fiyat varsa onu, yoksa ürünün ana fiyatını gösterir)
             const varPrice = variant.price || product.price;
             document.getElementById('detailPrice').innerText = varPrice.toLocaleString('tr-TR') + ' TL';
             
+            // Varyant seçildiğinde eski indirim etiketini gizler
             document.getElementById('detailOriginalPrice').classList.add('hidden');
             document.getElementById('detailDiscountBadge').classList.add('hidden');
 
+            // Resmi Değiştir (Varyanta özel fotoğraf eklenmişse ana resim o olur)
             if(variant.image) {
                 document.getElementById('detailMainImage').src = variant.image;
             }
@@ -1936,6 +1956,7 @@
             if(store.isPremium || store.packageType === 'premium') document.getElementById('spPremium').classList.remove('hidden');
             else document.getElementById('spPremium').classList.add('hidden');
 
+            // Sosyal Medya İkonları (SVG Olarak Garantili Gösterim)
             const socialLinksContainer = document.getElementById('spSocialLinks');
             let socialHtml = '';
             
@@ -2249,6 +2270,7 @@
             document.getElementById('cartCountBadge').innerText = totalQty;
             document.getElementById('cartCountBadge').classList.toggle('hidden', totalQty === 0);
             
+            // Mağaza Profili İçerisindeki Sepet Sayısını da Güncelle
             const spCartBadge = document.getElementById('spCartCountBadge');
             if(spCartBadge) {
                 spCartBadge.innerText = totalQty;
@@ -2310,6 +2332,7 @@
                 const buyerUid = auth.currentUser ? auth.currentUser.uid : 'misafir';
                 const buyerEmail = (auth.currentUser && !auth.currentUser.isAnonymous) ? auth.currentUser.email : 'Misafir';
                 
+                // Siparişi veritabanına kaydederken varyant özel fiyatı korunsun
                 const newOrder = {
                     storeId: storeId,
                     storeName: orderData.storeName,
@@ -2320,7 +2343,7 @@
                         product: i.product,
                         variant: i.variant,
                         quantity: i.quantity,
-                        price: i.dynamicPrice || i.product.price
+                        price: i.dynamicPrice || i.product.price // özel fiyat
                     })), 
                     totalAmount: orderData.total,
                     status: 'pending',
@@ -2492,6 +2515,7 @@
                         actionBtn = `<span class="text-xs text-slate-400 font-bold w-full text-center block bg-slate-50 py-2 rounded-lg">${window.t('order_closed')}</span>`;
                     }
 
+                    // Fiyat hesaplamasında varyant fiyatını (i.price) da hesaba katar
                     let itemsHtml = order.items.map(i => `<li class="text-sm text-slate-600 border-b border-slate-100 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0">${i.quantity}x ${i.product?.title || i.title} ${i.variant ? `<span class="text-xs text-orange-500">(${i.variant})</span>` : ''} <span class="font-black text-slate-800 rtl:mr-2 rtl:ml-0 ml-2 float-right rtl:float-left">${(i.price || i.product?.price).toLocaleString('tr-TR')} TL</span></li>`).join('');
 
                     ordersHtml += `
@@ -2560,6 +2584,7 @@
             const btn = form.querySelector('button[type="submit"]');
             btn.disabled = true;
 
+            // SIKIŞTIRILMIŞ GÜVENLİK DUVARI:
             if (!auth.currentUser || auth.currentUser.isAnonymous) {
                 window.showMessage("Yorum yapmak için Google ile giriş yapmalısınız.", "error");
                 btn.disabled = false;
@@ -2567,6 +2592,8 @@
             }
 
             const buyerUid = auth.currentUser.uid;
+
+            // 1. Satıcı kendi ürününe yorum yapamaz
             const product = dbProducts.find(p => p.id === pId);
             if (product) {
                 const storeDoc = dbStores.find(s => s.id === product.storeId);
@@ -2577,6 +2604,7 @@
                 }
             }
 
+            // 2. Bir kullanıcı aynı ürüne sadece 1 yorum yapabilir
             const rq = query(reviewsRef, where("productId", "==", pId), where("userId", "==", buyerUid));
             const checkSnap = await getDocs(rq);
             
