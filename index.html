@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">Kıbrıs Bazar | Hızlı ve Güvenli Alışveriş</title>
     
+    <!-- GOOGLE ARAMA SONUÇLARI İÇİN SİTE İKONU (FAVICON) -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+
     <!-- GOOGLE SEARCH CONSOLE DOĞRULAMA KODU -->
     <meta name="google-site-verification" content="SEe85MWs4T_2cy0MrmCR487B4TdycD7iWbiE2YDGzVc" />
 
@@ -134,7 +139,8 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16 gap-4">
                     
-                    <div class="flex items-center gap-3 cursor-pointer" onclick="window.renderHome()">
+                    <!-- DİNAMİK SEO LİNK (Logo) -->
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="window.navigateTo('/')">
                         <img id="navLogo" src="" class="h-9 object-contain hidden" alt="Logo">
                         <span id="navBrandName" class="text-xl sm:text-2xl font-black tracking-tighter text-slate-900">KIBRIS<span class="text-orange-500">BAZAR</span></span>
                     </div>
@@ -278,7 +284,6 @@
             </div>
         </section>
 
-        <!-- KAPSAMLI E-TİCARET FOOTER -->
         <footer class="bg-white border-t border-slate-200 mt-auto pt-12 pb-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
                 
@@ -464,17 +469,14 @@
         <!-- Mağaza Profili Ekranı -->
         <div id="storeProfileModal" class="fixed inset-0 z-[95] hidden bg-slate-50 overflow-y-auto">
             <div class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center shadow-sm">
-                 <!-- Sol Taraf: Geri Butonu -->
                  <div class="w-1/3 flex justify-start">
                      <button onclick="window.closeStoreProfile()" class="flex items-center gap-2 text-slate-600 hover:text-orange-500 font-bold text-sm transition bg-white py-1.5 px-3 rounded-lg border border-slate-200 hover:border-orange-200"><i data-lucide="arrow-left" class="w-4 h-4 rtl:rotate-180"></i> <span class="hidden sm:inline" data-i18n="go_back">Geri Dön</span></button>
                  </div>
                  
-                 <!-- Orta Taraf: Kıbrıs Bazar Logosu -->
-                 <div class="w-1/3 flex justify-center items-center cursor-pointer" onclick="window.closeStoreProfile(); window.scrollTo(0,0);">
+                 <div class="w-1/3 flex justify-center items-center cursor-pointer" onclick="window.navigateTo('/')">
                      <span class="text-xl sm:text-2xl font-black tracking-tighter text-slate-900">KIBRIS<span class="text-orange-500">BAZAR</span></span>
                  </div>
                  
-                 <!-- Sağ Taraf: Sepet Butonu -->
                  <div class="w-1/3 flex justify-end">
                      <button onclick="window.toggleCart()" class="flex items-center justify-center p-2 text-slate-600 hover:text-orange-500 transition-colors relative bg-white border border-slate-200 hover:border-orange-200 rounded-lg">
                          <i data-lucide="shopping-cart" class="w-5 h-5"></i>
@@ -499,7 +501,6 @@
                                  <span class="flex items-center gap-1"><i data-lucide="heart" class="w-4 h-4 text-rose-400"></i> <span id="spFollowersCount">0</span> <span data-i18n="followers">Takipçi</span></span>
                              </p>
                              
-                             <!-- Sosyal Medya İkonları (Otomatik Gizlenip/Açılacak) -->
                              <div id="spSocialLinks" class="flex items-center gap-3 hidden"></div>
                          </div>
                          <div class="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0">
@@ -599,6 +600,79 @@
         let activeCategory = '';
         let activeDistrict = '';
         let spMapInstance = null; 
+        
+        // ---------------------------------------------------------
+        // SEO URL (Slug) & ROUTING İŞLEMLERİ (Yeni Eklenen Bölüm)
+        // ---------------------------------------------------------
+        
+        window.slugify = (text) => {
+            if(!text) return 'urun';
+            return text.toString().toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
+        };
+
+        window.navigateTo = (url, updateState = true) => {
+            if (updateState) {
+                window.history.pushState({path: url}, '', url);
+            }
+            window.handleRoute();
+        };
+
+        window.handleRoute = () => {
+            const path = window.location.pathname;
+            
+            // Eğer URL bir MAĞAZA URL'si ise (Örn: /magaza/ahmet-p-ID)
+            if (path.startsWith('/magaza/')) {
+                const parts = path.split('-s-');
+                if (parts.length > 1) {
+                    const storeId = parts[parts.length - 1];
+                    // Ürün modalı açıksa kapat
+                    if(!document.getElementById('productDetailModal').classList.contains('hidden')) {
+                        document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
+                        setTimeout(() => document.getElementById('productDetailModal').classList.add('hidden'), 300);
+                    }
+                    window.openStoreProfile(storeId, false);
+                }
+            } 
+            // Eğer URL bir ÜRÜN URL'si ise (Örn: /elektronik/iphone-p-ID)
+            else if (path.includes('-p-')) {
+                const parts = path.split('-p-');
+                if (parts.length > 1) {
+                    const productId = parts[parts.length - 1];
+                    window.openProductDetail(productId, false);
+                }
+            } 
+            // Eğer ANA SAYFA ise (Örn: /)
+            else {
+                // Tüm modalları kapat
+                if(!document.getElementById('productDetailModal').classList.contains('hidden')) {
+                    document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => document.getElementById('productDetailModal').classList.add('hidden'), 300);
+                }
+                if(!document.getElementById('storeProfileModal').classList.contains('hidden')) {
+                    document.getElementById('storeProfileModal').classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }
+                
+                const seoSection = document.getElementById('homeSeoSection');
+                if(seoSection) seoSection.classList.remove('hidden');
+                
+                // Ana sayfayı render et
+                window.renderHome(document.getElementById('searchInput').value);
+            }
+            
+            applyTranslations();
+        };
+
+        // Kullanıcı "Geri" tuşuna bastığında sayfayı yenilemeden doğru modalı aç/kapat
+        window.addEventListener('popstate', () => {
+            window.handleRoute();
+        });
+
 
         // 🔥 DİNAMİK SEO VE ÇOK DİLLİ ÇEVİRİ SÖZLÜĞÜ 🔥
         const appTranslations = {
@@ -638,7 +712,7 @@
                 ask_seller: "Satıcıya Sor",
                 store_products: "Mağaza Ürünleri",
                 browse_categories: "Kategorilere Göz At",
-                premium_listings: "Premium Ürünler", // DEĞİŞTİRİLDİ
+                premium_listings: "Premium Ürünler",
                 favorites_title: "Favorileriniz",
                 for_you: "Sizin İçin Seçtiklerimiz",
                 no_products: "Kriterlere uygun ürün bulunamadı.",
@@ -1249,7 +1323,10 @@
                 dbStores = [];
                 snapshot.forEach(doc => { dbStores.push({id: doc.id, ...doc.data()}); });
                 isStoresLoaded = true;
-                if(isStoresLoaded && isProductsLoaded) checkAdminRedirects(); 
+                if(isStoresLoaded && isProductsLoaded) {
+                     checkAdminRedirects(); 
+                     window.handleRoute(); // Data is ready, check route
+                }
                 window.renderHome(document.getElementById('searchInput').value);
                 checkInitialLoadStatus();
             });
@@ -1266,11 +1343,15 @@
                 dbProducts = [];
                 snapshot.forEach(doc => { dbProducts.push({id: doc.id, ...doc.data()}); });
                 isProductsLoaded = true;
-                if(isStoresLoaded && isProductsLoaded) checkAdminRedirects(); 
+                if(isStoresLoaded && isProductsLoaded) {
+                     checkAdminRedirects(); 
+                     window.handleRoute(); // Data is ready, check route
+                }
                 window.renderHome(document.getElementById('searchInput').value); 
                 checkInitialLoadStatus();
             });
             
+            // Initial call to set translations on load
             applyTranslations();
         }
 
@@ -1282,12 +1363,12 @@
 
             if (targetStoreId) {
                 const store = dbStores.find(s => s.id === targetStoreId);
-                if (store) { localStorage.removeItem('admin_redirect_store'); setTimeout(() => window.openStoreProfile(targetStoreId), 200); } 
+                if (store) { localStorage.removeItem('admin_redirect_store'); setTimeout(() => window.openStoreProfile(targetStoreId, false), 200); } 
                 else { localStorage.removeItem('admin_redirect_store'); }
             }
             if (targetProductId) {
                 const prod = dbProducts.find(p => p.id === targetProductId);
-                if (prod) { localStorage.removeItem('admin_redirect_product'); setTimeout(() => window.openProductDetail(targetProductId), 600); } 
+                if (prod) { localStorage.removeItem('admin_redirect_product'); setTimeout(() => window.openProductDetail(targetProductId, false), 600); } 
                 else { localStorage.removeItem('admin_redirect_product'); }
             }
         }
@@ -1610,13 +1691,17 @@
             lucide.createIcons();
         };
 
-        window.openProductDetail = (id) => {
+        window.openProductDetail = (id, updateState = true) => {
             const product = dbProducts.find(p => p.id === id);
             if(!product) return;
             
-            const url = new URL(window.location);
-            url.searchParams.set('urun', id);
-            window.history.pushState({}, '', url);
+            if (updateState) {
+                const slugTitle = window.slugify(product.title);
+                const slugCat = window.slugify(product.category);
+                const seoUrl = `/${slugCat}/${slugTitle}-p-${id}`;
+                window.navigateTo(seoUrl);
+                return;
+            }
 
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
             document.title = `${product.title} - ${product.storeName} | ${pName}`;
@@ -1889,16 +1974,12 @@
         };
 
         window.closeProductDetail = () => {
-            const url = new URL(window.location);
-            url.searchParams.delete('urun');
-            window.history.pushState({}, '', url);
-            applyTranslations(); 
-
+            window.navigateTo('/', false); // Sadece URL'yi temizle
             document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
             setTimeout(() => { 
                 document.getElementById('productDetailModal').classList.add('hidden'); 
                 const seoSection = document.getElementById('homeSeoSection');
-                if(seoSection && !url.searchParams.has('magaza')) seoSection.classList.remove('hidden');
+                if(seoSection && !window.location.pathname.includes('/magaza/')) seoSection.classList.remove('hidden');
             }, 300);
         };
 
@@ -1917,14 +1998,16 @@
             }
         };
 
-        window.openStoreProfile = (storeId) => {
+        window.openStoreProfile = (storeId, updateState = true) => {
             const store = dbStores.find(s => s.id === storeId);
             if(!store) return;
 
-            const url = new URL(window.location);
-            url.searchParams.set('magaza', storeId);
-            url.searchParams.delete('urun');
-            window.history.pushState({}, '', url);
+            if (updateState) {
+                const slugName = window.slugify(store.name);
+                const seoUrl = `/magaza/${slugName}-s-${storeId}`;
+                window.navigateTo(seoUrl);
+                return;
+            }
 
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
             document.title = `${store.name} | ${pName}`;
@@ -2068,23 +2151,19 @@
                 const btn = document.getElementById('spFollowBtn');
                 btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>`;
                 await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', storeId), { followers: followers });
-                setTimeout(() => window.openStoreProfile(storeId), 100); 
+                setTimeout(() => window.openStoreProfile(storeId, false), 100); 
             } catch(e) {
                 console.error(e);
             }
         };
 
         window.closeStoreProfile = () => {
-            const url = new URL(window.location);
-            url.searchParams.delete('magaza');
-            window.history.pushState({}, '', url);
-            applyTranslations();
-
+            window.navigateTo('/', false); // URL'yi köke al, state pushlama
             document.getElementById('storeProfileModal').classList.add('hidden');
             document.body.style.overflow = 'auto'; 
             
             const seoSection = document.getElementById('homeSeoSection');
-            if(seoSection && !url.searchParams.has('urun')) seoSection.classList.remove('hidden');
+            if(seoSection && !window.location.pathname.includes('-p-')) seoSection.classList.remove('hidden');
         };
 
         window.renderStoreProfileCategories = () => {
@@ -2641,6 +2720,7 @@
             }
         };
 
+        // Initialize application on load
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
