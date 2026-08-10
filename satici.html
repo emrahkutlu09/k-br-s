@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Satıcı Paneli | Kıbrıs Bazar</title>
+    
+    <!-- Gerekli Kütüphaneler -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <!-- YENİ: Excel (XLSX) okumak için SheetJS kütüphanesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -25,6 +27,7 @@
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-orange-500 selection:text-white">
 
+    <!-- -->
     <!-- Özel Onay Modalı -->
     <div id="customConfirmModal" class="fixed inset-0 bg-slate-900/80 z-[400] hidden items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white p-6 rounded-3xl max-w-sm w-full shadow-2xl text-center transform transition-all">
@@ -124,6 +127,7 @@
         </div>
     </div>
 
+    <!-- -->
     <!-- Ana Panel -->
     <div id="dashboardScreen" class="hidden flex-col min-h-screen">
         <div class="bg-slate-900 text-white p-4 sm:px-8 flex justify-between items-center shadow-md z-20 relative border-b border-slate-800">
@@ -175,6 +179,7 @@
                 <button onclick="window.switchTab('settings')" id="tabBtn-settings" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4"></i> Ayarlar</button>
             </div>
 
+            <!-- -->
             <!-- İstatistik Sekmesi -->
             <div id="tab-stats" class="space-y-6">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -436,6 +441,7 @@
         </main>
     </div>
 
+    <!-- -->
     <!-- Ürün Ekleme/Düzenleme Modalı -->
     <div id="productModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] shadow-2xl transform transition-all">
@@ -516,6 +522,7 @@
         </div>
     </div>
 
+    <!-- -->
     <!-- Toplu Fiyat Güncelleme Modalı -->
     <div id="bulkPriceModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden flex flex-col shadow-2xl transform transition-all">
@@ -563,6 +570,7 @@
         <i data-lucide="message-circle" class="w-6 h-6"></i>
     </button>
 
+    <!-- -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -601,8 +609,8 @@
         let currentFilterCategory = '';
         let pendingRegistrationData = null;
 
-        // İnteraktif Medya Listesi (Mevcutlar + Yeniler)
-        let activeMediaList = []; // { type: 'image', url: string, file: File|null }
+        // İnteraktif Medya Listesi
+        let activeMediaList = [];
 
         const ADMIN_WHATSAPP = "905000000000"; 
 
@@ -633,9 +641,18 @@
         };
 
         function showScreen(id) {
-            ['loginScreen', 'registerScreen', 'pendingScreen', 'dashboardScreen', 'fullScreenLoader'].forEach(el => document.getElementById(el).classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-            if(id !== 'dashboardScreen' && id !== 'fullScreenLoader') document.getElementById(id).classList.add('flex');
+            ['loginScreen', 'registerScreen', 'pendingScreen', 'dashboardScreen', 'fullScreenLoader'].forEach(el => {
+                const element = document.getElementById(el);
+                if(element) {
+                    element.classList.add('hidden');
+                    element.classList.remove('flex'); // Tüm flex sınıflarını temizle
+                }
+            });
+            const target = document.getElementById(id);
+            if(target) {
+                target.classList.remove('hidden');
+                if(id !== 'fullScreenLoader') target.classList.add('flex'); // Gerekenlere flex ekle
+            }
             lucide.createIcons();
         }
 
@@ -645,18 +662,23 @@
         };
 
         onAuthStateChanged(auth, async (user) => {
-            if (user && !user.isAnonymous) {
-                currentUser = user; 
-                if (pendingRegistrationData) {
-                    await completeRegistrationWithAuth(pendingRegistrationData);
-                    pendingRegistrationData = null;
-                } else {
-                    checkStoreStatus();
+            try {
+                if (user && !user.isAnonymous) {
+                    currentUser = user; 
+                    if (pendingRegistrationData) {
+                        await completeRegistrationWithAuth(pendingRegistrationData);
+                        pendingRegistrationData = null;
+                    } else {
+                        checkStoreStatus();
+                    }
+                } else { 
+                    currentUser = null; 
+                    myStore = null; 
+                    showScreen('loginScreen'); 
                 }
-            } else { 
-                currentUser = null; 
-                myStore = null; 
-                showScreen('loginScreen'); 
+            } catch (err) {
+                console.error("Auth state error:", err);
+                showScreen('loginScreen');
             }
         });
 
@@ -803,7 +825,7 @@
             setTimeout(() => locationMap.invalidateSize(), 400);
         }
 
-        function updateDashboardHeader() {
+        //        function updateDashboardHeader() {
             document.getElementById('storeNameDisplay').innerText = myStore.name;
             document.getElementById('storeDistrictDisplay').innerText = myStore.district;
             document.getElementById('storeWhatsappDisplay').innerText = myStore.whatsapp || '-';
@@ -960,7 +982,7 @@
             renderProducts();
         };
 
-        function renderProducts() {
+        //        function renderProducts() {
             const container = document.getElementById('vendorProductsContainer');
             let displayList = myProducts;
             if(currentFilterCategory) displayList = displayList.filter(p => p.category === currentFilterCategory);
@@ -978,7 +1000,7 @@
                 html += `
                     <div class="border border-slate-200 rounded-3xl p-3 relative group bg-white shadow-sm hover:shadow-xl hover:border-orange-200 transition-all flex flex-col">
                         <div class="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-3 bg-slate-100">
-                            <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Product Image">
+                            <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Product Image" onerror="this.src='https://placehold.co/400x500/cbd5e1/475569?text=Gorsel+Hata'">
                         </div>
                         <div class="flex-1 px-1">
                             <div class="text-[10px] font-bold text-slate-500 bg-slate-100 inline-block px-2 py-1 rounded-lg mb-2 line-clamp-1" title="${p.category}">${p.category}</div>
@@ -1146,7 +1168,6 @@
             const mediaLimitStr = pkg === 'free' ? "(Max 1 Görsel)" : (pkg === 'standard' ? "(Max 3 Görsel)" : "(Sınırsız Görsel)");
             document.getElementById('mediaLimitText').innerText = mediaLimitStr;
 
-            // Varyant Kilidi Kontrolü
             const isPremium = myStore.isPremium || myStore.packageType === 'premium';
             if(isPremium) {
                 document.getElementById('premiumVariantLock').classList.add('hidden');
@@ -1458,4 +1479,308 @@
             const percent = parseFloat(document.getElementById('bulkPercentage').value);
             
             const btn = document.getElementById('btnBulkUpdate'); 
-            btn.innerHTML = `<i data-lucide="loader-
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> İşleniyor...`; 
+            btn.disabled = true;
+            lucide.createIcons();
+
+            const targets = cat === 'ALL' ? myProducts : myProducts.filter(p => p.category === cat);
+            if(targets.length === 0) { window.showMessage("Etkilenecek ürün bulunamadı.", "error"); btn.innerHTML = `<i data-lucide="zap" class="w-5 h-5"></i> Güncellemeyi Başlat`; btn.disabled = false; lucide.createIcons(); return; }
+
+            try {
+                const batch = writeBatch(db);
+                targets.forEach(p => {
+                    const pRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id);
+                    const oldPrice = p.price;
+                    let newPrice = 0;
+                    if(action === 'increase') newPrice = oldPrice + (oldPrice * (percent / 100));
+                    else newPrice = oldPrice - (oldPrice * (percent / 100));
+                    
+                    newPrice = Math.round(newPrice * 100) / 100;
+                    
+                    const updates = { price: newPrice, updatedAt: Date.now() };
+                    if(action === 'decrease') updates.originalPrice = oldPrice; 
+                    
+                    batch.update(pRef, updates);
+                });
+                await batch.commit();
+                window.showMessage(`${targets.length} ilan başarıyla güncellendi.`);
+                document.getElementById('bulkPriceModal').classList.add('hidden');
+            } catch(err) { window.showMessage("Toplu güncelleme hatası.", "error"); }
+            
+            btn.innerHTML = `<i data-lucide="zap" class="w-5 h-5"></i> Güncellemeyi Başlat`; 
+            btn.disabled = false;
+            lucide.createIcons();
+        };
+
+        window.exportToCSV = () => {
+            if (myProducts.length === 0) { window.showMessage("Dışa aktarılacak ürün bulunmuyor.", "error"); return; }
+            
+            const separator = ';';
+            let csvContent = `Baslik${separator}Kategori${separator}Fiyat${separator}Aciklama${separator}Gorseller${separator}Varyantlar\n`;
+            
+            myProducts.forEach(p => {
+                const baslik = `"${(p.title || '').replace(/"/g, '""')}"`;
+                const kategori = `"${p.category || ''}"`;
+                const fiyat = p.price || 0;
+                const aciklama = `"${(p.description || '').replace(/"/g, '""')}"`;
+                
+                let cleanImages = [];
+                if(p.images && p.images.length > 0) {
+                    cleanImages = p.images.map(img => {
+                         if(img.startsWith('data:image')) return 'BASE64_Gorsel_Dısa_Aktarilamadi';
+                         return img;
+                    });
+                }
+                const gorseller = `"${cleanImages.join('|')}"`;
+                
+                let varsStr = '';
+                if(p.variants && p.variants.length > 0){
+                    varsStr = p.variants.map(v => `${v.group || 'Seçenek'}^${v.name}^${v.price || p.price}^${v.image || ''}`).join('|');
+                }
+                const varyantlar = `"${varsStr}"`;
+                
+                csvContent += `${baslik}${separator}${kategori}${separator}${fiyat}${separator}${aciklama}${separator}${gorseller}${separator}${varyantlar}\n`;
+            });
+            
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' }); 
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `urunler_${myStore.name.replace(/\s+/g, '_')}_${new Date().toLocaleDateString('tr-TR').replace(/\./g,'-')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.showMessage("İlanlarınız Excel uyumlu CSV formatında indirildi.");
+        };
+
+        //        // YENİ: Ortak İşleme Fonksiyonu (Hem CSV hem Excel'den gelen veriyi işler)
+        async function processImportedData(data, rawHeaders, headers, event) {
+            const baslikIndex = headers.findIndex(k => k.includes('baslik') || k.includes('başlık') || k === 'data' || k.includes('name'));
+            const fiyatIndex = headers.findIndex(k => k.includes('fiyat') || k === 'price');
+            const kategoriIndex = headers.findIndex(k => k.includes('kategori') || k.includes('category'));
+            const aciklamaIndex = headers.findIndex(k => k.includes('aciklama') || k.includes('açıklama') || k.includes('description'));
+            const gorsellerIndex = headers.findIndex(k => k.includes('gorsel') || k.includes('görsel') || k === 'image' || k.includes('img'));
+            const varyantlarIndex = headers.findIndex(k => k.includes('varyant') || k.includes('variant'));
+
+            if (baslikIndex === -1 || fiyatIndex === -1) {
+                window.showMessage("Format hatası: Ürün adı/başlığı ve Fiyat sütunları bulunamadı.", "error");
+                event.target.value = ""; return;
+            }
+
+            const baslikKey = rawHeaders[baslikIndex];
+            const fiyatKey = rawHeaders[fiyatIndex];
+            const kategoriKey = kategoriIndex !== -1 ? rawHeaders[kategoriIndex] : null;
+            const aciklamaKey = aciklamaIndex !== -1 ? rawHeaders[aciklamaIndex] : null;
+            const gorsellerKey = gorsellerIndex !== -1 ? rawHeaders[gorsellerIndex] : null;
+            const varyantlarKey = varyantlarIndex !== -1 ? rawHeaders[varyantlarIndex] : null;
+
+            const isPremium = myStore.isPremium || myStore.packageType === 'premium';
+            const pkg = myStore.packageType || 'free';
+            const maxImagesPerProduct = pkg === 'free' ? 1 : (pkg === 'standard' ? 3 : 999);
+            const limit = pkg === 'free' ? 20 : (pkg === 'standard' ? 50 : 9999);
+            
+            if (myProducts.length + data.length > limit) {
+                window.showMessage(`Paket limitiniz (${limit}) bu kadar ürünü içe aktarmaya yetmiyor.`, "error");
+                event.target.value = ""; return;
+            }
+
+            showScreen('fullScreenLoader');
+            document.getElementById('loaderText').innerText = "Ürünler Akıllı Sistemle Yükleniyor...";
+
+            try {
+                let batches = [];
+                let currentBatch = writeBatch(db);
+                let opCount = 0;
+                let addedCount = 0;
+
+                for (const row of data) {
+                    if (!row[baslikKey] || !row[fiyatKey]) continue; 
+                    
+                    const newDocRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products'));
+                    
+                    let images = [];
+                    if (gorsellerKey && row[gorsellerKey]) {
+                        const rawImg = row[gorsellerKey].toString().trim();
+                        // Akıllı Ayrıştırıcı: Virgül, noktalı virgül veya dikey çizgiyi otomatik algıla
+                        const splitImages = rawImg.split(/[,;|]/); 
+                        images = splitImages
+                            .map(u => u.trim())
+                            .filter(u => u !== '' && u.startsWith('http') && !u.includes('BASE64'))
+                            .slice(0, maxImagesPerProduct); // Paket limitine göre resim kes
+                    }
+
+                    if (images.length === 0) {
+                        images = ['https://placehold.co/400x500/cbd5e1/475569?text=Gorsel+Yok'];
+                    }
+
+                    let cleanPrice = row[fiyatKey].toString().replace(/[^0-9.,]/g, '');
+                    if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
+                        cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
+                    } else if (cleanPrice.includes(',')) {
+                        cleanPrice = cleanPrice.replace(',', '.');
+                    }
+                    const parsedPrice = parseFloat(cleanPrice) || 0;
+                    
+                    const variants = [];
+                    if(isPremium && varyantlarKey && row[varyantlarKey]) {
+                        row[varyantlarKey].toString().split('|').forEach(v => {
+                            if(v.includes('^')) {
+                                const parts = v.split('^');
+                                if(parts.length >= 2 && parts[1].trim() !== '') {
+                                    variants.push({
+                                        group: parts[0].trim(),
+                                        name: parts[1].trim(),
+                                        price: parts[2] ? parseFloat(parts[2].replace(/[^0-9.]/g, '')) : parsedPrice,
+                                        image: parts[3] ? parts[3].trim() : '',
+                                        stock: 999
+                                    });
+                                }
+                            }
+                        });
+                    }
+
+                    let matchedCategory = 'Genel';
+                    if (kategoriKey && row[kategoriKey]) {
+                        const csvCatText = row[kategoriKey].toString().toLocaleLowerCase('tr-TR').trim();
+                        if (csvCatText) {
+                            for (const dbCat of dbCategories) {
+                                const dbCatLower = dbCat.name.toLocaleLowerCase('tr-TR').trim();
+                                if (dbCatLower.includes(csvCatText) || csvCatText.includes(dbCatLower)) {
+                                    matchedCategory = dbCat.name;
+                                    break; 
+                                }
+                            }
+                        }
+                    }
+
+                    const productData = {
+                        storeId: myStore.id, 
+                        storeName: myStore.name, 
+                        storeWhatsapp: myStore.whatsapp, 
+                        district: myStore.district,
+                        title: row[baslikKey].toString().trim(),
+                        description: (aciklamaKey && row[aciklamaKey]) ? row[aciklamaKey].toString().trim() : '',
+                        category: matchedCategory, 
+                        price: parsedPrice,
+                        originalPrice: parsedPrice,
+                        images: images, 
+                        variants: variants, 
+                        createdAt: Date.now()
+                    };
+
+                    currentBatch.set(newDocRef, productData);
+                    opCount++; addedCount++;
+                    
+                    if (opCount === 490) { batches.push(currentBatch.commit()); currentBatch = writeBatch(db); opCount = 0; }
+                }
+                
+                if (opCount > 0) batches.push(currentBatch.commit());
+                await Promise.all(batches);
+
+                if (addedCount > 0) { window.showMessage(`${addedCount} adet ilan başarıyla yüklendi!`); } 
+                else { window.showMessage("Geçerli ürün satırı bulunamadı.", "error"); }
+            } catch (err) { 
+                console.error(err);
+                window.showMessage("İçe aktarma sırasında hata oluştu.", "error"); 
+            }
+            
+            showScreen('dashboardScreen');
+            event.target.value = ""; 
+        }
+
+        // YENİ: Hem CSV hem XLSX (Excel) destekleyen ana okuyucu fonksiyon
+        window.importFromFile = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            window.showMessage("Dosya analiz ediliyor, lütfen bekleyin...", "info");
+
+            const fileName = file.name.toLowerCase();
+
+            if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, {type: 'array'});
+                        
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        
+                        const json_data = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
+                        
+                        if(json_data.length === 0) { window.showMessage("Excel dosyası boş veya format hatalı.", "error"); return; }
+
+                        const rawHeaders = Object.keys(json_data[0]);
+                        const headers = rawHeaders.map(h => h.trim().replace(/['"]/g, '').toLowerCase());
+                        
+                        processImportedData(json_data, rawHeaders, headers, event);
+                    } catch(err) {
+                        console.error(err);
+                        window.showMessage("Excel dosyası okunurken hata oluştu.", "error");
+                        event.target.value = "";
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            } 
+            else if (fileName.endsWith('.csv')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    let text = e.target.result;
+                    if (text.charCodeAt(0) === 0xFEFF) { text = text.substring(1); }
+
+                    const firstLine = text.split('\n')[0];
+                    const detectedDelimiter = firstLine.includes(';') ? ';' : ',';
+
+                    Papa.parse(text, {
+                        header: true,
+                        skipEmptyLines: 'greedy',
+                        delimiter: detectedDelimiter,
+                        transformHeader: function(header) { 
+                            return header.trim().replace(/['"]/g, '').toLowerCase(); 
+                        },
+                        complete: function(results) {
+                            const data = results.data;
+                            if(data.length === 0) { window.showMessage("CSV dosyası boş veya format hatalı.", "error"); return; }
+                            
+                            const rawHeaders = Object.keys(data[0]);
+                            const headers = rawHeaders.map(h => h.trim().replace(/['"]/g, '').toLowerCase());
+                            
+                            processImportedData(data, rawHeaders, headers, event);
+                        },
+                        error: function(err) {
+                            window.showMessage("CSV dosyası okuma hatası.", "error");
+                            event.target.value = "";
+                        }
+                    });
+                };
+                reader.readAsText(file, 'UTF-8');
+            } else {
+                window.showMessage("Sadece .csv veya .xlsx (Excel) formatında dosya yükleyebilirsiniz.", "error");
+                event.target.value = "";
+            }
+        };
+
+        window.requestPackageUpgrade = async (pkgType) => {
+            const pkgNames = { 'standard': 'Standart Paket', 'premium': 'Premium VIP Paket' };
+            const pkgName = pkgNames[pkgType] || pkgType;
+            
+            window.customConfirm(`Yöneticiden ${pkgName} geçişi talep edilsin ve WhatsApp üzerinden iletişime geçilsin mi?`, async () => {
+                try {
+                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), { upgradeRequest: pkgType });
+                    let message = `Merhaba, *${myStore.name}* mağazam için *${pkgName}* aboneliğine geçmek istiyorum.\n\nFiyat bilgisi alabilir miyim ve ödeme için IBAN numaranızı gönderebilir misiniz?`;
+                    window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
+                    window.showMessage("Talebiniz iletildi. WhatsApp'a yönlendiriliyorsunuz...");
+                } catch (err) { window.showMessage("Talep iletilemedi.", "error"); }
+            });
+        };
+
+        window.contactAdminSupport = () => {
+            let message = `Merhaba, *${myStore ? myStore.name : 'Yeni Satıcı'}* satıcısı olarak platform hakkında desteğe ihtiyacım var. Yardımcı olabilir misiniz?`;
+            window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
+        };
+
+        document.addEventListener('DOMContentLoaded', () => { lucide.createIcons(); });
+    </script>
+</body>
+</html>
