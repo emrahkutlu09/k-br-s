@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- YENİ: Excel (XLSX) okumak için SheetJS kütüphanesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -27,7 +28,6 @@
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-orange-500 selection:text-white">
 
-    <!-- -->
     <!-- Özel Onay Modalı -->
     <div id="customConfirmModal" class="fixed inset-0 bg-slate-900/80 z-[400] hidden items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white p-6 rounded-3xl max-w-sm w-full shadow-2xl text-center transform transition-all">
@@ -127,7 +127,6 @@
         </div>
     </div>
 
-    <!-- -->
     <!-- Ana Panel -->
     <div id="dashboardScreen" class="hidden flex-col min-h-screen">
         <div class="bg-slate-900 text-white p-4 sm:px-8 flex justify-between items-center shadow-md z-20 relative border-b border-slate-800">
@@ -179,7 +178,6 @@
                 <button onclick="window.switchTab('settings')" id="tabBtn-settings" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4"></i> Ayarlar</button>
             </div>
 
-            <!-- -->
             <!-- İstatistik Sekmesi -->
             <div id="tab-stats" class="space-y-6">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -441,7 +439,6 @@
         </main>
     </div>
 
-    <!-- -->
     <!-- Ürün Ekleme/Düzenleme Modalı -->
     <div id="productModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] shadow-2xl transform transition-all">
@@ -522,7 +519,6 @@
         </div>
     </div>
 
-    <!-- -->
     <!-- Toplu Fiyat Güncelleme Modalı -->
     <div id="bulkPriceModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden flex flex-col shadow-2xl transform transition-all">
@@ -570,7 +566,6 @@
         <i data-lucide="message-circle" class="w-6 h-6"></i>
     </button>
 
-    <!-- -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -609,8 +604,8 @@
         let currentFilterCategory = '';
         let pendingRegistrationData = null;
 
-        // İnteraktif Medya Listesi
-        let activeMediaList = [];
+        // İnteraktif Medya Listesi (Mevcutlar + Yeniler)
+        let activeMediaList = []; // { type: 'image', url: string, file: File|null }
 
         const ADMIN_WHATSAPP = "905000000000"; 
 
@@ -641,18 +636,9 @@
         };
 
         function showScreen(id) {
-            ['loginScreen', 'registerScreen', 'pendingScreen', 'dashboardScreen', 'fullScreenLoader'].forEach(el => {
-                const element = document.getElementById(el);
-                if(element) {
-                    element.classList.add('hidden');
-                    element.classList.remove('flex'); // Tüm flex sınıflarını temizle
-                }
-            });
-            const target = document.getElementById(id);
-            if(target) {
-                target.classList.remove('hidden');
-                if(id !== 'fullScreenLoader') target.classList.add('flex'); // Gerekenlere flex ekle
-            }
+            ['loginScreen', 'registerScreen', 'pendingScreen', 'dashboardScreen', 'fullScreenLoader'].forEach(el => document.getElementById(el).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            if(id !== 'dashboardScreen' && id !== 'fullScreenLoader') document.getElementById(id).classList.add('flex');
             lucide.createIcons();
         }
 
@@ -662,23 +648,18 @@
         };
 
         onAuthStateChanged(auth, async (user) => {
-            try {
-                if (user && !user.isAnonymous) {
-                    currentUser = user; 
-                    if (pendingRegistrationData) {
-                        await completeRegistrationWithAuth(pendingRegistrationData);
-                        pendingRegistrationData = null;
-                    } else {
-                        checkStoreStatus();
-                    }
-                } else { 
-                    currentUser = null; 
-                    myStore = null; 
-                    showScreen('loginScreen'); 
+            if (user && !user.isAnonymous) {
+                currentUser = user; 
+                if (pendingRegistrationData) {
+                    await completeRegistrationWithAuth(pendingRegistrationData);
+                    pendingRegistrationData = null;
+                } else {
+                    checkStoreStatus();
                 }
-            } catch (err) {
-                console.error("Auth state error:", err);
-                showScreen('loginScreen');
+            } else { 
+                currentUser = null; 
+                myStore = null; 
+                showScreen('loginScreen'); 
             }
         });
 
@@ -825,7 +806,7 @@
             setTimeout(() => locationMap.invalidateSize(), 400);
         }
 
-        //        function updateDashboardHeader() {
+        function updateDashboardHeader() {
             document.getElementById('storeNameDisplay').innerText = myStore.name;
             document.getElementById('storeDistrictDisplay').innerText = myStore.district;
             document.getElementById('storeWhatsappDisplay').innerText = myStore.whatsapp || '-';
@@ -982,7 +963,7 @@
             renderProducts();
         };
 
-        //        function renderProducts() {
+        function renderProducts() {
             const container = document.getElementById('vendorProductsContainer');
             let displayList = myProducts;
             if(currentFilterCategory) displayList = displayList.filter(p => p.category === currentFilterCategory);
@@ -1168,6 +1149,7 @@
             const mediaLimitStr = pkg === 'free' ? "(Max 1 Görsel)" : (pkg === 'standard' ? "(Max 3 Görsel)" : "(Sınırsız Görsel)");
             document.getElementById('mediaLimitText').innerText = mediaLimitStr;
 
+            // Varyant Kilidi Kontrolü
             const isPremium = myStore.isPremium || myStore.packageType === 'premium';
             if(isPremium) {
                 document.getElementById('premiumVariantLock').classList.add('hidden');
@@ -1553,7 +1535,7 @@
             window.showMessage("İlanlarınız Excel uyumlu CSV formatında indirildi.");
         };
 
-        //        // YENİ: Ortak İşleme Fonksiyonu (Hem CSV hem Excel'den gelen veriyi işler)
+        // YENİ: Ortak İşleme Fonksiyonu (Hem CSV hem Excel'den gelen veriyi işler)
         async function processImportedData(data, rawHeaders, headers, event) {
             const baslikIndex = headers.findIndex(k => k.includes('baslik') || k.includes('başlık') || k === 'data' || k.includes('name'));
             const fiyatIndex = headers.findIndex(k => k.includes('fiyat') || k === 'price');
@@ -1601,12 +1583,12 @@
                     let images = [];
                     if (gorsellerKey && row[gorsellerKey]) {
                         const rawImg = row[gorsellerKey].toString().trim();
-                        // Akıllı Ayrıştırıcı: Virgül, noktalı virgül veya dikey çizgiyi otomatik algıla
+                        // DÜZELTME: Virgül, noktalı virgül ve dik çizgiyi otomatik parçala
                         const splitImages = rawImg.split(/[,;|]/); 
                         images = splitImages
                             .map(u => u.trim())
                             .filter(u => u !== '' && u.startsWith('http') && !u.includes('BASE64'))
-                            .slice(0, maxImagesPerProduct); // Paket limitine göre resim kes
+                            .slice(0, maxImagesPerProduct);
                     }
 
                     if (images.length === 0) {
@@ -1688,7 +1670,7 @@
             event.target.value = ""; 
         }
 
-        // YENİ: Hem CSV hem XLSX (Excel) destekleyen ana okuyucu fonksiyon
+        // Hem CSV hem XLSX (Excel) destekleyen ana okuyucu fonksiyon
         window.importFromFile = (event) => {
             const file = event.target.files[0];
             if (!file) return;
