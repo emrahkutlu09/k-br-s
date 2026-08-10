@@ -225,6 +225,145 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Ana Vitrin Banner Ayarları -->
+                    <div class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-6 sm:p-8">
+                        <h3 class="text-lg font-black text-white flex items-center gap-2 mb-6"><i data-lucide="image" class="w-5 h-5 text-rose-500"></i> Ana Vitrin Banner Ayarları</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 mb-2">Üst Etiket (Tag)</label>
+                                <input type="text" id="setMainBannerTag" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Örn: Haftanın Fırsatı">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 mb-2">Buton Metni</label>
+                                <input type="text" id="setMainBannerBtn" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Örn: Alışverişe Başla">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-slate-400 mb-2">Başlık (Daha büyük vurgu için HTML kullanılabilir)</label>
+                                <textarea id="setMainBannerTitle" rows="2" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Örn: Seçili Ürünlerde İndirim"></textarea>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-slate-400 mb-2">Alt Başlık (Açıklama)</label>
+                                <textarea id="setMainBannerSubtitle" rows="2" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none" placeholder="En sevdiğiniz mağazalardan..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 mb-2">Yönlendirme Türü</label>
+                                <select id="setMainBannerLinkType" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none">
+                                    <option value="category">Kategoriye Git</option>
+                                    <option value="product">Ürüne Git (ID gerekir)</option>
+                                    <option value="store">Mağazaya Git (ID gerekir)</option>
+                                    <option value="url">Dış Bağlantı (URL)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 mb-2">Hedef Değeri (Kategori adı, ID veya URL)</label>
+                                <input type="text" id="setMainBannerLinkValue" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Moda">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-slate-400 mb-2">Arka Plan Görseli</label>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-32 h-20 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+                                        <img id="setMainBannerImagePreview" src="" class="w-full h-full object-cover hidden">
+                                        <i data-lucide="image" class="w-6 h-6 text-slate-600" id="setMainBannerImageFallback"></i>
+                                    </div>
+                                    <input type="file" id="setMainBannerImageInput" accept="image/*" onchange="window.previewAdminImage(this, 'setMainBannerImagePreview', 'setMainBannerImageFallback')" class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:font-bold file:bg-rose-500/10 file:text-rose-400 hover:file:bg-rose-500/20 cursor-pointer">
+                                </div>
+                                <p class="text-[10px] text-slate-500 mt-2">Görsel seçilmezse animasyonlu gradyan kullanılır. (Yatay format önerilir)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Yan Vitrin 1 ve 2 Ayarları -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Yan Banner 1 -->
+                        <div class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-6">
+                            <h3 class="text-md font-black text-white flex items-center gap-2 mb-4"><i data-lucide="layout-grid" class="w-4 h-4 text-orange-400"></i> Üst Yan Banner</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 mb-1">Başlık</label>
+                                    <input type="text" id="setSide1Title" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 mb-1">Alt Başlık</label>
+                                    <input type="text" id="setSide1Subtitle" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-400 mb-1">İkon (Lucide)</label>
+                                        <input type="text" id="setSide1Icon" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Örn: laptop">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-400 mb-1">Hedef Türü</label>
+                                        <select id="setSide1LinkType" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none">
+                                            <option value="category">Kategori</option>
+                                            <option value="product">Ürün</option>
+                                            <option value="store">Mağaza</option>
+                                            <option value="url">URL</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 mb-1">Hedef Değeri (Kategori adı vb.)</label>
+                                    <input type="text" id="setSide1LinkValue" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 mb-1">Arka Plan Görseli</label>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-16 h-12 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+                                            <img id="setSide1ImagePreview" src="" class="w-full h-full object-cover hidden">
+                                            <i data-lucide="image" class="w-4 h-4 text-slate-600" id="setSide1ImageFallback"></i>
+                                        </div>
+                                        <input type="file" id="setSide1ImageInput" accept="image/*" onchange="window.previewAdminImage(this, 'setSide1ImagePreview', 'setSide1ImageFallback')" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:font-bold file:bg-rose-500/10 file:text-rose-400 hover:file:bg-rose-500/20 cursor-pointer w-full">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Yan Banner 2 -->
+                        <div class="bg-slate-800/50 border border-slate-700/50 rounded-3xl p-6">
+                            <h3 class="text-md font-black text-white flex items-center gap-2 mb-4"><i data-lucide="layout-grid" class="w-4 h-4 text-emerald-400"></i> Alt Yan Banner</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 mb-1">Başlık</label>
+                                    <input type="text" id="setSide2Title" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 mb-1">Alt Başlık</label>
+                                    <input type="text" id="setSide2Subtitle" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-400 mb-1">İkon (Lucide)</label>
+                                        <input type="text" id="setSide2Icon" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Örn: home">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-400 mb-1">Hedef Türü</label>
+                                        <select id="setSide2LinkType" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none">
+                                            <option value="category">Kategori</option>
+                                            <option value="product">Ürün</option>
+                                            <option value="store">Mağaza</option>
+                                            <option value="url">URL</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 mb-1">Hedef Değeri</label>
+                                    <input type="text" id="setSide2LinkValue" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 mb-1">Arka Plan Görseli</label>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-16 h-12 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+                                            <img id="setSide2ImagePreview" src="" class="w-full h-full object-cover hidden">
+                                            <i data-lucide="image" class="w-4 h-4 text-slate-600" id="setSide2ImageFallback"></i>
+                                        </div>
+                                        <input type="file" id="setSide2ImageInput" accept="image/*" onchange="window.previewAdminImage(this, 'setSide2ImagePreview', 'setSide2ImageFallback')" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:font-bold file:bg-rose-500/10 file:text-rose-400 hover:file:bg-rose-500/20 cursor-pointer w-full">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="flex justify-end">
                         <button type="submit" id="btnSaveSettings" class="bg-rose-600 hover:bg-rose-500 text-white font-black py-4 px-10 rounded-2xl transition shadow-lg shadow-rose-500/30 flex items-center gap-2">
                             <i data-lucide="save" class="w-5 h-5"></i> Değişiklikleri Yayına Al
@@ -1023,6 +1162,46 @@
                 document.getElementById('setLogoPreview').classList.remove('hidden');
                 if(document.getElementById('setLogoFallback')) document.getElementById('setLogoFallback').classList.add('hidden');
             }
+
+            if(systemSettings.mainBanner) {
+                document.getElementById('setMainBannerTag').value = systemSettings.mainBanner.tag || '';
+                document.getElementById('setMainBannerTitle').value = systemSettings.mainBanner.title || '';
+                document.getElementById('setMainBannerSubtitle').value = systemSettings.mainBanner.subtitle || '';
+                document.getElementById('setMainBannerBtn').value = systemSettings.mainBanner.btnText || '';
+                document.getElementById('setMainBannerLinkType').value = systemSettings.mainBanner.linkType || 'category';
+                document.getElementById('setMainBannerLinkValue').value = systemSettings.mainBanner.linkValue || '';
+                if(systemSettings.mainBanner.image) {
+                    document.getElementById('setMainBannerImagePreview').src = systemSettings.mainBanner.image;
+                    document.getElementById('setMainBannerImagePreview').classList.remove('hidden');
+                    if(document.getElementById('setMainBannerImageFallback')) document.getElementById('setMainBannerImageFallback').classList.add('hidden');
+                }
+            }
+            
+            if(systemSettings.sideBanner1) {
+                document.getElementById('setSide1Title').value = systemSettings.sideBanner1.title || '';
+                document.getElementById('setSide1Subtitle').value = systemSettings.sideBanner1.subtitle || '';
+                document.getElementById('setSide1Icon').value = systemSettings.sideBanner1.icon || 'laptop';
+                document.getElementById('setSide1LinkType').value = systemSettings.sideBanner1.linkType || 'category';
+                document.getElementById('setSide1LinkValue').value = systemSettings.sideBanner1.linkValue || '';
+                if(systemSettings.sideBanner1.image) {
+                    document.getElementById('setSide1ImagePreview').src = systemSettings.sideBanner1.image;
+                    document.getElementById('setSide1ImagePreview').classList.remove('hidden');
+                    if(document.getElementById('setSide1ImageFallback')) document.getElementById('setSide1ImageFallback').classList.add('hidden');
+                }
+            }
+
+            if(systemSettings.sideBanner2) {
+                document.getElementById('setSide2Title').value = systemSettings.sideBanner2.title || '';
+                document.getElementById('setSide2Subtitle').value = systemSettings.sideBanner2.subtitle || '';
+                document.getElementById('setSide2Icon').value = systemSettings.sideBanner2.icon || 'home';
+                document.getElementById('setSide2LinkType').value = systemSettings.sideBanner2.linkType || 'category';
+                document.getElementById('setSide2LinkValue').value = systemSettings.sideBanner2.linkValue || '';
+                if(systemSettings.sideBanner2.image) {
+                    document.getElementById('setSide2ImagePreview').src = systemSettings.sideBanner2.image;
+                    document.getElementById('setSide2ImagePreview').classList.remove('hidden');
+                    if(document.getElementById('setSide2ImageFallback')) document.getElementById('setSide2ImageFallback').classList.add('hidden');
+                }
+            }
         }
 
         window.previewAdminImage = (input, previewId, fallbackId = null) => {
@@ -1073,8 +1252,45 @@
                 const logoInput = document.getElementById('setLogoInput');
                 if (logoInput.files.length > 0) updates.platformLogo = await compressAdminImage(logoInput.files[0], 400); 
 
+                const mainBannerObj = {
+                    tag: document.getElementById('setMainBannerTag').value,
+                    title: document.getElementById('setMainBannerTitle').value,
+                    subtitle: document.getElementById('setMainBannerSubtitle').value,
+                    btnText: document.getElementById('setMainBannerBtn').value,
+                    linkType: document.getElementById('setMainBannerLinkType').value,
+                    linkValue: document.getElementById('setMainBannerLinkValue').value,
+                    image: systemSettings.mainBanner?.image || null
+                };
+                const mainImgInput = document.getElementById('setMainBannerImageInput');
+                if(mainImgInput.files.length > 0) mainBannerObj.image = await compressAdminImage(mainImgInput.files[0], 1200);
+                updates.mainBanner = mainBannerObj;
+
+                const sideBanner1Obj = {
+                    title: document.getElementById('setSide1Title').value,
+                    subtitle: document.getElementById('setSide1Subtitle').value,
+                    icon: document.getElementById('setSide1Icon').value,
+                    linkType: document.getElementById('setSide1LinkType').value,
+                    linkValue: document.getElementById('setSide1LinkValue').value,
+                    image: systemSettings.sideBanner1?.image || null
+                };
+                const side1ImgInput = document.getElementById('setSide1ImageInput');
+                if(side1ImgInput.files.length > 0) sideBanner1Obj.image = await compressAdminImage(side1ImgInput.files[0], 800);
+                updates.sideBanner1 = sideBanner1Obj;
+
+                const sideBanner2Obj = {
+                    title: document.getElementById('setSide2Title').value,
+                    subtitle: document.getElementById('setSide2Subtitle').value,
+                    icon: document.getElementById('setSide2Icon').value,
+                    linkType: document.getElementById('setSide2LinkType').value,
+                    linkValue: document.getElementById('setSide2LinkValue').value,
+                    image: systemSettings.sideBanner2?.image || null
+                };
+                const side2ImgInput = document.getElementById('setSide2ImageInput');
+                if(side2ImgInput.files.length > 0) sideBanner2Obj.image = await compressAdminImage(side2ImgInput.files[0], 800);
+                updates.sideBanner2 = sideBanner2Obj;
+
                 await setDoc(settingsRef, updates, { merge: true });
-                window.showMessage("Sistem ayarları başarıyla güncellendi.");
+                window.showMessage("Sistem ayarları ve vitrin güncellendi.");
             } catch(err) {
                 console.error(err);
                 window.showMessage("Ayarlar kaydedilirken hata oluştu.", "error");
