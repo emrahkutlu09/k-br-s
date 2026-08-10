@@ -891,7 +891,7 @@
         function updateCategoryDropdowns() {
             let optionsHtml = '';
             if (dbCategories.length === 0) {
-                optionsHtml = '<option value="Genel">Genel (Kategori Bulunamadı)</option>';
+                optionsHtml = '<option value="Diğer">Diğer (Kategori Bulunamadı)</option>';
             } else {
                 const tree = buildCategoryTree(dbCategories, "");
                 optionsHtml = generateDropdownOptions(tree, 0);
@@ -1213,6 +1213,7 @@
             catch(err) { window.showMessage("Çoğaltma hatası.", "error"); }
         };
 
+        // Cloudinary Yükleme Modülü (Sadece Resim)
         async function uploadFileToCloudinary(file, resourceType = 'image') {
             const formData = new FormData();
             formData.append('file', file);
@@ -1534,23 +1535,23 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            window.showMessage("CSV dosyası akıllı filtre ile okunuyor, lütfen bekleyin...", "info");
+            window.showMessage("Gelişmiş CSV/Excel aktarımı başlatıldı, lütfen bekleyin...", "info");
 
             const reader = new FileReader();
             reader.onload = function(e) {
                 let text = e.target.result;
+                // UTF-8 BOM Temizliği
                 if (text.charCodeAt(0) === 0xFEFF) { text = text.substring(1); }
 
+                // Virgül ve Noktalı Virgül (Delimiter) Otomatik Algılama
                 const firstLine = text.split('\n')[0];
-                const detectedDelimiter = firstLine.includes(';') ? ';' : ',';
+                const detectedDelimiter = (firstLine.match(/;/g) || []).length > (firstLine.match(/,/g) || []).length ? ';' : ',';
 
                 Papa.parse(text, {
                     header: true,
                     skipEmptyLines: 'greedy',
                     delimiter: detectedDelimiter,
-                    transformHeader: function(header) { 
-                        return header.trim().replace(/['"]/g, '').toLowerCase(); 
-                    },
+                    transformHeader: function(header) { return header.trim().replace(/"/g, ''); },
                     complete: async function(results) {
                         const data = results.data;
                         if(data.length === 0) { window.showMessage("Dosya boş veya format hatalı.", "error"); return; }
@@ -1558,15 +1559,17 @@
                         const rawHeaders = Object.keys(data[0]);
                         const headers = rawHeaders.map(h => h.trim().replace(/['"]/g, '').toLowerCase());
                         
-                        const baslikIndex = headers.findIndex(k => k.includes('baslik') || k.includes('başlık') || k === 'data' || k.includes('name'));
-                        const fiyatIndex = headers.findIndex(k => k.includes('fiyat') || k === 'price');
-                        const kategoriIndex = headers.findIndex(k => k.includes('kategori') || k.includes('category'));
-                        const aciklamaIndex = headers.findIndex(k => k.includes('aciklama') || k.includes('açıklama') || k.includes('description'));
-                        const gorsellerIndex = headers.findIndex(k => k.includes('gorsel') || k.includes('görsel') || k === 'image' || k.includes('img'));
-                        const varyantlarIndex = headers.findIndex(k => k.includes('varyant') || k.includes('variant'));
+                        // Akıllı Başlık Tarayıcı (Çoklu İsim Desteği)
+                        const findCol = (possibilities) => headers.findIndex(h => possibilities.some(p => h.includes(p) || h === p));
+                        
+                        const baslikIndex = findCol(['baslik', 'başlık', 'ürün adı', 'urun adi', 'name', 'title']);
+                        const fiyatIndex = findCol(['fiyat', 'price', 'satis', 'satış', 'regular_price', 'sale_price', 'regular price']);
+                        const kategoriIndex = findCol(['kategori', 'category', 'categories']);
+                        const aciklamaIndex = findCol(['aciklama', 'açıklama', 'description', 'detay', 'icerik', 'içerik', 'short description']);
+                        const varyantlarIndex = findCol(['varyant', 'variant', 'secenek', 'seçenek', 'attribute']);
 
                         if (baslikIndex === -1 || fiyatIndex === -1) {
-                            window.showMessage("Format hatası: Ürün adı/başlığı ve Fiyat sütunları bulunamadı.", "error");
+                            window.showMessage("Hata: Dosyanızda 'Ürün Adı/Başlık' veya 'Fiyat' sütunları algılanamadı.", "error");
                             event.target.value = ""; return;
                         }
 
@@ -1574,7 +1577,6 @@
                         const fiyatKey = rawHeaders[fiyatIndex];
                         const kategoriKey = kategoriIndex !== -1 ? rawHeaders[kategoriIndex] : null;
                         const aciklamaKey = aciklamaIndex !== -1 ? rawHeaders[aciklamaIndex] : null;
-                        const gorsellerKey = gorsellerIndex !== -1 ? rawHeaders[gorsellerIndex] : null;
                         const varyantlarKey = varyantlarIndex !== -1 ? rawHeaders[varyantlarIndex] : null;
 
                         const isPremium = myStore.isPremium || myStore.packageType === 'premium';
@@ -1582,12 +1584,12 @@
                         const limit = pkg === 'free' ? 20 : (pkg === 'standard' ? 50 : 9999);
                         
                         if (myProducts.length + data.length > limit) {
-                            window.showMessage(`Paket limitiniz (${limit}) bu kadar ürünü içe aktarmaya yetmiyor.`, "error");
+                            window.showMessage(`Paket limitiniz (${limit}) bu kadar ürünü içeri aktarmaya yetmiyor.`, "error");
                             event.target.value = ""; return;
                         }
 
                         showScreen('fullScreenLoader');
-                        document.getElementById('loaderText').innerText = "Ürünler Akıllı Sistemle Yükleniyor...";
+                        document.getElementById('loaderText').innerText = "Mağaza Ürünleri Sisteme Entegre Ediliyor...";
 
                         try {
                             let batches = [];
@@ -1600,21 +1602,37 @@
                                 
                                 const newDocRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products'));
                                 
+                                // Gelişmiş Görsel Toplayıcı (Tüm resim sütunlarını tarar - Örn: Resim 1, Resim 2, Image)
                                 let images = [];
-                                if (gorsellerKey && row[gorsellerKey]) {
-                                    const rawImg = row[gorsellerKey].toString().trim();
-                                    images = rawImg.split('|').filter(u => u.trim() !== '' && !u.includes('BASE64'));
-                                }
+                                rawHeaders.forEach((origHeader, idx) => {
+                                    const lower = headers[idx];
+                                    if(lower.includes('resim') || lower.includes('image') || lower.includes('görsel') || lower.includes('gorsel') || lower.includes('foto')) {
+                                        const val = row[origHeader];
+                                        if(val) {
+                                            // Virgüle (WooCommerce) veya Dikey Çizgiye (Kıbrıs Bazar) göre ayır
+                                            const parts = val.split(/[|,]/).map(u => u.trim());
+                                            parts.forEach(p => {
+                                                if(p.startsWith('http') && !images.includes(p)) images.push(p);
+                                            });
+                                        }
+                                    }
+                                });
 
-                                let cleanPrice = row[fiyatKey].toString().replace(/[^0-9.,]/g, '');
-                                if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
-                                    cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
+                                // Gelişmiş Fiyat Ayrıştırıcı (Kur Korumalı - "1.234,56" veya "1234.56" formatlarını çözer)
+                                let cleanPrice = row[fiyatKey].toString().trim();
+                                if(cleanPrice.includes(',') && cleanPrice.includes('.')) {
+                                     const lastComma = cleanPrice.lastIndexOf(',');
+                                     const lastDot = cleanPrice.lastIndexOf('.');
+                                     if(lastComma > lastDot) cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
+                                     else cleanPrice = cleanPrice.replace(/,/g, '');
                                 } else if (cleanPrice.includes(',')) {
-                                    cleanPrice = cleanPrice.replace(',', '.');
+                                     cleanPrice = cleanPrice.replace(',', '.');
                                 }
+                                cleanPrice = cleanPrice.replace(/[^0-9.]/g, '');
                                 const parsedPrice = parseFloat(cleanPrice) || 0;
                                 
                                 const variants = [];
+                                // Premium Mağazalar İçin Gelişmiş Varyant Desteği
                                 if(isPremium && varyantlarKey && row[varyantlarKey]) {
                                     row[varyantlarKey].split('|').forEach(v => {
                                         if(v.includes('^')) {
@@ -1623,45 +1641,27 @@
                                                 variants.push({
                                                     group: parts[0].trim(),
                                                     name: parts[1].trim(),
-                                                    price: parts[2] ? parseFloat(parts[2].replace(/[^0-9.]/g, '')) : parsedPrice,
+                                                    price: parts[2] ? parseFloat(parts[2]) : parsedPrice,
                                                     image: parts[3] ? parts[3].trim() : '',
                                                     stock: 999
                                                 });
+                                            }
+                                        } else {
+                                            const parts = v.split(':');
+                                            if(parts.length > 0 && parts[0].trim() !== '') {
+                                                variants.push({ group: 'Seçenek', name: parts[0].trim(), price: parsedPrice, image: '', stock: 999 });
                                             }
                                         }
                                     });
                                 }
 
-                                // Akıllı Kategori Eşleştirme Motoru
-                                let matchedCategory = 'Genel'; // Varsayılan Kategori
-                                if (kategoriKey && row[kategoriKey]) {
-                                    const csvCatText = row[kategoriKey].toString().toLocaleLowerCase('tr-TR').trim();
-                                    if (csvCatText) {
-                                        // 1. Veritabanındaki tüm kategorileri kontrol et
-                                        for (const dbCat of dbCategories) {
-                                            const dbCatLower = dbCat.name.toLocaleLowerCase('tr-TR').trim();
-                                            // Eğer CSV'deki kelime DB'deki kategori adının içinde geçiyorsa VEYA DB'deki kategori adı CSV'dekinin içinde geçiyorsa eşleştir.
-                                            if (dbCatLower.includes(csvCatText) || csvCatText.includes(dbCatLower)) {
-                                                matchedCategory = dbCat.name; // Gerçek veritabanı ismini al
-                                                break; // İlk eşleşmede döngüyü durdur
-                                            }
-                                        }
-                                    }
-                                }
-
                                 const productData = {
-                                    storeId: myStore.id, 
-                                    storeName: myStore.name, 
-                                    storeWhatsapp: myStore.whatsapp, 
-                                    district: myStore.district,
-                                    title: row[baslikKey].toString().trim(),
-                                    description: (aciklamaKey && row[aciklamaKey]) ? row[aciklamaKey].toString().trim() : '',
-                                    category: matchedCategory, // Akıllı eşleşen kategoriyi kullan
+                                    storeId: myStore.id, storeName: myStore.name, storeWhatsapp: myStore.whatsapp, district: myStore.district,
+                                    title: row[baslikKey].trim(),
+                                    description: (aciklamaKey && row[aciklamaKey]) ? row[aciklamaKey].trim() : '',
+                                    category: (kategoriKey && row[kategoriKey]) ? row[kategoriKey].trim() : 'Diğer',
                                     price: parsedPrice,
-                                    originalPrice: parsedPrice,
-                                    images: images, 
-                                    variants: variants, 
-                                    createdAt: Date.now()
+                                    images: images, variants: variants, createdAt: Date.now()
                                 };
 
                                 currentBatch.set(newDocRef, productData);
@@ -1674,11 +1674,8 @@
                             await Promise.all(batches);
 
                             if (addedCount > 0) { window.showMessage(`${addedCount} adet ilan başarıyla yüklendi!`); } 
-                            else { window.showMessage("Geçerli ürün satırı bulunamadı.", "error"); }
-                        } catch (err) { 
-                            console.error(err);
-                            window.showMessage("İçe aktarma sırasında hata oluştu.", "error"); 
-                        }
+                            else { window.showMessage("Geçerli ürün bulunamadı. Lütfen CSV dosyanızı kontrol edin.", "error"); }
+                        } catch (err) { window.showMessage("İçe aktarma hatası.", "error"); }
                         
                         showScreen('dashboardScreen');
                         event.target.value = ""; 
