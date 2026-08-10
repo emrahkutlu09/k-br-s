@@ -1439,8 +1439,8 @@
             const variantsText = window.t('variants_label');
             
             return `
-                <div class="bg-white rounded-2xl p-3 hover:shadow-xl hover:border-orange-200 border border-slate-200 transition-all group flex flex-col cursor-pointer shrink-0 w-[160px] sm:w-auto sm:min-w-0" onclick="window.openProductDetail('${p.id}')">
-                    <div class="relative w-full aspect-[4/5] mb-3 overflow-hidden rounded-xl bg-slate-100">
+                <div class="bg-white rounded-2xl p-3 hover:shadow-xl hover:border-orange-200 border border-slate-200 transition-all group flex flex-col cursor-pointer w-full h-full" onclick="window.openProductDetail('${p.id}')">
+                    <div class="relative w-full aspect-[4/5] mb-3 overflow-hidden rounded-xl bg-slate-100 shrink-0">
                         <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Product"/>
                         <button onclick="event.stopPropagation(); window.toggleFavorite('${p.id}')" class="absolute top-2 right-2 rtl:left-2 rtl:right-auto p-2 rounded-full bg-white/90 shadow hover:scale-110 z-10 transition">
                             <i data-lucide="heart" class="w-4 h-4 ${isFav ? 'fill-rose-500 text-rose-500' : 'text-slate-400 hover:text-rose-500'}"></i>
@@ -1534,7 +1534,7 @@
                             </div>
                             <div id="featuredContainer" class="flex gap-4 sm:gap-5 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth snap-x">
                     `;
-                    featuredProducts.forEach(p => { html += `<div class="snap-start shrink-0">` + window.createProductCard(p) + `</div>`; });
+                    featuredProducts.forEach(p => { html += `<div class="snap-start shrink-0 w-[160px] sm:w-[200px] lg:w-[220px] flex">` + window.createProductCard(p) + `</div>`; });
                     html += `</div></div>`;
                 }
 
