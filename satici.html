@@ -256,7 +256,7 @@
                 <div class="flex items-center justify-between mb-2">
                     <div>
                         <h3 class="text-lg font-black text-slate-800">Sipariş Yönetimi</h3>
-                        <p class="text-xs text-slate-500 mt-1">Gelen siparişlerin durumunu güncelleyin. Ürün adındaki 🔗 ikonuna tıklayarak doğrudan ürüne gidebilirsiniz.</p>
+                        <p class="text-xs text-slate-500 mt-1">Gelen siparişlerin durumunu güncelleyin. "Teslim Edildi" olarak işaretlenenler cironuza yansır.</p>
                     </div>
                     <button onclick="window.createMockOrder()" class="text-[10px] font-bold bg-slate-200 text-slate-600 px-3 py-2 rounded-xl hover:bg-slate-300 transition hidden sm:block">Test Siparişi Ekle</button>
                 </div>
@@ -512,7 +512,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-2">Satış Fiyatı (TL) / (Ortalama Fiyat)</label>
-                            <input type="number" id="pPrice" step="0.01" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-black text-orange-600 outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors" placeholder="İsteğe Bağlı, boşsa 0 olarak alınır" />
+                            <input type="number" id="pPrice" required step="0.01" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-black text-orange-600 outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors" placeholder="0.00" />
                         </div>
                     </div>
 
@@ -925,8 +925,9 @@
             document.getElementById('statDelivered').innerText = delivered;
             document.getElementById('statPendingOrders').innerText = pending;
 
-            // Trafik Verilerini (Şimdilik Demo Olarak) Hesapla ve Ekrana Bas
-            const views = myStore.views || { daily: 14, monthly: 345, total: 1250 };
+            // GERÇEK Trafik Verilerini Ekrana Basma
+            // (Eğer mağazada henüz hiç 'views' objesi yoksa sıfır gösterir)
+            const views = myStore.views || { daily: 0, monthly: 0, total: 0, lastUpdateDate: new Date().toDateString() };
             
             const elDaily = document.getElementById('statDailyViews');
             if(elDaily) elDaily.innerText = views.daily.toLocaleString('tr-TR');
@@ -937,16 +938,19 @@
             const elTotal = document.getElementById('statTotalViews');
             if(elTotal) elTotal.innerText = views.total.toLocaleString('tr-TR');
 
-            // Canlı Ziyaretçi Simülasyonu
+            // Canlı Ziyaretçi: Firebase kotalarını aşmamak için "Gerçekçi Simülasyon" kullanılır.
+            // Gerçek ziyaretçi verilerine (Bugün kaç kişi girmiş) orantılı olarak anlık bir rakam üretir.
             if(!window.liveVisitorInterval) {
                 const updateLiveVisitor = () => {
-                    // Sadece sayfanın çalıştığını hissettirmek için 1 ile 3 arasında rastgele canlı ziyaretçi gösterir
-                    const baseVisitors = Math.floor(Math.random() * 3) + (activeCount > 0 ? 1 : 0);
+                    // Eğer bugün kimse girmemişse 0 veya 1 göstersin. Çok kişi girmişse daha yüksek göstersin.
+                    const trafficFactor = Math.ceil(views.daily / 50); // Her 50 günlük ziyarette anlık 1 kişi artar
+                    const baseVisitors = Math.floor(Math.random() * 3) + (activeCount > 0 ? 1 : 0) + trafficFactor;
+                    
                     const elLive = document.getElementById('statLiveVisitors');
                     if(elLive) elLive.innerText = baseVisitors;
                 };
                 updateLiveVisitor();
-                window.liveVisitorInterval = setInterval(updateLiveVisitor, 8000); // Her 8 saniyede bir güncellenir
+                window.liveVisitorInterval = setInterval(updateLiveVisitor, 8000); 
             }
         }
 
@@ -1063,55 +1067,6 @@
             lucide.createIcons();
         }
 
-        function renderOrders() {
-            const tbody = document.getElementById('ordersTableBody');
-            if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-400 font-bold bg-white">Sipariş bulunmuyor.</td></tr>'; return; }
-            
-            const sortedOrders = [...myOrders].sort((a,b) => b.createdAt - a.createdAt);
-            let html = '';
-            
-            sortedOrders.forEach(o => {
-                const date = new Date(o.createdAt).toLocaleDateString('tr-TR', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
-                let statusHtml = '';
-                if(o.status === 'pending') statusHtml = '<span class="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="clock" class="w-3 h-3 inline mb-0.5"></i> Yeni</span>';
-                else if(o.status === 'processing') statusHtml = '<span class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="package" class="w-3 h-3 inline mb-0.5"></i> Hazırlanıyor</span>';
-                else if(o.status === 'shipped') statusHtml = '<span class="bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="truck" class="w-3 h-3 inline mb-0.5"></i> Kargoda</span>';
-                else if(o.status === 'delivered') statusHtml = '<span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="check-circle" class="w-3 h-3 inline mb-0.5"></i> Teslim Edildi</span>';
-                else if(o.status === 'cancelled') statusHtml = '<span class="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="x-circle" class="w-3 h-3 inline mb-0.5"></i> İptal</span>';
-
-                // Ürün isimlerinin yanına Ana Sayfaya yönlendiren direkt link eklendi
-                let itemsHtml = o.items.map(i => {
-                    const pId = i.product?.id || i.productId;
-                    const pTitle = i.product?.title || i.title;
-                    const baseUrl = window.location.origin + window.location.pathname.replace('satici.html', 'index.html');
-                    const productUrl = `${baseUrl}#/urun/${pId}`;
-                    const linkHtml = pId ? `<a href="${productUrl}" target="_blank" class="text-blue-500 hover:text-blue-700 inline-flex items-center ml-1 align-middle" title="Ürüne Git"><i data-lucide="external-link" class="w-3 h-3"></i></a>` : '';
-                    return `<div class="mb-1 last:mb-0"><span class="font-black text-slate-800">${i.quantity || i.qty}x</span> ${pTitle} ${i.variant ? `<span class="text-[10px] text-purple-600">(${i.variant})</span>` : ''}${linkHtml}</div>`;
-                }).join('');
-
-                html += `
-                    <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="px-6 py-4 font-mono text-xs font-bold text-slate-500">#${o.id.substring(0,6).toUpperCase()}</td>
-                        <td class="px-6 py-4"><div class="text-sm font-black text-slate-800">${o.customerName}</div><div class="text-[10px] font-bold text-slate-400 mt-1">${date}</div></td>
-                        <td class="px-6 py-4 text-xs text-slate-600 max-w-[200px] truncate whitespace-normal leading-relaxed">${itemsHtml}</td>
-                        <td class="px-6 py-4 font-black text-orange-600 text-base">${o.totalAmount.toLocaleString('tr-TR')} TL</td>
-                        <td class="px-6 py-4">${statusHtml}</td>
-                        <td class="px-6 py-4 text-right">
-                            <select onchange="window.updateOrderStatus('${o.id}', this.value)" class="text-xs font-bold bg-white border border-slate-200 text-slate-700 rounded-lg p-2 outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer shadow-sm">
-                                <option value="" disabled selected>Durum Değiştir</option>
-                                <option value="processing">Hazırlanıyor</option>
-                                <option value="shipped">Kargoda</option>
-                                <option value="delivered">Teslim Edildi</option>
-                                <option value="cancelled">İptal Et</option>
-                            </select>
-                        </td>
-                    </tr>
-                `;
-            });
-            tbody.innerHTML = html;
-            lucide.createIcons();
-        }
-
         let variantCount = 0;
         window.addVariantRow = (group = 'Seçenek', name = '', price = '', imageUrl = '') => {
             const container = document.getElementById('variantsContainer');
@@ -1169,8 +1124,483 @@
             }
         };
 
+        window.renderActiveMediaPreview = () => {
+            const container = document.getElementById('pMediaPreviewContainer');
+            if(!container) return;
 
-        // YENİ ROBUST (AKILLI) İÇE AKTARMA MOTORU
+            if(activeMediaList.length === 0) {
+                container.innerHTML = `<span class="text-xs text-slate-400 italic">Henüz fotoğraf seçilmedi.</span>`;
+                return;
+            }
+
+            let html = '';
+            activeMediaList.forEach((item, index) => {
+                html += `
+                    <div class="relative w-20 h-20 rounded-xl overflow-hidden shrink-0 shadow-md border-2 border-slate-200 media-thumb-item group" draggable="true" ondragstart="window.onMediaDragStart(event, ${index})" ondragover="event.preventDefault()" ondrop="window.onMediaDrop(event, ${index})">
+                        <img src="${item.url}" class="w-full h-full object-cover">
+                        <span class="absolute top-1 left-1 bg-black/70 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">${index+1}</span>
+                        <button type="button" onclick="window.removeActiveMedia(${index})" class="absolute top-1 right-1 bg-rose-600 hover:bg-rose-700 text-white p-1 rounded-full shadow transition" title="Kaldır">
+                            <i data-lucide="x" class="w-3 h-3"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            lucide.createIcons();
+        };
+
+        let draggedMediaIndex = null;
+        window.onMediaDragStart = (e, index) => {
+            draggedMediaIndex = index;
+        };
+
+        window.onMediaDrop = (e, targetIndex) => {
+            e.preventDefault();
+            if (draggedMediaIndex === null || draggedMediaIndex === targetIndex) return;
+            const movedItem = activeMediaList.splice(draggedMediaIndex, 1)[0];
+            activeMediaList.splice(targetIndex, 0, movedItem);
+            draggedMediaIndex = null;
+            window.renderActiveMediaPreview();
+        };
+
+        window.removeActiveMedia = (index) => {
+            activeMediaList.splice(index, 1);
+            window.renderActiveMediaPreview();
+        };
+
+        document.getElementById('pImages').addEventListener('change', async function(e) {
+            const files = Array.from(this.files);
+            const pkg = myStore.packageType || 'free';
+            const maxImages = pkg === 'free' ? 1 : (pkg === 'standard' ? 3 : 999);
+
+            for(let f of files) {
+                if(f.type.startsWith('image/')) {
+                    const currentImagesCount = activeMediaList.filter(m => m.type === 'image').length;
+                    if(currentImagesCount >= maxImages) {
+                        window.showMessage(`Paket limitiniz (${maxImages} görsel) doldu.`, "error");
+                        continue;
+                    }
+                    const url = URL.createObjectURL(f);
+                    activeMediaList.push({ type: 'image', url: url, file: f });
+                }
+            }
+            this.value = ""; 
+            window.renderActiveMediaPreview();
+        });
+
+        window.openAddProduct = () => {
+            const pkg = myStore.packageType || 'free';
+            const limit = pkg === 'free' ? 20 : (pkg === 'standard' ? 50 : 9999);
+            
+            if(myProducts.length >= limit) { window.showMessage(`Paket limitinize (${limit}) ulaştınız. Yeni ürün eklemek için paketinizi yükseltin.`, "error"); return; }
+            
+            document.getElementById('productModalTitle').innerHTML = `<i data-lucide="package-plus" class="w-6 h-6 text-orange-500"></i> İlan Ekle`;
+            document.getElementById('pEditingId').value = "";
+            document.getElementById('pImages').value = "";
+            activeMediaList = [];
+            window.renderActiveMediaPreview();
+
+            document.getElementById('pTitle').value = "";
+            document.getElementById('pDesc').value = "";
+            document.getElementById('pPrice').value = "";
+            document.getElementById('variantsContainer').innerHTML = ""; 
+            
+            updateCategoryDropdowns();
+            
+            const mediaLimitStr = pkg === 'free' ? "(Max 1 Görsel)" : (pkg === 'standard' ? "(Max 3 Görsel)" : "(Sınırsız Görsel)");
+            document.getElementById('mediaLimitText').innerText = mediaLimitStr;
+
+            const isPremium = myStore.isPremium || myStore.packageType === 'premium';
+            if(isPremium) {
+                document.getElementById('premiumVariantLock').classList.add('hidden');
+                document.getElementById('variantContent').classList.remove('opacity-50', 'pointer-events-none');
+            } else {
+                document.getElementById('premiumVariantLock').classList.remove('hidden');
+                document.getElementById('variantContent').classList.add('opacity-50', 'pointer-events-none');
+            }
+
+            document.getElementById('productModal').classList.remove('hidden');
+            lucide.createIcons();
+        };
+
+        window.closeProductModal = () => { document.getElementById('productModal').classList.add('hidden'); };
+
+        window.editProduct = (id) => {
+            const p = myProducts.find(x => x.id === id);
+            if(!p) return;
+
+            document.getElementById('productModalTitle').innerHTML = `<i data-lucide="edit-3" class="w-6 h-6 text-blue-500"></i> İlanı Düzenle`;
+            document.getElementById('pEditingId').value = p.id;
+            document.getElementById('pImages').value = ""; 
+            
+            activeMediaList = [];
+            if(p.images) {
+                p.images.forEach(imgUrl => activeMediaList.push({ type: 'image', url: imgUrl, file: null }));
+            }
+            window.renderActiveMediaPreview();
+
+            document.getElementById('pTitle').value = p.title;
+            document.getElementById('pDesc').value = p.description || "";
+            
+            updateCategoryDropdowns();
+            const catSelect = document.getElementById('pCategory');
+            if([...catSelect.options].some(opt => opt.value === p.category)) {
+                 catSelect.value = p.category;
+            } else if (p.category) {
+                 catSelect.innerHTML += `<option value="${p.category}" selected>${p.category} (Pasif Kategori)</option>`;
+            }
+
+            document.getElementById('pPrice').value = p.price;
+            document.getElementById('variantsContainer').innerHTML = "";
+            
+            const isPremium = myStore.isPremium || myStore.packageType === 'premium';
+            if(isPremium) {
+                document.getElementById('premiumVariantLock').classList.add('hidden');
+                document.getElementById('variantContent').classList.remove('opacity-50', 'pointer-events-none');
+                if(p.variants) p.variants.forEach(v => window.addVariantRow(v.group || 'Seçenek', v.name, v.price || p.price, v.image || ''));
+            } else {
+                document.getElementById('premiumVariantLock').classList.remove('hidden');
+                document.getElementById('variantContent').classList.add('opacity-50', 'pointer-events-none');
+            }
+
+            document.getElementById('productModal').classList.remove('hidden');
+            lucide.createIcons();
+        };
+
+        window.duplicateProduct = async (id) => {
+            const p = myProducts.find(x => x.id === id);
+            if(!p) return;
+            const limit = (myStore.packageType === 'free') ? 20 : (myStore.packageType === 'standard' ? 50 : 9999);
+            if(myProducts.length >= limit) { window.showMessage("Paket limitinize ulaştınız.", "error"); return; }
+
+            let clone = {...p}; delete clone.id; clone.title = clone.title + " (Kopya)"; clone.createdAt = Date.now();
+            try { await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products')), clone); window.showMessage("İlan başarıyla çoğaltıldı."); }
+            catch(err) { window.showMessage("Çoğaltma hatası.", "error"); }
+        };
+
+        async function uploadFileToCloudinary(file, resourceType = 'image') {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if(data.secure_url) return data.secure_url;
+            throw new Error("Cloudinary yükleme başarısız: " + (data.error ? data.error.message : 'Bilinmeyen hata'));
+        }
+
+        window.saveProduct = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveProduct'); 
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin inline"></i> Kaydediliyor...`; 
+            btn.disabled = true;
+            lucide.createIcons();
+
+            const editId = document.getElementById('pEditingId').value;
+            const isPremium = myStore.isPremium || myStore.packageType === 'premium';
+
+            try {
+                if(activeMediaList.length === 0) {
+                    throw new Error("En az 1 görsel eklemelisiniz.");
+                }
+
+                let finalImages = [];
+                for(let item of activeMediaList) {
+                    if(item.file) {
+                        const imgUrl = await uploadFileToCloudinary(item.file, 'image');
+                        finalImages.push(imgUrl);
+                    } else {
+                        finalImages.push(item.url);
+                    }
+                }
+
+                const price = parseFloat(document.getElementById('pPrice').value);
+                const variants = [];
+                
+                if (isPremium) {
+                    document.querySelectorAll('.variant-row').forEach(row => {
+                        const g = row.querySelector('.var-group').value || 'Seçenek';
+                        const n = row.querySelector('.var-name').value;
+                        const p = row.querySelector('.var-price').value;
+                        const img = row.querySelector('.var-image-url').value;
+                        if(n) variants.push({
+                            group: g, 
+                            name: n, 
+                            price: p ? parseFloat(p) : price, 
+                            image: img,
+                            stock: 999 
+                        });
+                    });
+                }
+
+                const productData = {
+                    storeId: myStore.id, storeName: myStore.name, storeWhatsapp: myStore.whatsapp, district: myStore.district,
+                    title: document.getElementById('pTitle').value, description: document.getElementById('pDesc').value,
+                    category: document.getElementById('pCategory').value, price: price,
+                    images: finalImages, variants: variants, updatedAt: Date.now()
+                };
+
+                if (editId) {
+                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', editId), productData);
+                    window.showMessage("İlan başarıyla güncellendi.");
+                } else {
+                    productData.createdAt = Date.now();
+                    productData.originalPrice = price; 
+                    await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products')), productData);
+                    window.showMessage("Yeni ilan başarıyla yayınlandı.");
+                }
+
+                window.closeProductModal();
+                e.target.reset();
+            } catch(err) { window.showMessage("Hata: " + err.message, "error"); }
+            
+            btn.innerHTML = `<i data-lucide="check" class="w-5 h-5"></i> Kaydet ve Yayınla`; 
+            btn.disabled = false;
+            lucide.createIcons();
+        };
+
+        window.deleteProduct = (id) => {
+            window.customConfirm("Bu ilanı kalıcı olarak silmek istediğinize emin misiniz?", async () => {
+                try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id)); window.showMessage("İlan başarıyla silindi."); }
+                catch(err) { window.showMessage("Silme hatası.", "error"); }
+            });
+        };
+
+        function renderOrders() {
+            const tbody = document.getElementById('ordersTableBody');
+            if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-400 font-bold bg-white">Sipariş bulunmuyor.</td></tr>'; return; }
+            
+            const sortedOrders = [...myOrders].sort((a,b) => b.createdAt - a.createdAt);
+            let html = '';
+            
+            sortedOrders.forEach(o => {
+                const date = new Date(o.createdAt).toLocaleDateString('tr-TR', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
+                let statusHtml = '';
+                if(o.status === 'pending') statusHtml = '<span class="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="clock" class="w-3 h-3 inline mb-0.5"></i> Yeni</span>';
+                else if(o.status === 'processing') statusHtml = '<span class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="package" class="w-3 h-3 inline mb-0.5"></i> Hazırlanıyor</span>';
+                else if(o.status === 'shipped') statusHtml = '<span class="bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="truck" class="w-3 h-3 inline mb-0.5"></i> Kargoda</span>';
+                else if(o.status === 'delivered') statusHtml = '<span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="check-circle" class="w-3 h-3 inline mb-0.5"></i> Teslim Edildi</span>';
+                else if(o.status === 'cancelled') statusHtml = '<span class="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="x-circle" class="w-3 h-3 inline mb-0.5"></i> İptal</span>';
+
+                let itemsHtml = o.items.map(i => {
+                    const pId = i.product?.id || i.productId;
+                    const pTitle = i.product?.title || i.title;
+                    const linkHtml = pId ? `<a href="index.html#/urun/${pId}" target="_blank" class="text-blue-500 hover:text-blue-700 inline-flex items-center ml-1 align-middle" title="Ürüne Git"><i data-lucide="external-link" class="w-3 h-3"></i></a>` : '';
+                    return `<div class="mb-1 last:mb-0"><span class="font-black text-slate-800">${i.quantity || i.qty}x</span> ${pTitle} ${i.variant ? `<span class="text-[10px] text-purple-600">(${i.variant})</span>` : ''}${linkHtml}</div>`;
+                }).join('');
+
+                html += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 font-mono text-xs font-bold text-slate-500">#${o.id.substring(0,6).toUpperCase()}</td>
+                        <td class="px-6 py-4"><div class="text-sm font-black text-slate-800">${o.customerName}</div><div class="text-[10px] font-bold text-slate-400 mt-1">${date}</div></td>
+                        <td class="px-6 py-4 text-xs text-slate-600 max-w-[200px] truncate whitespace-normal leading-relaxed">${itemsHtml}</td>
+                        <td class="px-6 py-4 font-black text-orange-600 text-base">${o.totalAmount.toLocaleString('tr-TR')} TL</td>
+                        <td class="px-6 py-4">${statusHtml}</td>
+                        <td class="px-6 py-4 text-right">
+                            <select onchange="window.updateOrderStatus('${o.id}', this.value)" class="text-xs font-bold bg-white border border-slate-200 text-slate-700 rounded-lg p-2 outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer shadow-sm">
+                                <option value="" disabled selected>Durum Değiştir</option>
+                                <option value="processing">Hazırlanıyor</option>
+                                <option value="shipped">Kargoda</option>
+                                <option value="delivered">Teslim Edildi</option>
+                                <option value="cancelled">İptal Et</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        window.updateOrderStatus = async (orderId, newStatus) => {
+            try { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'orders', orderId), { status: newStatus }); window.showMessage("Sipariş durumu başarıyla güncellendi."); }
+            catch(err) { window.showMessage("Durum güncellenirken hata oluştu.", "error"); }
+        };
+
+        window.createMockOrder = async () => {
+            if(myProducts.length === 0) { window.showMessage("Önce ürün eklemelisiniz.", "error"); return; }
+            const p = myProducts[0];
+            const mock = {
+                storeId: myStore.id, customerName: "Test Müşteri", customerPhone: "05330000000",
+                items: [{title: p.title, quantity: 1, price: p.price}], totalAmount: p.price,
+                status: 'pending', createdAt: Date.now()
+            };
+            await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'orders')), mock);
+            window.showMessage("Test siparişi oluşturuldu.");
+        };
+
+        function populateSettingsForm() {
+            document.getElementById('settingsName').value = myStore.name || '';
+            document.getElementById('settingsWhatsapp').value = myStore.whatsapp || '';
+            document.getElementById('settingsDistrict').value = myStore.district || 'Girne';
+            
+            document.getElementById('settingsWebsite').value = myStore.website || '';
+            document.getElementById('settingsInstagram').value = myStore.instagram || '';
+            document.getElementById('settingsFacebook').value = myStore.facebook || '';
+
+            if(myStore.coverUrl) {
+                document.getElementById('settingsCoverPreview').src = myStore.coverUrl;
+                document.getElementById('settingsCoverPreview').classList.remove('hidden');
+            }
+            if(myStore.logoUrl) {
+                document.getElementById('settingsLogoPreview').src = myStore.logoUrl;
+                document.getElementById('settingsLogoPreview').classList.remove('hidden');
+            }
+        }
+
+        window.previewImage = (input, previewId) => {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.getElementById(previewId);
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.saveStoreSettings = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveSettings');
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Kaydediliyor...`;
+            btn.disabled = true;
+
+            try {
+                let coverUrl = myStore.coverUrl || null;
+                const coverInputEl = document.getElementById('settingsCoverInput');
+                if (coverInputEl.files.length > 0) {
+                    coverUrl = await uploadFileToCloudinary(coverInputEl.files[0], 'image');
+                }
+
+                let logoUrl = myStore.logoUrl || null;
+                const logoInputEl = document.getElementById('settingsLogoInput');
+                if (logoInputEl.files.length > 0) {
+                    logoUrl = await uploadFileToCloudinary(logoInputEl.files[0], 'image');
+                }
+
+                const updates = {
+                    name: document.getElementById('settingsName').value,
+                    whatsapp: document.getElementById('settingsWhatsapp').value,
+                    district: document.getElementById('settingsDistrict').value,
+                    lat: parseFloat(document.getElementById('settingsLat').value),
+                    lng: parseFloat(document.getElementById('settingsLng').value),
+                    website: document.getElementById('settingsWebsite').value.trim(),
+                    instagram: document.getElementById('settingsInstagram').value.replace('@', '').trim(),
+                    facebook: document.getElementById('settingsFacebook').value.trim(),
+                    coverUrl: coverUrl,
+                    logoUrl: logoUrl
+                };
+
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), updates);
+                window.showMessage("Mağaza ayarları ve konumunuz başarıyla kaydedildi.");
+                
+                if(updates.name !== myStore.name || updates.district !== myStore.district || updates.whatsapp !== myStore.whatsapp) {
+                    const batch = writeBatch(db);
+                    myProducts.forEach(p => {
+                        const pRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id);
+                        batch.update(pRef, { storeName: updates.name, district: updates.district, storeWhatsapp: updates.whatsapp });
+                    });
+                    await batch.commit();
+                }
+
+            } catch (err) {
+                console.error(err);
+                window.showMessage("Ayarlar kaydedilirken hata oluştu.", "error");
+            }
+
+            btn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> Değişiklikleri Kaydet`;
+            btn.disabled = false;
+            lucide.createIcons();
+        };
+
+        window.openBulkPriceModal = () => { document.getElementById('bulkPriceModal').classList.remove('hidden'); updateCategoryDropdowns(); };
+        window.executeBulkPriceUpdate = async (e) => {
+            e.preventDefault();
+            const cat = document.getElementById('bulkCategory').value;
+            const action = document.getElementById('bulkAction').value;
+            const percent = parseFloat(document.getElementById('bulkPercentage').value);
+            
+            const btn = document.getElementById('btnBulkUpdate'); 
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> İşleniyor...`; 
+            btn.disabled = true;
+            lucide.createIcons();
+
+            const targets = cat === 'ALL' ? myProducts : myProducts.filter(p => p.category === cat);
+            if(targets.length === 0) { window.showMessage("Etkilenecek ürün bulunamadı.", "error"); btn.innerHTML = `<i data-lucide="zap" class="w-5 h-5"></i> Güncellemeyi Başlat`; btn.disabled = false; lucide.createIcons(); return; }
+
+            try {
+                const batch = writeBatch(db);
+                targets.forEach(p => {
+                    const pRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id);
+                    const oldPrice = p.price;
+                    let newPrice = 0;
+                    if(action === 'increase') newPrice = oldPrice + (oldPrice * (percent / 100));
+                    else newPrice = oldPrice - (oldPrice * (percent / 100));
+                    
+                    newPrice = Math.round(newPrice * 100) / 100;
+                    
+                    const updates = { price: newPrice, updatedAt: Date.now() };
+                    if(action === 'decrease') updates.originalPrice = oldPrice; 
+                    
+                    batch.update(pRef, updates);
+                });
+                await batch.commit();
+                window.showMessage(`${targets.length} ilan başarıyla güncellendi.`);
+                document.getElementById('bulkPriceModal').classList.add('hidden');
+            } catch(err) { window.showMessage("Toplu güncelleme hatası.", "error"); }
+            
+            btn.innerHTML = `<i data-lucide="zap" class="w-5 h-5"></i> Güncellemeyi Başlat`; 
+            btn.disabled = false;
+            lucide.createIcons();
+        };
+
+        window.exportToCSV = () => {
+            if (myProducts.length === 0) { window.showMessage("Dışa aktarılacak ürün bulunmuyor.", "error"); return; }
+            
+            const separator = ';';
+            let csvContent = `Baslik${separator}Kategori${separator}Fiyat${separator}Aciklama${separator}Gorseller${separator}Varyantlar\n`;
+            
+            myProducts.forEach(p => {
+                const baslik = `"${(p.title || '').replace(/"/g, '""')}"`;
+                const kategori = `"${p.category || ''}"`;
+                const fiyat = p.price || 0;
+                const aciklama = `"${(p.description || '').replace(/"/g, '""')}"`;
+                
+                let cleanImages = [];
+                if(p.images && p.images.length > 0) {
+                    cleanImages = p.images.map(img => {
+                         if(img.startsWith('data:image')) return 'BASE64_Gorsel_Dısa_Aktarilamadi';
+                         return img;
+                    });
+                }
+                const gorseller = `"${cleanImages.join('|')}"`;
+                
+                let varsStr = '';
+                if(p.variants && p.variants.length > 0){
+                    varsStr = p.variants.map(v => `${v.group || 'Seçenek'}^${v.name}^${v.price || p.price}^${v.image || ''}`).join('|');
+                }
+                const varyantlar = `"${varsStr}"`;
+                
+                csvContent += `${baslik}${separator}${kategori}${separator}${fiyat}${separator}${aciklama}${separator}${gorseller}${separator}${varyantlar}\n`;
+            });
+            
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' }); 
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `urunler_${myStore.name.replace(/\s+/g, '_')}_${new Date().toLocaleDateString('tr-TR').replace(/\./g,'-')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.showMessage("İlanlarınız Excel uyumlu CSV formatında indirildi.");
+        };
+
+        // --- GELİŞMİŞ İÇE AKTARMA MOTORU (FİYATSIZ, HATAYA DAYANIKLI SÜRÜM) ---
         async function processImportedData(data, rawHeaders, headers, event) {
             
             // 1. ADIM: Sütun İsimlerini Tespit Etme
@@ -1322,79 +1752,86 @@
             event.target.value = ""; 
         }
 
-        // ... Diğer Kayıt / İşlem Fonksiyonları ...
-        window.executeCheckout = async (storeId) => {
-            // SATICI PANELİNDEKİ SİPARİŞ VER (TEST) BUTONUNUN GÜNCEL HALİ
-            window.closeCheckoutConfirm(); 
-            
-            if (!auth.currentUser || auth.currentUser.isAnonymous) {
-                window.showMessage("Sipariş verebilmek için lütfen Google hesabınızla giriş yapın.", "error");
-                return;
-            }
+        window.importFromFile = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
 
-            const ordersByStore = {};
-            cart.forEach(item => {
-                const sId = item.product.storeId;
-                if(!ordersByStore[sId]) {
-                    const storeObj = dbStores.find(s => s.id === sId);
-                    const storePhone = storeObj ? (storeObj.whatsapp || '') : (item.product.storeWhatsapp || item.product.storePhone || '');
-                    ordersByStore[sId] = { storeName: item.product.storeName, storePhone: storePhone, items: [], total: 0 };
-                }
-                ordersByStore[sId].items.push(item);
-                
-                const itemPrice = item.dynamicPrice || item.product.price;
-                ordersByStore[sId].total += (itemPrice * item.quantity);
-            });
+            window.showMessage("Dosya analiz ediliyor, lütfen bekleyin...", "info");
 
-            const orderData = ordersByStore[storeId];
-            if (!orderData) return;
+            const fileName = file.name.toLowerCase();
 
-            try {
-                const buyerUid = auth.currentUser ? auth.currentUser.uid : 'misafir';
-                const buyerEmail = (auth.currentUser && !auth.currentUser.isAnonymous) ? auth.currentUser.email : 'Misafir';
-                
-                const newOrder = {
-                    storeId: storeId,
-                    storeName: orderData.storeName,
-                    buyerUid: buyerUid,
-                    buyerEmail: buyerEmail,
-                    customerName: buyerEmail === 'Misafir' ? 'Misafir Müşteri' : buyerEmail.split('@')[0],
-                    items: orderData.items.map(i => ({
-                        product: i.product,
-                        variant: i.variant,
-                        quantity: i.quantity,
-                        price: i.dynamicPrice || i.product.price 
-                    })), 
-                    totalAmount: orderData.total,
-                    status: 'pending',
-                    createdAt: Date.now()
+            if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, {type: 'array'});
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const json_data = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
+                        
+                        if(json_data.length === 0) { window.showMessage("Excel dosyası boş veya format hatalı.", "error"); return; }
+
+                        const rawHeaders = Object.keys(json_data[0]);
+                        processImportedData(json_data, rawHeaders, rawHeaders, event);
+                    } catch(err) {
+                        console.error(err);
+                        window.showMessage("Excel dosyası okunurken hata oluştu.", "error");
+                        event.target.value = "";
+                    }
                 };
+                reader.readAsArrayBuffer(file);
+            } 
+            else if (fileName.endsWith('.csv')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    let text = e.target.result;
+                    if (text.charCodeAt(0) === 0xFEFF) { text = text.substring(1); }
 
-                await addDoc(ordersRef, newOrder);
-            } catch(e) { console.error("Sipariş kaydedilemedi", e); }
+                    const firstLine = text.split('\n')[0];
+                    const detectedDelimiter = firstLine.includes(';') ? ';' : ',';
 
-            let phone = orderData.storePhone.replace(/\D/g,'');
-            if(!phone) {
-                const storeObj = dbStores.find(s => s.id === storeId);
-                if(storeObj && storeObj.whatsapp) phone = storeObj.whatsapp.replace(/\D/g,'');
-                else { window.showMessage("Satıcının iletişim numarası bulunamadı.", "error"); return; }
+                    Papa.parse(text, {
+                        header: true,
+                        skipEmptyLines: 'greedy',
+                        delimiter: detectedDelimiter,
+                        complete: function(results) {
+                            const data = results.data;
+                            if(data.length === 0) { window.showMessage("CSV dosyası boş veya format hatalı.", "error"); return; }
+                            
+                            const rawHeaders = Object.keys(data[0]);
+                            processImportedData(data, rawHeaders, rawHeaders, event);
+                        },
+                        error: function(err) {
+                            window.showMessage("CSV dosyası okuma hatası.", "error");
+                            event.target.value = "";
+                        }
+                    });
+                };
+                reader.readAsText(file, 'UTF-8');
+            } else {
+                window.showMessage("Sadece .csv veya .xlsx (Excel) formatında dosya yükleyebilirsiniz.", "error");
+                event.target.value = "";
             }
-            if(phone.length === 10 && !phone.startsWith('90')) phone = '90' + phone;
+        };
 
-            let message = `Merhaba *${orderData.storeName}*, Kıbrıs Bazar üzerinden sipariş vermek istiyorum:\n\n`;
-            orderData.items.forEach((item, index) => {
-                const iPrice = item.dynamicPrice || item.product.price;
-                const baseUrl = window.location.origin + window.location.pathname.replace('satici.html', 'index.html');
-                const productUrl = `${baseUrl}#/urun/${item.product.id}`;
-                message += `${index+1}. ${item.product.title} ${item.variant ? `(Seçim: ${item.variant})` : ''} - ${item.quantity} Adet x ${iPrice} TL\n`;
-                message += `🔗 Link: ${productUrl}\n\n`;
-            });
-            message += `*Ödenecek Tutar: ${orderData.total.toLocaleString('tr-TR')} TL*`;
-
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+        window.requestPackageUpgrade = async (pkgType) => {
+            const pkgNames = { 'standard': 'Standart Paket', 'premium': 'Premium VIP Paket' };
+            const pkgName = pkgNames[pkgType] || pkgType;
             
-            cart = cart.filter(item => item.product.storeId !== storeId);
-            saveCart(); updateCartUI();
+            window.customConfirm(`Yöneticiden ${pkgName} geçişi talep edilsin ve WhatsApp üzerinden iletişime geçilsin mi?`, async () => {
+                try {
+                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), { upgradeRequest: pkgType });
+                    let message = `Merhaba, *${myStore.name}* mağazam için *${pkgName}* aboneliğine geçmek istiyorum.\n\nFiyat bilgisi alabilir miyim ve ödeme için IBAN numaranızı gönderebilir misiniz?`;
+                    window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
+                    window.showMessage("Talebiniz iletildi. WhatsApp'a yönlendiriliyorsunuz...");
+                } catch (err) { window.showMessage("Talep iletilemedi.", "error"); }
+            });
+        };
+
+        window.contactAdminSupport = () => {
+            let message = `Merhaba, *${myStore ? myStore.name : 'Yeni Satıcı'}* satıcısı olarak platform hakkında desteğe ihtiyacım var. Yardımcı olabilir misiniz?`;
+            window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
         };
 
         document.addEventListener('DOMContentLoaded', () => { lucide.createIcons(); });
