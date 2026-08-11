@@ -2491,9 +2491,15 @@
             let message = `Merhaba *${orderData.storeName}*, Kıbrıs Bazar üzerinden sipariş vermek istiyorum:\n\n`;
             orderData.items.forEach((item, index) => {
                 const iPrice = item.dynamicPrice || item.product.price;
+                
+                // Müşterinin bulunduğu platformun adresini alarak tam ürün linki oluşturur
+                const baseUrl = window.location.origin + window.location.pathname;
+                const productUrl = `${baseUrl}#/urun/${item.product.id}`;
+                
                 message += `${index+1}. ${item.product.title} ${item.variant ? `(Seçim: ${item.variant})` : ''} - ${item.quantity} Adet x ${iPrice} TL\n`;
+                message += `🔗 Link: ${productUrl}\n\n`; // Ürün linki eklendi
             });
-            message += `\n*Ödenecek Tutar: ${orderData.total.toLocaleString('tr-TR')} TL*`;
+            message += `*Ödenecek Tutar: ${orderData.total.toLocaleString('tr-TR')} TL*`;
 
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
             
