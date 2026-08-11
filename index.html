@@ -420,93 +420,96 @@
         <div id="productDetailModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-0 sm:p-6">
             <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="window.closeProductDetail()"></div>
             
-            <div class="relative w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-6xl bg-white sm:rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="productDetailPanel">
+            <div class="relative w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-5xl bg-white sm:rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="productDetailPanel">
                 <!-- Mobil İçin Kapatma Butonu (İçeride, üstte) -->
                 <button onclick="window.closeProductDetail()" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto z-20 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-lg hover:bg-white text-slate-800 transition md:hidden"><i data-lucide="x" class="w-5 h-5"></i></button>
                 
                 <!-- Masaüstü İçin Kapatma Butonu -->
                 <button onclick="window.closeProductDetail()" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto z-20 bg-slate-100/80 backdrop-blur-md p-2.5 rounded-full shadow-sm hover:bg-rose-100 hover:text-rose-600 text-slate-600 transition hidden md:flex"><i data-lucide="x" class="w-5 h-5"></i></button>
 
-                <!-- SOL TARAF: GÖRSELLER (Premium, Büyük ve Kaydırmalı Galeri) -->
-                <div class="w-full md:w-3/5 bg-slate-100 flex flex-col relative h-[50vh] md:h-auto">
+                <!-- SOL TARAF: GÖRSELLER -->
+                <div class="w-full md:w-1/2 bg-slate-50 border-r border-slate-100 p-4 sm:p-6 flex flex-col gap-4 h-[45vh] md:h-auto shrink-0 relative">
                     <!-- Büyük Ana Görsel -->
-                    <div class="flex-1 relative flex items-center justify-center p-4 overflow-hidden h-full">
-                        <img id="detailMainImage" src="" class="w-full h-full object-contain mix-blend-multiply drop-shadow-2xl transition-transform duration-300 hover:scale-105" alt="Main Product Image"/>
+                    <div class="w-full flex-1 bg-white rounded-2xl border border-slate-200 overflow-hidden relative flex items-center justify-center">
+                        <img id="detailMainImage" src="" class="w-full h-full object-contain mix-blend-multiply drop-shadow-xl" alt="Main Product Image"/>
                     </div>
                     
-                    <!-- Küçültülmüş Alt Görseller (Thumbnails) - Yatay Kaydırmalı -->
-                    <div class="bg-white/50 backdrop-blur-sm border-t border-slate-200/50 p-3 sm:p-4">
-                        <div id="detailThumbnails" class="flex gap-3 overflow-x-auto no-scrollbar snap-x scroll-smooth pb-2">
-                            <!-- JS ile Doldurulacak -->
-                        </div>
+                    <!-- Küçültülmüş Alt Görseller (Thumbnails) - Tam Görünür Kaydırmalı -->
+                    <div id="detailThumbnails" class="flex gap-3 overflow-x-auto pb-2 no-scrollbar snap-x scroll-smooth shrink-0 h-[80px]">
+                        <!-- JS ile Doldurulacak -->
                     </div>
                 </div>
 
                 <!-- SAĞ TARAF: BİLGİLER VE SATIN ALMA -->
-                <div class="w-full md:w-2/5 p-5 sm:p-8 flex flex-col overflow-y-auto no-scrollbar bg-white h-[50vh] md:h-auto pb-24 md:pb-8">
-                    <!-- Üst Kısım: Mağaza Adı ve Kategori -->
-                    <div class="flex items-center gap-2 mb-3">
-                        <span id="detailStoreNameTag" class="text-[10px] font-black uppercase tracking-wider text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg truncate cursor-pointer hover:bg-orange-100 hover:text-orange-600 transition" onclick="window.openStoreProfileFromDetail()">Mağaza Adı</span>
-                        <span class="text-slate-300">•</span>
-                        <span id="detailCategoryTag" class="text-[10px] font-bold text-slate-400 truncate">Kategori</span>
-                    </div>
-
-                    <!-- Başlık -->
-                    <h2 id="detailTitle" class="text-2xl sm:text-3xl font-black text-slate-900 mb-6 leading-tight">Ürün Başlığı</h2>
-
-                    <!-- Modern Akordiyon Ürün Açıklaması -->
-                    <div class="mb-6 border border-slate-200 rounded-2xl overflow-hidden bg-slate-50/50 transition-colors hover:bg-slate-50">
-                        <button onclick="window.toggleAccordion('descAccordion')" class="w-full p-4 flex items-center justify-between text-left focus:outline-none">
-                            <span class="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2"><i data-lucide="align-left" class="w-4 h-4 text-orange-500"></i> <span data-i18n="product_desc_title">Ürün Açıklaması</span></span>
-                            <i data-lucide="chevron-down" id="descAccordionIcon" class="w-5 h-5 text-slate-400 accordion-icon"></i>
-                        </button>
-                        <div id="descAccordionContent" class="accordion-content border-t border-slate-100">
-                            <div class="p-4 pt-2 text-sm text-slate-600 leading-relaxed whitespace-pre-wrap" id="detailDescription"></div>
+                <div class="w-full md:w-1/2 flex flex-col bg-white h-[55vh] md:h-[90vh]">
+                    <!-- İçerik Kaydırma Alanı -->
+                    <div class="flex-1 overflow-y-auto no-scrollbar p-5 sm:p-8 flex flex-col gap-6">
+                        
+                        <!-- Üst Kısım: Mağaza Adı ve Kategori -->
+                        <div class="flex items-center gap-2">
+                            <span id="detailStoreNameTag" class="text-[10px] font-black uppercase tracking-wider text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg truncate cursor-pointer hover:bg-orange-100 hover:text-orange-600 transition" onclick="window.openStoreProfileFromDetail()">Mağaza Adı</span>
+                            <span class="text-slate-300">•</span>
+                            <span id="detailCategoryTag" class="text-[10px] font-bold text-slate-400 truncate">Kategori</span>
                         </div>
-                    </div>
 
-                    <!-- Gelişmiş, Resimli Varyant Alanı -->
-                    <div id="detailVariantContainer" class="mb-6 hidden">
-                        <!-- JS ile Doldurulacak: Yuvarlak resimli modern yapı -->
-                    </div>
+                        <!-- Başlık -->
+                        <h2 id="detailTitle" class="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">Ürün Başlığı</h2>
 
-                    <!-- Fiyat ve İndirim Alanı -->
-                    <div class="mb-8 flex items-end justify-between">
-                        <div>
-                            <div id="detailOriginalPrice" class="text-sm text-slate-400 line-through font-bold mb-1 hidden"></div>
-                            <div id="detailPrice" class="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight"></div>
+                        <!-- Gelişmiş Şık Varyant Alanı -->
+                        <div id="detailVariantContainer" class="hidden">
+                            <!-- JS ile Doldurulacak: Yuvarlak resimli yapı -->
                         </div>
-                        <div id="detailDiscountBadge" class="hidden bg-rose-100 text-rose-600 font-black text-sm px-3 py-1.5 rounded-lg border border-rose-200 shadow-sm"></div>
+
+                        <!-- Modern Akordiyon Ürün Açıklaması (Fiyatın Hemen Üstünde) -->
+                        <div class="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50/50 transition-colors hover:bg-slate-50">
+                            <button onclick="window.toggleAccordion('descAccordion')" class="w-full p-4 flex items-center justify-between text-left focus:outline-none">
+                                <span class="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2"><i data-lucide="align-left" class="w-4 h-4 text-orange-500"></i> <span data-i18n="product_desc_title">Ürün Açıklaması</span></span>
+                                <i data-lucide="chevron-down" id="descAccordionIcon" class="w-5 h-5 text-slate-400 accordion-icon"></i>
+                            </button>
+                            <div id="descAccordionContent" class="accordion-content border-t border-slate-100">
+                                <div class="p-4 pt-3 text-sm text-slate-600 leading-relaxed whitespace-pre-wrap" id="detailDescription"></div>
+                            </div>
+                        </div>
+
+                        <!-- Fiyat Alanı -->
+                        <div class="p-5 bg-orange-50/50 rounded-2xl border border-orange-100 flex items-center justify-between mt-auto">
+                            <div>
+                                <div id="detailOriginalPrice" class="text-sm text-slate-400 line-through font-bold mb-1 hidden"></div>
+                                <div id="detailPrice" class="text-4xl sm:text-5xl font-black text-orange-600 tracking-tight"></div>
+                            </div>
+                            <div id="detailDiscountBadge" class="hidden bg-rose-500 text-white font-black text-sm px-3 py-1.5 rounded-lg shadow-sm"></div>
+                        </div>
+                        
+                        <!-- Satıcı Profili Kısayolu -->
+                        <div onclick="window.openStoreProfileFromDetail()" class="bg-slate-50 hover:bg-orange-50 cursor-pointer rounded-2xl p-4 border border-slate-200 flex items-center justify-between transition-colors group shrink-0">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 overflow-hidden" id="detailStoreLogoContainer">
+                                    <i data-lucide="store" class="w-5 h-5" id="detailStoreLogoIcon"></i>
+                                    <img id="detailStoreLogo" src="" class="w-full h-full object-cover hidden">
+                                </div>
+                                <div>
+                                    <div class="text-[9px] font-bold text-slate-400 uppercase group-hover:text-orange-500 transition-colors" data-i18n="seller_profile_btn">Satıcı Profili & Tüm Ürünleri</div>
+                                    <div class="font-black text-slate-800 text-base flex items-center gap-1"><span id="detailStoreName"></span><i id="detailStoreShield" data-lucide="shield-check" class="w-4 h-4 text-emerald-500 hidden" title="Güvenilir Premium Satıcı"></i></div>
+                                </div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 group-hover:text-orange-500 transition-colors rtl:rotate-180"></i>
+                        </div>
+                        <input type="hidden" id="detailStoreIdHidden">
+                        <input type="hidden" id="detailProductId">
+
+                        <!-- Yorumlar -->
+                        <div class="pt-2 border-t border-slate-100 hidden" id="reviewsSectionWrapper">
+                            <h3 class="text-sm font-black text-slate-900 mb-4 flex items-center gap-2"><i data-lucide="message-square" class="w-4 h-4 text-orange-500"></i> <span data-i18n="reviews_title">Müşteri Değerlendirmeleri</span></h3>
+                            <div id="detailReviewsContainer"></div>
+                        </div>
+
                     </div>
                     
-                    <!-- Satıcı Profili Kısayolu -->
-                    <div onclick="window.openStoreProfileFromDetail()" class="bg-slate-50 hover:bg-orange-50 cursor-pointer rounded-2xl p-4 border border-slate-200 mb-6 flex items-center justify-between transition-colors group mt-auto">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 overflow-hidden" id="detailStoreLogoContainer">
-                                <i data-lucide="store" class="w-5 h-5" id="detailStoreLogoIcon"></i>
-                                <img id="detailStoreLogo" src="" class="w-full h-full object-cover hidden">
-                            </div>
-                            <div>
-                                <div class="text-[9px] font-bold text-slate-400 uppercase group-hover:text-orange-500 transition-colors" data-i18n="seller_profile_btn">Satıcı Profili & Tüm Ürünleri</div>
-                                <div class="font-black text-slate-800 text-base flex items-center gap-1"><span id="detailStoreName"></span><i id="detailStoreShield" data-lucide="shield-check" class="w-4 h-4 text-emerald-500 hidden" title="Güvenilir Premium Satıcı"></i></div>
-                            </div>
-                        </div>
-                        <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 group-hover:text-orange-500 transition-colors rtl:rotate-180"></i>
-                    </div>
-                    <input type="hidden" id="detailStoreIdHidden">
-                    <input type="hidden" id="detailProductId">
-
-                    <!-- Sabit (Sticky) Sepete Ekle Butonu Mobil İçin -->
-                    <div class="fixed bottom-0 left-0 w-full p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 md:static md:p-0 md:bg-transparent md:border-t-0 md:backdrop-blur-none z-30">
+                    <!-- Sabit Sepete Ekle Butonu -->
+                    <div class="p-4 sm:p-5 bg-white border-t border-slate-100 shrink-0 z-30">
                         <button id="detailAddToCartBtn" class="w-full bg-slate-900 hover:bg-orange-500 text-white py-4 sm:py-5 rounded-xl font-black text-sm sm:text-base transition-colors shadow-xl shadow-slate-900/20 hover:shadow-orange-500/30 flex items-center justify-center gap-2">
                             <i data-lucide="shopping-cart" class="w-5 h-5"></i> <span data-i18n="add_to_cart">Sepete Ekle</span>
                         </button>
-                    </div>
-
-                    <!-- Yorumlar -->
-                    <div class="pt-6 border-t border-slate-100 mt-6 hidden" id="reviewsSectionWrapper">
-                        <h3 class="text-sm font-black text-slate-900 mb-4 flex items-center gap-2"><i data-lucide="message-square" class="w-4 h-4 text-orange-500"></i> <span data-i18n="reviews_title">Müşteri Değerlendirmeleri</span></h3>
-                        <div id="detailReviewsContainer"></div>
                     </div>
                 </div>
             </div>
@@ -1830,55 +1833,41 @@
                 document.getElementById('detailStoreLogoIcon').classList.remove('hidden');
             }
 
-            // Gelişmiş Şık Varyant Sistemi
+            // Gelişmiş Şık Varyant Sistemi (Tek Bir Başlık Altında)
             const variantContainer = document.getElementById('detailVariantContainer');
             if (product.variants && product.variants.length > 0) {
-                // Varyantları gruplarına göre ayır (Örn: Renk, Beden)
-                const groupedVariants = {};
+                // Varyantları aynı grup ismi altında toplama hatalarını engellemek için hepsini tek başlığa alıyoruz
+                let varHtml = `<label class="block text-[11px] font-black uppercase tracking-wider text-slate-500 mb-3">${window.t('variants_label')}</label><div class="flex flex-wrap gap-3">`;
+                
                 product.variants.forEach((v, idx) => {
-                    const g = v.group || window.t('variants_label');
-                    if(!groupedVariants[g]) groupedVariants[g] = [];
-                    groupedVariants[g].push({ ...v, originalIndex: idx });
-                });
-
-                let varHtml = '';
-                for(const [groupName, vars] of Object.entries(groupedVariants)) {
-                    varHtml += `<div class="mb-4"><label class="block text-[11px] font-black uppercase tracking-wider text-slate-500 mb-3">${groupName}</label><div class="flex flex-wrap gap-3">`;
+                    const isOut = v.stock <= 0;
+                    const hasImg = v.image && v.image.trim() !== '';
+                    const btnClass = `var-btn var-btn-${idx} relative flex flex-col items-center justify-center p-1.5 rounded-2xl border-2 transition-all cursor-pointer ${isOut ? 'opacity-50 cursor-not-allowed border-slate-100 bg-slate-50' : 'border-slate-100 bg-white hover:border-orange-200'}`;
                     
-                    vars.forEach(v => {
-                        const isOut = v.stock <= 0;
-                        const hasImg = v.image && v.image.trim() !== '';
-                        const btnClass = `var-btn var-btn-${v.originalIndex} relative flex flex-col items-center justify-center p-1.5 rounded-2xl border-2 transition-all cursor-pointer ${isOut ? 'opacity-50 cursor-not-allowed border-slate-100 bg-slate-50' : 'border-slate-100 bg-white hover:border-orange-200'}`;
-                        
-                        let innerContent = '';
-                        if(hasImg) {
-                            innerContent = `
-                                <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 mb-1.5">
-                                    <img src="${v.image}" class="w-full h-full object-cover">
-                                </div>
-                                <span class="text-[10px] font-bold text-slate-700 px-1 truncate max-w-[60px] text-center">${v.name}</span>
-                            `;
-                        } else {
-                            innerContent = `<div class="px-4 py-2"><span class="text-xs font-bold text-slate-700">${v.name}</span></div>`;
-                        }
-
-                        varHtml += `
-                            <button onclick="window.selectVariant(${v.originalIndex})" id="varBtn-${v.originalIndex}" class="${btnClass}" ${isOut ? 'disabled' : ''} title="${v.name}">
-                                ${isOut ? `<div class="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center rounded-xl z-10"><i data-lucide="x" class="w-4 h-4 text-slate-800"></i></div>` : ''}
-                                ${innerContent}
-                            </button>
+                    let innerContent = '';
+                    if(hasImg) {
+                        innerContent = `
+                            <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 mb-1.5">
+                                <img src="${v.image}" class="w-full h-full object-cover">
+                            </div>
+                            <span class="text-[10px] font-bold text-slate-700 px-1 truncate max-w-[60px] text-center">${v.name}</span>
                         `;
-                    });
-                    varHtml += `</div></div>`;
-                }
+                    } else {
+                        innerContent = `<div class="px-4 py-2"><span class="text-xs font-bold text-slate-700">${v.name}</span></div>`;
+                    }
 
-                varHtml += `<input type="hidden" id="selectedVariantIndex" value="">`;
+                    varHtml += `
+                        <button onclick="window.selectVariant(${idx})" id="varBtn-${idx}" class="${btnClass}" ${isOut ? 'disabled' : ''} title="${v.name}">
+                            ${isOut ? `<div class="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center rounded-xl z-10"><i data-lucide="x" class="w-4 h-4 text-slate-800"></i></div>` : ''}
+                            ${innerContent}
+                        </button>
+                    `;
+                });
+                varHtml += `</div><input type="hidden" id="selectedVariantIndex" value="">`;
+                
                 variantContainer.innerHTML = varHtml;
                 variantContainer.classList.remove('hidden');
                 
-                // İlk varyantı otomatik seç (opsiyonel, kaldırılabilir)
-                // if(product.variants[0] && product.variants[0].stock > 0) window.selectVariant(0);
-
             } else {
                 variantContainer.innerHTML = '<input type="hidden" id="selectedVariantIndex" value="">';
                 variantContainer.classList.add('hidden');
