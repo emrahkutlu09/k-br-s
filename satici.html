@@ -387,7 +387,6 @@
                                         <label class="block text-xs font-bold text-slate-500 mb-2">Instagram</label>
                                         <div class="relative">
                                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                <!-- Inline SVG for Instagram since Lucide might miss it -->
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                             <input type="text" id="settingsInstagram" class="w-full pl-11 p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors" placeholder="@kullaniciadi">
@@ -397,7 +396,6 @@
                                         <label class="block text-xs font-bold text-slate-500 mb-2">Facebook</label>
                                         <div class="relative">
                                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                <!-- Inline SVG for Facebook since Lucide might miss it -->
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
                                             </div>
                                             <input type="text" id="settingsFacebook" class="w-full pl-11 p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors" placeholder="sayfa.adi">
@@ -1526,25 +1524,52 @@
             window.showMessage("İlanlarınız Excel uyumlu CSV formatında indirildi.");
         };
 
-        // Gelişmiş Akıllı İçe Aktarma Motoru (Web Scraper 'baslik', 'fiyat', 'gorseller-src' formatını destekler)
+        // ÇOK GÜÇLÜ İÇE AKTARMA MOTORU (Tüm sorunları çözen sürüm)
         async function processImportedData(data, rawHeaders, headers, event) {
-            const baslikIndex = headers.findIndex(k => k.includes('baslik') || k.includes('başlık') || k.includes('title') || k.includes('name') || k === 'ürün adı');
-            const fiyatIndex = headers.findIndex(k => k.includes('fiyat') || k === 'price' || k.includes('sale price'));
-            const kategoriIndex = headers.findIndex(k => k.includes('kategori') || k.includes('category'));
-            const aciklamaIndex = headers.findIndex(k => k.includes('aciklama') || k.includes('açıklama') || k.includes('description'));
             
+            // 1. ADIM: Sütun İsimlerini Temizle ve Güvenli Hale Getir
+            const cleanHeaders = rawHeaders.map(h => {
+                let clean = h.toLowerCase().trim();
+                clean = clean.replace(/['"]/g, ''); // Tırnakları at
+                clean = clean.replace(/^\ufeff/, ''); // BOM (gizli karakter) at
+                return clean;
+            });
+
+            // 2. ADIM: Güçlü Regex Eşleştirmesi ile Doğru Sütunları Bul
+            let baslikIndex = -1; let fiyatIndex = -1; let kategoriIndex = -1; let aciklamaIndex = -1;
             const gorselSutunlari = [];
-            headers.forEach((h, index) => {
-                if (h.includes('gorsel') || h.includes('görsel') || h.includes('image') || h.includes('resim') || h.includes('foto') || h.includes('src')) {
+
+            cleanHeaders.forEach((k, index) => {
+                // Başlık/İsim Sütunu Arayışı
+                if (baslikIndex === -1 && k.match(/baslik|başlık|title|name|ürün|urun|ad|product/i)) {
+                    baslikIndex = index;
+                }
+                // Fiyat Sütunu Arayışı
+                else if (fiyatIndex === -1 && k.match(/fiyat|price|sale|ücret/i)) {
+                    fiyatIndex = index;
+                }
+                // Kategori Sütunu Arayışı
+                else if (kategoriIndex === -1 && k.match(/kategori|category/i)) {
+                    kategoriIndex = index;
+                }
+                // Açıklama Sütunu Arayışı
+                else if (aciklamaIndex === -1 && k.match(/aciklama|açıklama|desc|detay/i)) {
+                    aciklamaIndex = index;
+                }
+                // Resim/Görsel Sütunları Arayışı (Birden fazla olabilir)
+                if (k.match(/gorsel|görsel|image|resim|foto|src|pic/i)) {
                     gorselSutunlari.push(rawHeaders[index]);
                 }
             });
 
+            // Eğer hala bulunamadıysa uyarı ver ve detayları Console'a yazdır
             if (baslikIndex === -1 || fiyatIndex === -1) {
-                window.showMessage("Format hatası: Ürün başlığı ve Fiyat sütunları bulunamadı.", "error");
+                console.warn("--- BULUNAN SÜTUNLAR ---", cleanHeaders);
+                window.showMessage("Sütunlar eşleştirilemedi. Dosyada 'Başlık' ve 'Fiyat' sütunu olduğundan emin olun.", "error");
                 event.target.value = ""; return;
             }
 
+            // Orijinal dosyadaki (büyük/küçük harf korumalı) sütun isimlerini al
             const baslikKey = rawHeaders[baslikIndex];
             const fiyatKey = rawHeaders[fiyatIndex];
             const kategoriKey = kategoriIndex !== -1 ? rawHeaders[kategoriIndex] : null;
@@ -1576,9 +1601,21 @@
                     let images = [];
                     gorselSutunlari.forEach(colKey => {
                         if (row[colKey]) {
-                            const rawImgStr = row[colKey].toString().trim();
+                            // Web Scraper Array desteği (Örn: `[{"src":"link1"}, {"src":"link2"}]` formatını ayıkla)
+                            let rawImgStr = row[colKey].toString().trim();
+                            if(rawImgStr.startsWith('[') && rawImgStr.endsWith(']')) {
+                                try {
+                                    const parsed = JSON.parse(rawImgStr);
+                                    parsed.forEach(item => {
+                                        if(item.src) images.push(item.src);
+                                        else if(typeof item === 'string') images.push(item);
+                                    });
+                                    return; // Bu satırdan resimleri çektik, diğer formata bakma
+                                } catch(e) {}
+                            }
+
+                            // Normal ayırıcı desteği (virgül, çizgi, boşluk vs)
                             const splitImages = rawImgStr.split(/[,;|\n]/);
-                            
                             splitImages.forEach(imgUrl => {
                                 const cleanUrl = imgUrl.trim();
                                 if (cleanUrl !== '' && !cleanUrl.includes('BASE64') && cleanUrl.length > 5) {
@@ -1588,12 +1625,15 @@
                         }
                     });
 
+                    // Limite göre resim sayısını kırp
                     images = images.slice(0, imageLimit);
 
+                    // Eğer hiç resim bulunamadıysa placeholder ekle
                     if (images.length === 0) {
                         images = ['https://placehold.co/400x500/cbd5e1/475569?text=Gorsel+Yok'];
                     }
 
+                    // Fiyatı akıllı temizleme
                     let cleanPrice = row[fiyatKey].toString().replace(/[^0-9.,]/g, '');
                     if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
                         cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
@@ -1602,6 +1642,7 @@
                     }
                     const parsedPrice = parseFloat(cleanPrice) || 0;
                     
+                    // Akıllı Kategori Eşleştirme
                     let matchedCategory = 'Ev, Mobilya & Yaşam';
                     if (kategoriKey && row[kategoriKey]) {
                         const csvCatText = row[kategoriKey].toString().toLocaleLowerCase('tr-TR').trim();
@@ -1627,7 +1668,7 @@
                         price: parsedPrice,
                         originalPrice: parsedPrice,
                         images: images, 
-                        variants: [],
+                        variants: [], // Web scraper ile çekilen düz varyantlar şimdilik boş gelir, elle düzenlenir.
                         createdAt: Date.now()
                     };
 
@@ -1641,10 +1682,10 @@
                 await Promise.all(batches);
 
                 if (addedCount > 0) { window.showMessage(`${addedCount} adet ilan başarıyla yüklendi!`); } 
-                else { window.showMessage("Geçerli ürün satırı bulunamadı.", "error"); }
+                else { window.showMessage("Geçerli ürün satırı bulunamadı. Lütfen CSV/XLSX dosyanızı kontrol edin.", "error"); }
             } catch (err) { 
                 console.error(err);
-                window.showMessage("İçe aktarma sırasında hata oluştu.", "error"); 
+                window.showMessage("İçe aktarma sırasında bir hata oluştu.", "error"); 
             }
             
             showScreen('dashboardScreen');
@@ -1655,10 +1696,11 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            window.showMessage("Dosya analiz ediliyor, lütfen bekleyin...", "info");
+            window.showMessage("Dosya okunuyor, lütfen bekleyin...", "info");
 
             const fileName = file.name.toLowerCase();
 
+            // EXCEL (.xlsx, .xls) FORMATI OKUMA
             if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -1669,23 +1711,24 @@
                         const worksheet = workbook.Sheets[firstSheetName];
                         const json_data = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
                         
-                        if(json_data.length === 0) { window.showMessage("Excel dosyası boş veya format hatalı.", "error"); return; }
+                        if(json_data.length === 0) { window.showMessage("Excel dosyası boş veya okunamıyor.", "error"); return; }
 
                         const rawHeaders = Object.keys(json_data[0]);
-                        const headers = rawHeaders.map(h => h.trim().replace(/['"]/g, '').toLowerCase());
-                        processImportedData(json_data, rawHeaders, headers, event);
+                        processImportedData(json_data, rawHeaders, rawHeaders, event);
                     } catch(err) {
                         console.error(err);
-                        window.showMessage("Excel dosyası okunurken hata oluştu.", "error");
+                        window.showMessage("Excel dosyası işlenirken hata oluştu.", "error");
                         event.target.value = "";
                     }
                 };
                 reader.readAsArrayBuffer(file);
             } 
+            // CSV (.csv) FORMATI OKUMA (PapaParse)
             else if (fileName.endsWith('.csv')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     let text = e.target.result;
+                    // BOM gizli karakterini temizle (Web Scraper dosyaları için çok önemli!)
                     if (text.charCodeAt(0) === 0xFEFF) { text = text.substring(1); }
 
                     const firstLine = text.split('\n')[0];
@@ -1695,26 +1738,22 @@
                         header: true,
                         skipEmptyLines: 'greedy',
                         delimiter: detectedDelimiter,
-                        transformHeader: function(header) { 
-                            return header.trim().replace(/['"]/g, '').toLowerCase(); 
-                        },
                         complete: function(results) {
                             const data = results.data;
-                            if(data.length === 0) { window.showMessage("CSV dosyası boş veya format hatalı.", "error"); return; }
+                            if(data.length === 0) { window.showMessage("CSV dosyası boş.", "error"); return; }
                             
                             const rawHeaders = Object.keys(data[0]);
-                            const headers = rawHeaders.map(h => h.trim().replace(/['"]/g, '').toLowerCase());
-                            processImportedData(data, rawHeaders, headers, event);
+                            processImportedData(data, rawHeaders, rawHeaders, event);
                         },
                         error: function(err) {
-                            window.showMessage("CSV dosyası okuma hatası.", "error");
+                            window.showMessage("CSV dosyası okunurken hata oluştu.", "error");
                             event.target.value = "";
                         }
                     });
                 };
                 reader.readAsText(file, 'UTF-8');
             } else {
-                window.showMessage("Sadece .csv veya .xlsx (Excel) formatında dosya yükleyebilirsiniz.", "error");
+                window.showMessage("Sadece .csv veya .xlsx (Excel) uzantılı dosya yükleyebilirsiniz.", "error");
                 event.target.value = "";
             }
         };
@@ -1742,4 +1781,3 @@
     </script>
 </body>
 </html>
-```eof
