@@ -437,21 +437,21 @@
                     <!-- Dinamik Varyant Alanı (Resimli) -->
                     <div id="detailVariantContainer" class="mb-6 hidden"></div>
 
-                    <!-- Sabit, Her Zaman Görünür Açıklama Kutusu (Fiyatın Üstünde) -->
+                    <!-- Fiyat Kutusu (YUKARI ALINDI VE BÜYÜTÜLDÜ) -->
+                    <div class="mb-6 p-5 sm:p-6 bg-orange-50/50 rounded-3xl border border-orange-100 flex items-center justify-between shadow-sm">
+                        <div>
+                            <div id="detailOriginalPrice" class="text-sm text-slate-400 line-through font-bold mb-1 hidden"></div>
+                            <div id="detailPrice" class="text-4xl sm:text-5xl font-black text-orange-600 tracking-tight"></div>
+                        </div>
+                        <div id="detailDiscountBadge" class="hidden bg-rose-500 text-white font-black text-lg px-4 py-2 rounded-xl shadow-md"></div>
+                    </div>
+
+                    <!-- Sabit, Her Zaman Görünür Açıklama Kutusu (FİYATIN ALTINA ALINDI) -->
                     <div id="detailDescContainer" class="mb-6 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-100 hidden">
                         <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider mb-2.5 flex items-center gap-2">
                             <i data-lucide="align-left" class="w-4 h-4 text-orange-500"></i> <span data-i18n="product_desc_title">Ürün Açıklaması</span>
                         </h4>
                         <p id="detailDescription" class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap"></p>
-                    </div>
-
-                    <!-- Fiyat Kutusu -->
-                    <div class="mb-6 p-5 bg-orange-50/30 rounded-3xl border border-orange-100 flex items-center justify-between">
-                        <div>
-                            <div id="detailOriginalPrice" class="text-sm text-slate-400 line-through font-bold mb-1 hidden"></div>
-                            <div id="detailPrice" class="text-4xl font-black text-orange-600 tracking-tight"></div>
-                        </div>
-                        <div id="detailDiscountBadge" class="hidden bg-rose-500 text-white font-black text-lg px-4 py-2 rounded-xl shadow-md"></div>
                     </div>
                     
                     <!-- Mağaza Profili -->
