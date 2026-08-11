@@ -143,8 +143,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16 gap-4">
                     
-                    <!-- DİNAMİK SEO LİNK (Logo) -->
-                    <div class="flex items-center gap-3 cursor-pointer" onclick="window.navigateTo('/')">
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="window.navigateTo('')">
                         <img id="navLogo" src="" class="h-9 object-contain hidden" alt="Logo">
                         <span id="navBrandName" class="text-xl sm:text-2xl font-black tracking-tighter text-slate-900">KIBRIS<span class="text-orange-500">BAZAR</span></span>
                     </div>
@@ -236,7 +235,6 @@
             </div>
         </main>
 
-        <!-- YENİ EKLENEN ÇOK DİLLİ SEO İÇERİK ALANI -->
         <section id="homeSeoSection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 mt-4 bg-white rounded-3xl shadow-sm border border-slate-100 mb-8 hidden">
             <div class="max-w-4xl mx-auto text-center sm:text-left">
                 <h1 class="text-2xl sm:text-3xl font-black text-slate-900 mb-4 leading-tight" data-i18n="seo_h1">Kuzey Kıbrıs'ın Yeni Nesil Dijital Pazar Yeri: Kıbrıs Bazar</h1>
@@ -261,7 +259,6 @@
             </div>
         </section>
 
-        <!-- SATICI OLMA ÇAĞRISI (CTA BANNER) -->
         <section class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-16 sm:py-20 border-y border-slate-700 relative overflow-hidden">
             <div class="absolute -right-20 -top-20 w-80 h-80 bg-orange-500 opacity-20 rounded-full blur-[80px] pointer-events-none"></div>
             <div class="absolute left-10 bottom-10 w-64 h-64 bg-rose-500 opacity-20 rounded-full blur-[80px] pointer-events-none"></div>
@@ -295,6 +292,7 @@
                     <h4 class="font-black text-slate-900 text-2xl tracking-tighter mb-4">KIBRIS<span class="text-orange-500">BAZAR</span></h4>
                     <p class="text-sm text-slate-500 leading-relaxed mb-4" data-i18n="footer_about_desc">Kıbrıs'ın yeni nesil, komisyonsuz dijital pazar yeri. Alıcılar ve yerel satıcılar güvenle buluşuyor.</p>
                     <div class="flex gap-3">
+                        <!-- Çizim İkonları ile Hata Önleme -->
                         <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-orange-500 hover:text-white transition">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
                         </a>
@@ -439,15 +437,12 @@
                     <!-- Dinamik Varyant Alanı (Resimli) -->
                     <div id="detailVariantContainer" class="mb-6 hidden"></div>
 
-                    <!-- Modern Akordiyon Ürün Açıklaması (Fiyatın Hemen Üstünde) -->
-                    <div id="descAccordionContainer" class="mb-6 border border-slate-200 rounded-2xl overflow-hidden bg-slate-50/50 hidden">
-                        <button onclick="window.toggleDescAccordion()" class="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 transition-colors focus:outline-none group">
-                            <span class="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2"><i data-lucide="align-left" class="w-4 h-4 text-orange-500"></i> <span data-i18n="product_desc_title">Ürün Açıklaması</span></span>
-                            <i data-lucide="chevron-down" id="descAccordionIcon" class="w-5 h-5 text-slate-400 transition-transform duration-300 group-hover:text-orange-500"></i>
-                        </button>
-                        <div id="descAccordionContent" class="hidden border-t border-slate-100 bg-white">
-                            <div class="p-5 text-sm text-slate-600 leading-relaxed whitespace-pre-wrap max-h-60 overflow-y-auto custom-scrollbar" id="detailDescription"></div>
-                        </div>
+                    <!-- Sabit, Her Zaman Görünür Açıklama Kutusu (Fiyatın Üstünde) -->
+                    <div id="detailDescContainer" class="mb-6 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-100 hidden">
+                        <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider mb-2.5 flex items-center gap-2">
+                            <i data-lucide="align-left" class="w-4 h-4 text-orange-500"></i> <span data-i18n="product_desc_title">Ürün Açıklaması</span>
+                        </h4>
+                        <p id="detailDescription" class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap"></p>
                     </div>
 
                     <!-- Fiyat Kutusu -->
@@ -502,7 +497,7 @@
                      <button onclick="window.closeStoreProfile()" class="flex items-center gap-2 text-slate-600 hover:text-orange-500 font-bold text-sm transition bg-white py-1.5 px-3 rounded-lg border border-slate-200 hover:border-orange-200"><i data-lucide="arrow-left" class="w-4 h-4 rtl:rotate-180"></i> <span class="hidden sm:inline" data-i18n="go_back">Geri Dön</span></button>
                  </div>
                  
-                 <div class="w-1/3 flex justify-center items-center cursor-pointer" onclick="window.navigateTo('/')">
+                 <div class="w-1/3 flex justify-center items-center cursor-pointer" onclick="window.navigateTo('')">
                      <span class="text-xl sm:text-2xl font-black tracking-tighter text-slate-900">KIBRIS<span class="text-orange-500">BAZAR</span></span>
                  </div>
                  
@@ -576,7 +571,6 @@
 
     </div>
 
-    <!-- LEAFLET HARİTA KÜTÜPHANESİ -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -630,10 +624,6 @@
         let activeDistrict = '';
         let spMapInstance = null; 
         
-        // ---------------------------------------------------------
-        // SEO URL (Slug) & ROUTING İŞLEMLERİ
-        // ---------------------------------------------------------
-        
         window.slugify = (text) => {
             if(!text) return 'urun';
             return text.toString().toLowerCase()
@@ -644,33 +634,28 @@
                 .replace(/-+$/, '');
         };
 
+        // KESİN ÇÖZÜM: 404 HATASINI ÖNLEMEK İÇİN YALNIZCA HASH (#) KULLANAN ROUTING SİSTEMİ
         window.navigateTo = (url, updateState = true) => {
             if (updateState) {
-                window.history.pushState({path: url}, '', url);
+                window.location.hash = url;
             }
             window.handleRoute();
         };
 
         window.handleRoute = () => {
-            const path = window.location.pathname;
+            const hash = window.location.hash;
             
-            if (path.startsWith('/magaza/')) {
-                const parts = path.split('-s-');
-                if (parts.length > 1) {
-                    const storeId = parts[parts.length - 1];
-                    if(!document.getElementById('productDetailModal').classList.contains('hidden')) {
-                        document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
-                        setTimeout(() => document.getElementById('productDetailModal').classList.add('hidden'), 300);
-                    }
-                    window.openStoreProfile(storeId, false);
+            if (hash.startsWith('#/magaza/')) {
+                const storeId = hash.replace('#/magaza/', '');
+                if(!document.getElementById('productDetailModal').classList.contains('hidden')) {
+                    document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => document.getElementById('productDetailModal').classList.add('hidden'), 300);
                 }
+                window.openStoreProfile(storeId, false);
             } 
-            else if (path.includes('-p-')) {
-                const parts = path.split('-p-');
-                if (parts.length > 1) {
-                    const productId = parts[parts.length - 1];
-                    window.openProductDetail(productId, false);
-                }
+            else if (hash.startsWith('#/urun/')) {
+                const productId = hash.replace('#/urun/', '');
+                window.openProductDetail(productId, false);
             } 
             else {
                 if(!document.getElementById('productDetailModal').classList.contains('hidden')) {
@@ -691,10 +676,12 @@
             applyTranslations();
         };
 
-        window.addEventListener('popstate', () => { window.handleRoute(); });
+        // Geri/İleri tuşlarına basıldığında sayfanın sorunsuz değişmesini sağlar
+        window.addEventListener('hashchange', () => {
+            window.handleRoute();
+        });
 
 
-        // 🔥 DİNAMİK SEO VE ÇOK DİLLİ ÇEVİRİ SÖZLÜĞÜ 🔥
         const appTranslations = {
             tr: {
                 dir: "ltr",
@@ -771,8 +758,6 @@
                 disclaimer_text: "Siparişinizi tamamlamak için mağazanın WhatsApp hattına yönlendirileceksiniz.<br><br><b>Önemli:</b> Kıbrıs Bazar, alıcı ile satıcıyı doğrudan buluşturan bir platformdur. Ödeme, kargo ve iade gibi tüm süreçlerden <b>yalnızca satıcı sorumludur</b>. Platformumuzun bu aşamalarda yasal bir sorumluluğu bulunmamaktadır.",
                 disclaimer_checkbox: "Şartları okudum ve kabul ediyorum. Alışveriş sürecinde satıcıyla doğrudan muhatap olduğumu onaylıyorum.",
                 btn_go_whatsapp: "WhatsApp'a Git",
-                
-                // SEO METİNLERİ
                 seo_title: "Kıbrıs Bazar | Kıbrıs'ın Ücretsiz Dijital Pazar Yeri",
                 seo_desc: "Kuzey Kıbrıs'ın yeni nesil, komisyonsuz dijital pazar yeridir. Yüzlerce yerel mağazadan güvenle online alışveriş yapın veya ücretsiz kendi mağazanızı açın.",
                 seo_h1: "Kuzey Kıbrıs'ın Yeni Nesil Dijital Pazar Yeri: Kıbrıs Bazar",
@@ -857,7 +842,6 @@
                 disclaimer_text: "You will be redirected to the store's WhatsApp to complete your order.<br><br><b>Important:</b> Kıbrıs Bazar is a platform that directly connects buyers and sellers. The seller is <b>solely responsible</b> for all processes such as payment, shipping, and returns. Our platform has no legal liability in these stages.",
                 disclaimer_checkbox: "I have read and agree to the terms. I confirm that I am dealing directly with the seller.",
                 btn_go_whatsapp: "Go to WhatsApp",
-                
                 seo_title: "Kibris Bazar | Cyprus' Free Digital Marketplace",
                 seo_desc: "Northern Cyprus' new generation, commission-free digital marketplace. Shop safely from hundreds of local stores or open your own store for free.",
                 seo_h1: "Northern Cyprus' New Generation Digital Marketplace: Kibris Bazar",
@@ -942,7 +926,6 @@
                 disclaimer_text: "Θα ανακατευθυνθείτε στο WhatsApp.<br><br><b>Σημαντικό:</b> Ο πωλητής είναι υπεύθυνος για πληρωμές και αποστολές. Δεν φέρουμε καμία νομική ευθύνη.",
                 disclaimer_checkbox: "Έχω διαβάσει και συμφωνώ με τους όρους.",
                 btn_go_whatsapp: "Μετάβαση στο WhatsApp",
-                
                 seo_title: "Kibris Bazar | Η Δωρεάν Ψηφιακή Αγορά της Κύπρου",
                 seo_desc: "Η νέας γενιάς ψηφιακή αγορά της Βόρειας Κύπρου χωρίς προμήθειες. Αγοράστε με ασφάλεια ή ανοίξτε το δικό σας κατάστημα δωρεάν.",
                 seo_h1: "Η Νέας Γενιάς Ψηφιακή Αγορά της Βόρειας Κύπρου: Kibris Bazar",
@@ -1027,7 +1010,6 @@
                 disclaimer_text: "Вы будете перенаправлены в WhatsApp магазина.<br><br><b>Важно:</b> Платформа не несет ответственности за оплату и доставку.",
                 disclaimer_checkbox: "Я согласен с условиями.",
                 btn_go_whatsapp: "Перейти в WhatsApp",
-                
                 seo_title: "Kibris Bazar | Бесплатная цифровая торговая площадка Кипра",
                 seo_desc: "Цифровая торговая площадка нового поколения на Северном Кипре без комиссий. Покупайте онлайн безопасно или откройте свой магазин бесплатно.",
                 seo_h1: "Цифровая торговая площадка нового поколения на Северном Кипре: Kibris Bazar",
@@ -1112,7 +1094,6 @@
                 disclaimer_text: "سيتم توجيهك إلى WhatsApp الخاص بالمتجر.<br><br><b>مهم:</b> المنصة غير مسؤولة عن الدفع أو الشحن.",
                 disclaimer_checkbox: "لقد قرأت الشروط وأوافق عليها.",
                 btn_go_whatsapp: "الذهاب إلى الواتساب",
-                
                 seo_title: "Kibris Bazar | السوق الرقمي المجاني في قبرص",
                 seo_desc: "الجيل الجديد من الأسواق الرقمية الخالية من العمولات في شمال قبرص. تسوق بأمان أو افتح متجرك الخاص مجانًا.",
                 seo_h1: "الجيل الجديد من الأسواق الرقمية في شمال قبرص: Kibris Bazar",
@@ -1182,6 +1163,7 @@
                 if (tObj[key]) el.placeholder = tObj[key];
             });
 
+            // META ETİKETLERİNİ DİNAMİK OLARAK GÜNCELLE
             const metaDesc = document.getElementById('metaDesc');
             const ogTitle = document.getElementById('ogTitle');
             const ogDesc = document.getElementById('ogDesc');
@@ -1298,6 +1280,7 @@
             }
         }
 
+        // Fisher-Yates Karıştırma (Shuffle) Algoritması
         const shuffleArray = (array) => {
             let arr = [...array];
             for (let i = arr.length - 1; i > 0; i--) {
@@ -1529,7 +1512,9 @@
             
             const storeObj = dbStores.find(s => s.id === p.storeId);
             const followerCount = storeObj && storeObj.followers ? storeObj.followers.length : 0;
+            
             const isPremiumStore = storeObj && (storeObj.isPremium || storeObj.packageType === 'premium');
+            
             const variantsText = window.t('variants_label');
             
             return `
@@ -1720,10 +1705,8 @@
             if(!product) return;
             
             if (updateState) {
-                const slugTitle = window.slugify(product.title);
-                const slugCat = window.slugify(product.category);
-                const seoUrl = `/${slugCat}/${slugTitle}-p-${id}`;
-                window.navigateTo(seoUrl);
+                // 404 hatasını önlemek için HASH yapısına geçildi
+                window.navigateTo('#/urun/' + id);
                 return;
             }
 
@@ -1746,17 +1729,16 @@
 
             document.getElementById('detailTitle').innerText = product.title;
             
-            // Açıklama Metni - Akordiyon Sistemi
+            // Açıklama Metni (Her zaman açık, okunaklı kutu)
             const descStr = product.description ? product.description.trim() : "";
-            const descAccordionContainer = document.getElementById('descAccordionContainer');
+            const descContainer = document.getElementById('detailDescContainer');
             if(descStr !== "") {
                 document.getElementById('detailDescription').innerText = descStr;
-                descAccordionContainer.classList.remove('hidden');
-                // Varsayılan olarak kapalı başlat
-                document.getElementById('descAccordionContent').classList.add('hidden');
-                document.getElementById('descAccordionIcon').classList.remove('rotate-180');
+                descContainer.classList.remove('hidden');
             } else {
-                descAccordionContainer.classList.add('hidden');
+                // Açıklama yoksa nezaketen bilgi ver veya kutuyu gizle
+                document.getElementById('detailDescription').innerHTML = "<i>Bu ürün için açıklama belirtilmemiş.</i>";
+                descContainer.classList.remove('hidden');
             }
 
             document.getElementById('detailPrice').innerText = product.price.toLocaleString('tr-TR') + ' TL';
@@ -1793,12 +1775,14 @@
                 document.getElementById('detailStoreLogoIcon').classList.remove('hidden');
             }
 
-            // Gelişmiş Varyant İşlemleri (Resimli, Yuvarlak)
+            // Gelişmiş Varyant İşlemleri (Çift İsimleri Engeller, Yuvarlak İkon Yapar)
             const variantContainer = document.getElementById('detailVariantContainer');
             if (product.variants && product.variants.length > 0) {
                 const groups = {};
                 product.variants.forEach((v, idx) => {
-                    const g = v.group || 'Seçenek';
+                    // Normalize the group name (uppercase it) to prevent "Renk" and "RENK" from duplicating
+                    const rawGroup = v.group || 'Seçenek';
+                    const g = rawGroup.toUpperCase(); 
                     if(!groups[g]) groups[g] = [];
                     groups[g].push({ ...v, originalIndex: idx });
                 });
@@ -1812,6 +1796,7 @@
                     vars.forEach(v => {
                         const isOut = v.stock <= 0;
                         const activeBorder = "border-slate-200"; 
+                        // Resim varsa yuvarlak kutucuk, resim yoksa normal buton tasarımı
                         if (v.image) {
                             varHtml += `
                             <div onclick="${isOut ? '' : `window.selectVariant(${v.originalIndex})`}" id="varBtn-${v.originalIndex}" class="var-btn flex flex-col items-center gap-2 cursor-pointer ${isOut ? 'opacity-50 cursor-not-allowed' : 'group'} w-16">
@@ -2036,30 +2021,18 @@
             }
         };
 
-        window.toggleDescAccordion = () => {
-            const content = document.getElementById('descAccordionContent');
-            const icon = document.getElementById('descAccordionIcon');
-            if(content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                icon.classList.add('rotate-180');
-            } else {
-                content.classList.add('hidden');
-                icon.classList.remove('rotate-180');
-            }
-        };
-
         window.changeDetailMedia = (url) => {
             const img = document.getElementById('detailMainImage');
             img.src = url; 
         };
 
         window.closeProductDetail = () => {
-            window.navigateTo('/', false); 
+            window.navigateTo('', false); 
             document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
             setTimeout(() => { 
                 document.getElementById('productDetailModal').classList.add('hidden'); 
                 const seoSection = document.getElementById('homeSeoSection');
-                if(seoSection && !window.location.pathname.includes('/magaza/')) seoSection.classList.remove('hidden');
+                if(seoSection && !window.location.hash.includes('/magaza/')) seoSection.classList.remove('hidden');
             }, 300);
         };
 
@@ -2083,9 +2056,7 @@
             if(!store) return;
 
             if (updateState) {
-                const slugName = window.slugify(store.name);
-                const seoUrl = `/magaza/${slugName}-s-${storeId}`;
-                window.navigateTo(seoUrl);
+                window.navigateTo('#/magaza/' + storeId);
                 return;
             }
 
@@ -2237,12 +2208,12 @@
         };
 
         window.closeStoreProfile = () => {
-            window.navigateTo('/', false); 
+            window.navigateTo('', false); 
             document.getElementById('storeProfileModal').classList.add('hidden');
             document.body.style.overflow = 'auto'; 
             
             const seoSection = document.getElementById('homeSeoSection');
-            if(seoSection && !window.location.pathname.includes('-p-')) seoSection.classList.remove('hidden');
+            if(seoSection && !window.location.hash.includes('/urun/')) seoSection.classList.remove('hidden');
         };
 
         window.renderStoreProfileCategories = () => {
