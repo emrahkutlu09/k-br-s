@@ -1524,54 +1524,42 @@
             window.showMessage("İlanlarınız Excel uyumlu CSV formatında indirildi.");
         };
 
-        // ÇOK GÜÇLÜ İÇE AKTARMA MOTORU (Tüm sorunları çözen sürüm)
+        // --- GELİŞMİŞ İÇE AKTARMA MOTORU (FİYATSIZ, HATAYA DAYANIKLI SÜRÜM) ---
         async function processImportedData(data, rawHeaders, headers, event) {
             
-            // 1. ADIM: Sütun İsimlerini Temizle ve Güvenli Hale Getir
-            const cleanHeaders = rawHeaders.map(h => {
-                let clean = h.toLowerCase().trim();
-                clean = clean.replace(/['"]/g, ''); // Tırnakları at
-                clean = clean.replace(/^\ufeff/, ''); // BOM (gizli karakter) at
-                return clean;
-            });
-
-            // 2. ADIM: Güçlü Regex Eşleştirmesi ile Doğru Sütunları Bul
+            // 1. ADIM: Sütun İsimlerini Tespit Etme
             let baslikIndex = -1; let fiyatIndex = -1; let kategoriIndex = -1; let aciklamaIndex = -1;
             const gorselSutunlari = [];
 
+            // Başlıkları temizle (BOM, tırnak, büyük/küçük harf sorunlarını yok et)
+            const cleanHeaders = rawHeaders.map(h => h.toString().toLowerCase().trim().replace(/['"]/g, '').replace(/^\ufeff/, ''));
+
             cleanHeaders.forEach((k, index) => {
-                // Başlık/İsim Sütunu Arayışı
-                if (baslikIndex === -1 && k.match(/baslik|başlık|title|name|ürün|urun|ad|product/i)) {
+                if (baslikIndex === -1 && (k.includes('baslik') || k.includes('başlık') || k.includes('title') || k.includes('name') || k === 'ürün adı')) {
                     baslikIndex = index;
-                }
-                // Fiyat Sütunu Arayışı
-                else if (fiyatIndex === -1 && k.match(/fiyat|price|sale|ücret/i)) {
+                } else if (fiyatIndex === -1 && (k.includes('fiyat') || k.includes('price') || k.includes('sale'))) {
                     fiyatIndex = index;
-                }
-                // Kategori Sütunu Arayışı
-                else if (kategoriIndex === -1 && k.match(/kategori|category/i)) {
+                } else if (kategoriIndex === -1 && (k.includes('kategori') || k.includes('category'))) {
                     kategoriIndex = index;
-                }
-                // Açıklama Sütunu Arayışı
-                else if (aciklamaIndex === -1 && k.match(/aciklama|açıklama|desc|detay/i)) {
+                } else if (aciklamaIndex === -1 && (k.includes('aciklama') || k.includes('açıklama') || k.includes('desc') || k.includes('detay'))) {
                     aciklamaIndex = index;
                 }
-                // Resim/Görsel Sütunları Arayışı (Birden fazla olabilir)
-                if (k.match(/gorsel|görsel|image|resim|foto|src|pic/i)) {
-                    gorselSutunlari.push(rawHeaders[index]);
+                
+                // İçinde gorsel, src, resim vs. geçen tüm sütunları görsel olarak al
+                if (k.includes('gorsel') || k.includes('görsel') || k.includes('image') || k.includes('resim') || k.includes('foto') || k.includes('src')) {
+                    gorselSutunlari.push(rawHeaders[index]); // Orjinal indexteki anahtarı tut
                 }
             });
 
-            // Eğer hala bulunamadıysa uyarı ver ve detayları Console'a yazdır
-            if (baslikIndex === -1 || fiyatIndex === -1) {
-                console.warn("--- BULUNAN SÜTUNLAR ---", cleanHeaders);
-                window.showMessage("Sütunlar eşleştirilemedi. Dosyada 'Başlık' ve 'Fiyat' sütunu olduğundan emin olun.", "error");
-                event.target.value = ""; return;
+            // YALNIZCA BAŞLIK ZORUNLU Kılındı
+            if (baslikIndex === -1) {
+                window.showMessage("Format hatası: Ürün başlığı (baslik) sütunu bulunamadı. Lütfen Excel/CSV dosyanızı kontrol edin.", "error");
+                event.target.value = ""; 
+                return;
             }
 
-            // Orijinal dosyadaki (büyük/küçük harf korumalı) sütun isimlerini al
             const baslikKey = rawHeaders[baslikIndex];
-            const fiyatKey = rawHeaders[fiyatIndex];
+            const fiyatKey = fiyatIndex !== -1 ? rawHeaders[fiyatIndex] : null;
             const kategoriKey = kategoriIndex !== -1 ? rawHeaders[kategoriIndex] : null;
             const aciklamaKey = aciklamaIndex !== -1 ? rawHeaders[aciklamaIndex] : null;
 
@@ -1581,7 +1569,8 @@
             
             if (myProducts.length + data.length > limit) {
                 window.showMessage(`Paket limitiniz (${limit}) bu kadar ürünü içe aktarmaya yetmiyor.`, "error");
-                event.target.value = ""; return;
+                event.target.value = ""; 
+                return;
             }
 
             showScreen('fullScreenLoader');
@@ -1594,27 +1583,17 @@
                 let addedCount = 0;
 
                 for (const row of data) {
-                    if (!row[baslikKey] || !row[fiyatKey]) continue; 
+                    // YALNIZCA başlık (ürün adı) boş ise satırı atla
+                    if (!row[baslikKey] || row[baslikKey].toString().trim() === '') continue; 
                     
                     const newDocRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products'));
                     
+                    // Görselleri Topla
                     let images = [];
                     gorselSutunlari.forEach(colKey => {
                         if (row[colKey]) {
-                            // Web Scraper Array desteği (Örn: `[{"src":"link1"}, {"src":"link2"}]` formatını ayıkla)
-                            let rawImgStr = row[colKey].toString().trim();
-                            if(rawImgStr.startsWith('[') && rawImgStr.endsWith(']')) {
-                                try {
-                                    const parsed = JSON.parse(rawImgStr);
-                                    parsed.forEach(item => {
-                                        if(item.src) images.push(item.src);
-                                        else if(typeof item === 'string') images.push(item);
-                                    });
-                                    return; // Bu satırdan resimleri çektik, diğer formata bakma
-                                } catch(e) {}
-                            }
-
-                            // Normal ayırıcı desteği (virgül, çizgi, boşluk vs)
+                            const rawImgStr = row[colKey].toString().trim();
+                            // Birden fazla fotoğraf içeren (virgüllü, çizgili) hücreleri de bölerek al
                             const splitImages = rawImgStr.split(/[,;|\n]/);
                             splitImages.forEach(imgUrl => {
                                 const cleanUrl = imgUrl.trim();
@@ -1625,24 +1604,26 @@
                         }
                     });
 
-                    // Limite göre resim sayısını kırp
+                    // Paket Limitine Göre Görsel Kes
                     images = images.slice(0, imageLimit);
-
-                    // Eğer hiç resim bulunamadıysa placeholder ekle
+                    // Hiç görsel yoksa Varsayılan Resim at
                     if (images.length === 0) {
                         images = ['https://placehold.co/400x500/cbd5e1/475569?text=Gorsel+Yok'];
                     }
 
-                    // Fiyatı akıllı temizleme
-                    let cleanPrice = row[fiyatKey].toString().replace(/[^0-9.,]/g, '');
-                    if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
-                        cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
-                    } else if (cleanPrice.includes(',')) {
-                        cleanPrice = cleanPrice.replace(',', '.');
+                    // Fiyatı Topla (Boşsa veya Hatalıysa 0 TL Olarak Belirle)
+                    let parsedPrice = 0; 
+                    if (fiyatKey && row[fiyatKey]) {
+                        let cleanPrice = row[fiyatKey].toString().replace(/[^0-9.,]/g, '');
+                        if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
+                            cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
+                        } else if (cleanPrice.includes(',')) {
+                            cleanPrice = cleanPrice.replace(',', '.');
+                        }
+                        parsedPrice = parseFloat(cleanPrice) || 0;
                     }
-                    const parsedPrice = parseFloat(cleanPrice) || 0;
                     
-                    // Akıllı Kategori Eşleştirme
+                    // Kategoriyi Eşleştir
                     let matchedCategory = 'Ev, Mobilya & Yaşam';
                     if (kategoriKey && row[kategoriKey]) {
                         const csvCatText = row[kategoriKey].toString().toLocaleLowerCase('tr-TR').trim();
@@ -1665,10 +1646,10 @@
                         title: row[baslikKey].toString().trim(),
                         description: (aciklamaKey && row[aciklamaKey]) ? row[aciklamaKey].toString().trim() : '',
                         category: matchedCategory, 
-                        price: parsedPrice,
+                        price: parsedPrice, // 0 TL olabilir, satıcı sonradan düzeltebilir
                         originalPrice: parsedPrice,
                         images: images, 
-                        variants: [], // Web scraper ile çekilen düz varyantlar şimdilik boş gelir, elle düzenlenir.
+                        variants: [], // İçe aktarımda varyant şimdilik boş gönderilir
                         createdAt: Date.now()
                     };
 
@@ -1681,11 +1662,14 @@
                 if (opCount > 0) batches.push(currentBatch.commit());
                 await Promise.all(batches);
 
-                if (addedCount > 0) { window.showMessage(`${addedCount} adet ilan başarıyla yüklendi!`); } 
-                else { window.showMessage("Geçerli ürün satırı bulunamadı. Lütfen CSV/XLSX dosyanızı kontrol edin.", "error"); }
+                if (addedCount > 0) { 
+                    window.showMessage(`${addedCount} adet ilan başarıyla yüklendi! (Fiyatı eksik olanlar 0 TL olarak eklendi)`); 
+                } else { 
+                    window.showMessage("Geçerli ürün satırı bulunamadı. Lütfen başlık sütununu kontrol edin.", "error"); 
+                }
             } catch (err) { 
                 console.error(err);
-                window.showMessage("İçe aktarma sırasında bir hata oluştu.", "error"); 
+                window.showMessage("İçe aktarma sırasında hata oluştu.", "error"); 
             }
             
             showScreen('dashboardScreen');
@@ -1696,11 +1680,10 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            window.showMessage("Dosya okunuyor, lütfen bekleyin...", "info");
+            window.showMessage("Dosya analiz ediliyor, lütfen bekleyin...", "info");
 
             const fileName = file.name.toLowerCase();
 
-            // EXCEL (.xlsx, .xls) FORMATI OKUMA
             if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -1711,24 +1694,22 @@
                         const worksheet = workbook.Sheets[firstSheetName];
                         const json_data = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
                         
-                        if(json_data.length === 0) { window.showMessage("Excel dosyası boş veya okunamıyor.", "error"); return; }
+                        if(json_data.length === 0) { window.showMessage("Excel dosyası boş veya format hatalı.", "error"); return; }
 
                         const rawHeaders = Object.keys(json_data[0]);
                         processImportedData(json_data, rawHeaders, rawHeaders, event);
                     } catch(err) {
                         console.error(err);
-                        window.showMessage("Excel dosyası işlenirken hata oluştu.", "error");
+                        window.showMessage("Excel dosyası okunurken hata oluştu.", "error");
                         event.target.value = "";
                     }
                 };
                 reader.readAsArrayBuffer(file);
             } 
-            // CSV (.csv) FORMATI OKUMA (PapaParse)
             else if (fileName.endsWith('.csv')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     let text = e.target.result;
-                    // BOM gizli karakterini temizle (Web Scraper dosyaları için çok önemli!)
                     if (text.charCodeAt(0) === 0xFEFF) { text = text.substring(1); }
 
                     const firstLine = text.split('\n')[0];
@@ -1740,20 +1721,20 @@
                         delimiter: detectedDelimiter,
                         complete: function(results) {
                             const data = results.data;
-                            if(data.length === 0) { window.showMessage("CSV dosyası boş.", "error"); return; }
+                            if(data.length === 0) { window.showMessage("CSV dosyası boş veya format hatalı.", "error"); return; }
                             
                             const rawHeaders = Object.keys(data[0]);
                             processImportedData(data, rawHeaders, rawHeaders, event);
                         },
                         error: function(err) {
-                            window.showMessage("CSV dosyası okunurken hata oluştu.", "error");
+                            window.showMessage("CSV dosyası okuma hatası.", "error");
                             event.target.value = "";
                         }
                     });
                 };
                 reader.readAsText(file, 'UTF-8');
             } else {
-                window.showMessage("Sadece .csv veya .xlsx (Excel) uzantılı dosya yükleyebilirsiniz.", "error");
+                window.showMessage("Sadece .csv veya .xlsx (Excel) formatında dosya yükleyebilirsiniz.", "error");
                 event.target.value = "";
             }
         };
