@@ -206,6 +206,49 @@
                         <h4 class="text-3xl font-black text-slate-900"><span id="statActiveProducts">0</span><span class="text-sm text-slate-400 font-medium"> / <span id="statMaxProducts">Limit</span></span></h4>
                     </div>
                 </div>
+
+                <!-- YENİ EKLENEN MAĞAZA TRAFİĞİ BÖLÜMÜ -->
+                <div class="mt-8">
+                    <h3 class="text-lg font-black text-slate-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-500"></i> Mağaza Trafiği & Analiz
+                    </h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-3xl border border-slate-700 shadow-lg text-white flex flex-col justify-between relative overflow-hidden">
+                            <div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-500/20 rounded-full blur-xl animate-pulse"></div>
+                            <div class="flex items-start justify-between mb-3 relative z-10">
+                                <span class="text-[10px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Canlı Ziyaretçi
+                                </span>
+                                <i data-lucide="users" class="w-5 h-5 text-emerald-400"></i>
+                            </div>
+                            <h4 class="text-4xl font-black text-white relative z-10" id="statLiveVisitors">0</h4>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div class="flex items-start justify-between mb-3">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Bugün (Tekil)</span>
+                                <i data-lucide="eye" class="w-5 h-5 text-blue-500"></i>
+                            </div>
+                            <h4 class="text-2xl font-black text-slate-900" id="statDailyViews">0</h4>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div class="flex items-start justify-between mb-3">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Bu Ay</span>
+                                <i data-lucide="calendar-days" class="w-5 h-5 text-indigo-500"></i>
+                            </div>
+                            <h4 class="text-2xl font-black text-slate-900" id="statMonthlyViews">0</h4>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div class="flex items-start justify-between mb-3">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tüm Zamanlar</span>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-purple-500"></i>
+                            </div>
+                            <h4 class="text-2xl font-black text-slate-900" id="statTotalViews">0</h4>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Siparişler Sekmesi -->
@@ -981,7 +1024,7 @@
                         <div class="flex justify-between items-end mt-3 pt-3 border-t border-slate-100 px-1">
                             <div>
                                 ${p.originalPrice > p.price ? `<span class="block text-[10px] text-slate-400 line-through mb-0.5">${p.originalPrice.toLocaleString('tr-TR')} TL</span>` : ''}
-                                <span class="text-lg font-black text-slate-900">${p.price.toLocaleString('tr-TR')} TL</span>
+                                <span class="text-lg font-black text-slate-900">${(p.price || 0).toLocaleString('tr-TR')} TL</span>
                             </div>
                             <div class="flex gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                 <button onclick="window.editProduct('${p.id}')" class="bg-blue-50 hover:bg-blue-500 text-blue-500 hover:text-white p-2 rounded-xl transition shadow-sm" title="Düzenle"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
