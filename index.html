@@ -76,6 +76,12 @@
         .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
         .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
         * { -webkit-text-size-adjust: none; }
+        
+        /* Custom Accordion Animation */
+        .accordion-content { transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out; max-height: 0; opacity: 0; overflow: hidden; }
+        .accordion-content.open { max-height: 1000px; opacity: 1; }
+        .accordion-icon { transition: transform 0.3s ease; }
+        .accordion-icon.open { transform: rotate(180deg); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased selection:bg-orange-500 selection:text-white">
@@ -404,47 +410,79 @@
             </div>
         </div>
 
-        <!-- Ürün Detay Modalı -->
-        <div id="productDetailModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4 sm:p-6">
+        <!-- YENİLENEN Ürün Detay Modalı -->
+        <div id="productDetailModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-0 sm:p-6">
             <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="window.closeProductDetail()"></div>
-            <div class="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden transform scale-95 opacity-0 transition-all duration-300 max-h-[90vh]" id="productDetailPanel">
-                <button onclick="window.closeProductDetail()" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto z-10 bg-white/50 backdrop-blur-md p-2 rounded-full shadow-sm hover:bg-white text-slate-600 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+            
+            <div class="relative w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-6xl bg-white sm:rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="productDetailPanel">
+                <!-- Mobil İçin Kapatma Butonu (İçeride, üstte) -->
+                <button onclick="window.closeProductDetail()" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto z-20 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-lg hover:bg-white text-slate-800 transition md:hidden"><i data-lucide="x" class="w-5 h-5"></i></button>
                 
-                <div class="w-full md:w-1/2 bg-slate-50 border-r border-slate-100 p-4 sm:p-6 flex flex-col gap-4 overflow-y-auto no-scrollbar">
-                    <div class="w-full aspect-square bg-white rounded-2xl border border-slate-200 overflow-hidden relative flex items-center justify-center">
-                        <img id="detailMainImage" src="" class="w-full h-full object-contain" alt="Main Product Image"/>
+                <!-- Masaüstü İçin Kapatma Butonu -->
+                <button onclick="window.closeProductDetail()" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto z-20 bg-slate-100/80 backdrop-blur-md p-2.5 rounded-full shadow-sm hover:bg-rose-100 hover:text-rose-600 text-slate-600 transition hidden md:flex"><i data-lucide="x" class="w-5 h-5"></i></button>
+
+                <!-- SOL TARAF: GÖRSELLER (Premium, Büyük ve Kaydırmalı Galeri) -->
+                <div class="w-full md:w-3/5 bg-slate-100 flex flex-col relative h-[50vh] md:h-auto">
+                    <!-- Büyük Ana Görsel -->
+                    <div class="flex-1 relative flex items-center justify-center p-4 overflow-hidden h-full">
+                        <img id="detailMainImage" src="" class="w-full h-full object-contain mix-blend-multiply drop-shadow-2xl transition-transform duration-300 hover:scale-105" alt="Main Product Image"/>
                     </div>
-                    <div id="detailThumbnails" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar"></div>
+                    
+                    <!-- Küçültülmüş Alt Görseller (Thumbnails) - Yatay Kaydırmalı -->
+                    <div class="bg-white/50 backdrop-blur-sm border-t border-slate-200/50 p-3 sm:p-4">
+                        <div id="detailThumbnails" class="flex gap-3 overflow-x-auto no-scrollbar snap-x scroll-smooth pb-2">
+                            <!-- JS ile Doldurulacak -->
+                        </div>
+                    </div>
                 </div>
 
-                <div class="w-full md:w-1/2 p-6 sm:p-8 flex flex-col overflow-y-auto no-scrollbar bg-white">
-                    <h2 id="detailTitle" class="text-2xl sm:text-3xl font-black text-slate-900 mb-3"></h2>
-                    
-                    <div class="mb-5">
-                        <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-wider" data-i18n="product_desc_title">Ürün Açıklaması</h4>
-                        <p id="detailDescription" class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap"></p>
+                <!-- SAĞ TARAF: BİLGİLER VE SATIN ALMA -->
+                <div class="w-full md:w-2/5 p-5 sm:p-8 flex flex-col overflow-y-auto no-scrollbar bg-white h-[50vh] md:h-auto pb-24 md:pb-8">
+                    <!-- Üst Kısım: Mağaza Adı ve Kategori -->
+                    <div class="flex items-center gap-2 mb-3">
+                        <span id="detailStoreNameTag" class="text-[10px] font-black uppercase tracking-wider text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg truncate cursor-pointer hover:bg-orange-100 hover:text-orange-600 transition" onclick="window.openStoreProfileFromDetail()">Mağaza Adı</span>
+                        <span class="text-slate-300">•</span>
+                        <span id="detailCategoryTag" class="text-[10px] font-bold text-slate-400 truncate">Kategori</span>
                     </div>
 
-                    <div id="detailVariantContainer" class="mb-5 hidden bg-slate-50 border border-slate-100 p-4 rounded-2xl"></div>
+                    <!-- Başlık -->
+                    <h2 id="detailTitle" class="text-2xl sm:text-3xl font-black text-slate-900 mb-6 leading-tight">Ürün Başlığı</h2>
 
-                    <div class="mb-6 p-5 bg-orange-50/50 rounded-2xl border border-orange-100 flex items-center justify-between">
+                    <!-- Modern Akordiyon Ürün Açıklaması -->
+                    <div class="mb-6 border border-slate-200 rounded-2xl overflow-hidden bg-slate-50/50 transition-colors hover:bg-slate-50">
+                        <button onclick="window.toggleAccordion('descAccordion')" class="w-full p-4 flex items-center justify-between text-left focus:outline-none">
+                            <span class="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2"><i data-lucide="align-left" class="w-4 h-4 text-orange-500"></i> <span data-i18n="product_desc_title">Ürün Açıklaması</span></span>
+                            <i data-lucide="chevron-down" id="descAccordionIcon" class="w-5 h-5 text-slate-400 accordion-icon"></i>
+                        </button>
+                        <div id="descAccordionContent" class="accordion-content border-t border-slate-100">
+                            <div class="p-4 pt-2 text-sm text-slate-600 leading-relaxed whitespace-pre-wrap" id="detailDescription"></div>
+                        </div>
+                    </div>
+
+                    <!-- Gelişmiş, Resimli Varyant Alanı -->
+                    <div id="detailVariantContainer" class="mb-6 hidden">
+                        <!-- JS ile Doldurulacak: Yuvarlak resimli modern yapı -->
+                    </div>
+
+                    <!-- Fiyat ve İndirim Alanı -->
+                    <div class="mb-8 flex items-end justify-between">
                         <div>
                             <div id="detailOriginalPrice" class="text-sm text-slate-400 line-through font-bold mb-1 hidden"></div>
-                            <div id="detailPrice" class="text-4xl font-black text-orange-600"></div>
+                            <div id="detailPrice" class="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight"></div>
                         </div>
-                        <div id="detailDiscountBadge" class="hidden bg-rose-500 text-white font-black text-lg px-4 py-2 rounded-xl shadow-sm"></div>
+                        <div id="detailDiscountBadge" class="hidden bg-rose-100 text-rose-600 font-black text-sm px-3 py-1.5 rounded-lg border border-rose-200 shadow-sm"></div>
                     </div>
                     
-                    <div onclick="window.openStoreProfileFromDetail()" class="bg-slate-50 hover:bg-orange-50 cursor-pointer rounded-2xl p-4 border border-slate-200 mb-6 flex items-center justify-between transition-colors group">
-                        <div class="flex items-center gap-4">
-                            <div class="w-14 h-14 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 overflow-hidden" id="detailStoreLogoContainer">
-                                <i data-lucide="store" class="w-6 h-6" id="detailStoreLogoIcon"></i>
+                    <!-- Satıcı Profili Kısayolu -->
+                    <div onclick="window.openStoreProfileFromDetail()" class="bg-slate-50 hover:bg-orange-50 cursor-pointer rounded-2xl p-4 border border-slate-200 mb-6 flex items-center justify-between transition-colors group mt-auto">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 overflow-hidden" id="detailStoreLogoContainer">
+                                <i data-lucide="store" class="w-5 h-5" id="detailStoreLogoIcon"></i>
                                 <img id="detailStoreLogo" src="" class="w-full h-full object-cover hidden">
                             </div>
                             <div>
-                                <div class="text-[10px] font-bold text-slate-400 uppercase group-hover:text-orange-500 transition-colors" data-i18n="seller_profile_btn">Satıcı Profili & Tüm Ürünleri</div>
-                                <div class="font-black text-slate-800 text-lg flex items-center gap-1"><span id="detailStoreName"></span><i id="detailStoreShield" data-lucide="shield-check" class="w-4 h-4 text-emerald-500 hidden" title="Güvenilir Premium Satıcı"></i></div>
-                                <div class="text-xs font-bold text-slate-500 flex items-center gap-1 mt-0.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-orange-400"></i> <span id="detailDistrict"></span></div>
+                                <div class="text-[9px] font-bold text-slate-400 uppercase group-hover:text-orange-500 transition-colors" data-i18n="seller_profile_btn">Satıcı Profili & Tüm Ürünleri</div>
+                                <div class="font-black text-slate-800 text-base flex items-center gap-1"><span id="detailStoreName"></span><i id="detailStoreShield" data-lucide="shield-check" class="w-4 h-4 text-emerald-500 hidden" title="Güvenilir Premium Satıcı"></i></div>
                             </div>
                         </div>
                         <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 group-hover:text-orange-500 transition-colors rtl:rotate-180"></i>
@@ -452,14 +490,16 @@
                     <input type="hidden" id="detailStoreIdHidden">
                     <input type="hidden" id="detailProductId">
 
-                    <div class="mb-8">
-                        <button id="detailAddToCartBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-xl font-black text-sm transition-all shadow-lg flex items-center justify-center gap-2">
+                    <!-- Sabit (Sticky) Sepete Ekle Butonu Mobil İçin -->
+                    <div class="fixed bottom-0 left-0 w-full p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 md:static md:p-0 md:bg-transparent md:border-t-0 md:backdrop-blur-none z-30">
+                        <button id="detailAddToCartBtn" class="w-full bg-slate-900 hover:bg-orange-500 text-white py-4 sm:py-5 rounded-xl font-black text-sm sm:text-base transition-colors shadow-xl shadow-slate-900/20 hover:shadow-orange-500/30 flex items-center justify-center gap-2">
                             <i data-lucide="shopping-cart" class="w-5 h-5"></i> <span data-i18n="add_to_cart">Sepete Ekle</span>
                         </button>
                     </div>
 
-                    <div class="pt-6 border-t border-slate-100">
-                        <h3 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2"><i data-lucide="message-square" class="w-5 h-5 text-orange-500"></i> <span data-i18n="reviews_title">Müşteri Değerlendirmeleri</span></h3>
+                    <!-- Yorumlar -->
+                    <div class="pt-6 border-t border-slate-100 mt-6 hidden" id="reviewsSectionWrapper">
+                        <h3 class="text-sm font-black text-slate-900 mb-4 flex items-center gap-2"><i data-lucide="message-square" class="w-4 h-4 text-orange-500"></i> <span data-i18n="reviews_title">Müşteri Değerlendirmeleri</span></h3>
                         <div id="detailReviewsContainer"></div>
                     </div>
                 </div>
@@ -699,7 +739,7 @@
                 product_desc_title: "Ürün Açıklaması",
                 variants_label: "Seçenekler (Varyant)",
                 out_of_stock: "(Tükendi)",
-                seller_profile_btn: "Satıcı Profili & Tüm Ürünleri",
+                seller_profile_btn: "Satıcı Profili",
                 add_to_cart: "Sepete Ekle",
                 reviews_title: "Müşteri Değerlendirmeleri",
                 no_reviews: "Henüz değerlendirme yapılmamış. İlk değerlendiren siz olun!",
@@ -785,7 +825,7 @@
                 product_desc_title: "Product Description",
                 variants_label: "Options (Variant)",
                 out_of_stock: "(Out of Stock)",
-                seller_profile_btn: "Seller Profile & All Products",
+                seller_profile_btn: "Seller Profile",
                 add_to_cart: "Add to Cart",
                 reviews_title: "Customer Reviews",
                 no_reviews: "No reviews yet. Be the first to review!",
@@ -871,7 +911,7 @@
                 product_desc_title: "Περιγραφή Προϊόντος",
                 variants_label: "Επιλογές (Παραλλαγή)",
                 out_of_stock: "(Εξαντλήθηκε)",
-                seller_profile_btn: "Προφίλ Πωλητή & Όλα τα Προϊόντα",
+                seller_profile_btn: "Προφίλ Πωλητή",
                 add_to_cart: "Προσθήκη στο Καλάθι",
                 reviews_title: "Κριτικές Πελατών",
                 no_reviews: "Δεν υπάρχουν κριτικές ακόμα. Γίνετε ο πρώτος!",
@@ -957,7 +997,7 @@
                 product_desc_title: "Описание товара",
                 variants_label: "Параметры (Вариант)",
                 out_of_stock: "(Нет в наличии)",
-                seller_profile_btn: "Профиль продавца и все товары",
+                seller_profile_btn: "Профиль продавца",
                 add_to_cart: "В корзину",
                 reviews_title: "Отзывы клиентов",
                 no_reviews: "Пока нет отзывов. Будьте первым!",
@@ -1043,7 +1083,7 @@
                 product_desc_title: "وصف المنتج",
                 variants_label: "خيارات (متغير)",
                 out_of_stock: "(نفد من المخزون)",
-                seller_profile_btn: "ملف البائع وجميع المنتجات",
+                seller_profile_btn: "ملف البائع",
                 add_to_cart: "أضف إلى السلة",
                 reviews_title: "تقييمات العملاء",
                 no_reviews: "لا توجد مراجعات حتى الآن. كن الأول!",
@@ -1205,10 +1245,11 @@
         window.showMessage = (msg, type = 'success') => {
             const toast = document.createElement('div');
             const color = type === 'error' ? 'bg-rose-500' : 'bg-slate-900';
-            toast.className = `fixed bottom-5 right-5 ${color} text-white px-5 py-3 rounded-xl text-sm font-bold shadow-2xl z-[200] transition-all transform duration-300`;
+            toast.className = `fixed bottom-5 right-5 ${color} text-white px-5 py-3 rounded-xl text-sm font-bold shadow-2xl z-[500] transition-all transform duration-300 translate-y-10 opacity-0`;
             toast.innerText = msg;
             document.body.appendChild(toast);
-            setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-2'); setTimeout(() => toast.remove(), 300); }, 3000);
+            setTimeout(() => { toast.classList.remove('opacity-0', 'translate-y-10'); }, 10);
+            setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-10'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
         onAuthStateChanged(auth, (user) => {
@@ -1283,7 +1324,6 @@
             }
         }
 
-        // Fisher-Yates Karıştırma (Shuffle) Algoritması - Rastgeleliği Garantiler
         const shuffleArray = (array) => {
             let arr = [...array];
             for (let i = arr.length - 1; i > 0; i--) {
@@ -1325,7 +1365,7 @@
                 isStoresLoaded = true;
                 if(isStoresLoaded && isProductsLoaded) {
                      checkAdminRedirects(); 
-                     window.handleRoute(); // Data is ready, check route
+                     window.handleRoute();
                 }
                 window.renderHome(document.getElementById('searchInput').value);
                 checkInitialLoadStatus();
@@ -1345,13 +1385,12 @@
                 isProductsLoaded = true;
                 if(isStoresLoaded && isProductsLoaded) {
                      checkAdminRedirects(); 
-                     window.handleRoute(); // Data is ready, check route
+                     window.handleRoute();
                 }
                 window.renderHome(document.getElementById('searchInput').value); 
                 checkInitialLoadStatus();
             });
             
-            // Initial call to set translations on load
             applyTranslations();
         }
 
@@ -1508,7 +1547,6 @@
             window.renderHome(document.getElementById('searchInput').value);
         };
 
-        // KART OLUŞTURUCU (Tüm kartlar standart bir şekilde kutuyu doldurur w-full h-full)
         window.createProductCard = (p) => {
             const discount = p.originalPrice > p.price ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
             const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500/cbd5e1/475569?text=Gorsel';
@@ -1518,9 +1556,7 @@
             const storeObj = dbStores.find(s => s.id === p.storeId);
             const followerCount = storeObj && storeObj.followers ? storeObj.followers.length : 0;
             
-            // Satıcı VIP Paket ise Rozet Gösterimi İçin
             const isPremiumStore = storeObj && (storeObj.isPremium || storeObj.packageType === 'premium');
-            
             const variantsText = window.t('variants_label');
             
             return `
@@ -1565,7 +1601,6 @@
             const activeStoreIds = dbStores.filter(s => s.status === 'active' && (!s.expiryDate || s.expiryDate > Date.now())).map(s => s.id);
             let displayProducts = dbProducts.filter(p => activeStoreIds.includes(p.storeId));
             
-            // Satıcı paketlerine göre mağaza ID'lerini ayırma
             const premiumStoreIds = dbStores.filter(s => s.isPremium || s.packageType === 'premium').map(s => s.id);
             const standardStoreIds = dbStores.filter(s => s.packageType === 'standard' && !s.isPremium).map(s => s.id);
             const freeStoreIds = dbStores.filter(s => s.packageType === 'free' && !s.isPremium).map(s => s.id);
@@ -1573,7 +1608,6 @@
             let html = '';
 
             if (!searchQuery && !activeCategory && !activeDistrict) {
-                // Afiş Bölümleri
                 const mainBgContent = appSettings.mainBanner.image ? `<img src="${appSettings.mainBanner.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 z-0"></div>`;
                 const side1BgContent = appSettings.sideBanner1.image ? `<img src="${appSettings.sideBanner1.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-rose-400 z-0"></div>`;
                 const side2BgContent = appSettings.sideBanner2.image ? `<img src="${appSettings.sideBanner2.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 z-0"></div>`;
@@ -1617,12 +1651,10 @@
                     </div>
                 `;
 
-                // ÜRÜN HAVUZLARINI OLUŞTURMA (En yeniden eskiye)
                 let premiumProds = displayProducts.filter(p => premiumStoreIds.includes(p.storeId)).sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
                 let standardProds = displayProducts.filter(p => standardStoreIds.includes(p.storeId)).sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
                 let freeProds = displayProducts.filter(p => freeStoreIds.includes(p.storeId)).sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-                // 1. PREMIUM ÜRÜNLER VİTRİNİ (Sadece VIP, Karıştırılmış, Max 10)
                 const featuredProducts = shuffleArray([...premiumProds]).slice(0, 10);
                 if (featuredProducts.length > 0) {
                     html += `
@@ -1634,13 +1666,11 @@
                             <div id="featuredContainer" class="flex gap-4 sm:gap-5 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth snap-x">
                     `;
                     featuredProducts.forEach(p => { 
-                        // Kartları yatay kaydırma için belirli bir genişliğe hapsediyoruz ki devasa büyümesin
                         html += `<div class="snap-start shrink-0 w-[160px] sm:w-[200px] lg:w-[220px]">` + window.createProductCard(p) + `</div>`; 
                     });
                     html += `</div></div>`;
                 }
 
-                // FAVORİLER BÖLÜMÜ
                 const favProducts = displayProducts.filter(p => favorites.includes(p.id));
                 if (favProducts.length > 0) {
                     html += `<div class="mb-12 bg-rose-50 rounded-3xl p-6 border border-rose-100"><h2 class="text-xl font-black text-rose-900 mb-5">${window.t('favorites_title')}</h2><div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">`;
@@ -1648,8 +1678,6 @@
                     html += `</div></div>`;
                 }
 
-                // 2. SİZİN İÇİN SEÇTİKLERİMİZ (Akıllı Karma Algoritması)
-                // Her paketin en yeni 30 ürünü içinden rastgele (10 Premium, 8 Standart, 2 Free) çekiliyor ve tekrar karıştırılıyor.
                 let poolPremium = shuffleArray(premiumProds.slice(0, 30)).slice(0, 10);
                 let poolStandard = shuffleArray(standardProds.slice(0, 30)).slice(0, 8);
                 let poolFree = shuffleArray(freeProds.slice(0, 30)).slice(0, 2);
@@ -1666,39 +1694,31 @@
                 }
 
             } else {
-                // FİLTRELEME & ARAMA ALANI
                 if (searchQuery) {
                     const q = searchQuery.toLocaleLowerCase('tr-TR');
                     displayProducts = displayProducts.filter(p => p.title.toLocaleLowerCase('tr-TR').includes(q) || p.storeName.toLocaleLowerCase('tr-TR').includes(q));
                 }
                 
                 if (activeCategory) {
-                    let validCategoryNames = [activeCategory]; // Aranacak kategoriler havuzu
-                    
-                    // Aktif kategorinin veritabanındaki objesini bul
+                    let validCategoryNames = [activeCategory]; 
                     const activeCatLower = activeCategory.toLocaleLowerCase('tr-TR').trim();
                     const parentCatObj = dbCategories.find(c => c.name.toLocaleLowerCase('tr-TR').trim().includes(activeCatLower));
                     
-                    // Eğer bir üst kategoriyse, tüm alt kategorilerini de havuza ekle
                     if (parentCatObj) {
                         const getChildren = (parentId) => {
                             const children = dbCategories.filter(c => c.parentId === parentId);
                             children.forEach(child => {
                                 validCategoryNames.push(child.name);
-                                getChildren(child.id); // Daha da alt kategoriler varsa onları da bulur
+                                getChildren(child.id); 
                             });
                         };
                         getChildren(parentCatObj.id);
                     }
                     
-                    // Havuzdaki tüm isimleri küçük harfe çevir
                     const validCatsLower = validCategoryNames.map(c => c.toLocaleLowerCase('tr-TR').trim());
-                    
-                    // Ürünleri bu geniş havuza göre filtrele
                     displayProducts = displayProducts.filter(p => {
                         if (!p.category) return false;
                         const pCatLower = p.category.toLocaleLowerCase('tr-TR').trim();
-                        // Ürünün kategorisi bu listedeki (üst veya alt kategori) herhangi bir isimle eşleşiyor mu?
                         return validCatsLower.some(validCat => pCatLower.includes(validCat) || validCat.includes(pCatLower));
                     });
                 }
@@ -1722,6 +1742,7 @@
             lucide.createIcons();
         };
 
+        // --- YENİLENMİŞ ÜRÜN DETAY MANTIĞI ---
         window.openProductDetail = (id, updateState = true) => {
             const product = dbProducts.find(p => p.id === id);
             if(!product) return;
@@ -1740,16 +1761,34 @@
             const seoSection = document.getElementById('homeSeoSection');
             if(seoSection) seoSection.classList.add('hidden');
 
-            const images = (product.images && product.images.length > 0) ? product.images : ['https://placehold.co/400x400/cbd5e1/475569?text=Gorsel+Yok'];
+            const images = (product.images && product.images.length > 0) ? product.images : ['https://placehold.co/800x800/cbd5e1/475569?text=Gorsel+Yok'];
             document.getElementById('detailMainImage').src = images[0];
-            document.getElementById('detailMainImage').classList.remove('hidden');
             
             let thumbHtml = '';
-            images.forEach(imgUrl => { thumbHtml += `<div onclick="window.changeDetailMedia('${imgUrl}')" class="w-16 h-16 rounded-xl overflow-hidden cursor-pointer border-2 border-slate-200"><img src="${imgUrl}" class="w-full h-full object-cover"/></div>`; });
+            images.forEach((imgUrl, index) => { 
+                const isActive = index === 0 ? 'ring-2 ring-orange-500 ring-offset-1' : 'border border-slate-300 opacity-60 hover:opacity-100';
+                thumbHtml += `
+                    <div onclick="window.changeDetailMedia('${imgUrl}', this)" class="w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-xl overflow-hidden cursor-pointer transition-all duration-200 snap-center bg-white ${isActive} thumb-item">
+                        <img src="${imgUrl}" class="w-full h-full object-cover"/>
+                    </div>
+                `; 
+            });
             document.getElementById('detailThumbnails').innerHTML = thumbHtml;
 
             document.getElementById('detailTitle').innerText = product.title;
-            document.getElementById('detailDescription').innerText = product.description || "";
+            
+            // Accordion Description Reset
+            const descContent = document.getElementById('descAccordionContent');
+            const descIcon = document.getElementById('descAccordionIcon');
+            descContent.classList.remove('open');
+            descIcon.classList.remove('open');
+            
+            if(product.description && product.description.trim() !== '') {
+                document.getElementById('detailDescription').innerText = product.description;
+            } else {
+                document.getElementById('detailDescription').innerHTML = `<span class="italic text-slate-400">Bu ürün için açıklama girilmemiş.</span>`;
+            }
+
             document.getElementById('detailPrice').innerText = product.price.toLocaleString('tr-TR') + ' TL';
             
             if(product.originalPrice > product.price) {
@@ -1763,11 +1802,11 @@
             }
 
             document.getElementById('detailStoreName').innerText = product.storeName;
-            document.getElementById('detailDistrict').innerText = product.district;
+            document.getElementById('detailStoreNameTag').innerText = product.storeName;
+            document.getElementById('detailCategoryTag').innerText = product.category || 'Genel';
             document.getElementById('detailStoreIdHidden').value = product.storeId;
-            document.getElementById('detailProductId').value = product.id; // Varyant seçimi için ID'yi tuttuk
+            document.getElementById('detailProductId').value = product.id;
             
-            // Satıcı Premium ise Güven Rozetini Göster
             const storeObj = dbStores.find(s => s.id === product.storeId);
             const isPremiumStore = storeObj && (storeObj.isPremium || storeObj.packageType === 'premium');
             const shieldIcon = document.getElementById('detailStoreShield');
@@ -1785,17 +1824,55 @@
                 document.getElementById('detailStoreLogoIcon').classList.remove('hidden');
             }
 
-            // Gelişmiş Varyant İşlemleri
+            // Gelişmiş Şık Varyant Sistemi
             const variantContainer = document.getElementById('detailVariantContainer');
             if (product.variants && product.variants.length > 0) {
-                let varHtml = `<label class="block text-xs font-bold text-slate-500 mb-2">${window.t('variants_label')}</label><div class="flex flex-wrap gap-2">`;
+                // Varyantları gruplarına göre ayır (Örn: Renk, Beden)
+                const groupedVariants = {};
                 product.variants.forEach((v, idx) => {
-                    const isOut = v.stock <= 0;
-                    varHtml += `<button onclick="window.selectVariant(${idx})" id="varBtn-${idx}" class="var-btn px-4 py-2 rounded-xl border ${isOut ? 'opacity-50 cursor-not-allowed bg-slate-100 border-slate-200' : 'hover:border-orange-500 bg-white border-slate-200 text-slate-700'} text-sm font-bold transition" ${isOut ? 'disabled' : ''}>${v.name} ${isOut ? window.t('out_of_stock') : ''}</button>`;
+                    const g = v.group || window.t('variants_label');
+                    if(!groupedVariants[g]) groupedVariants[g] = [];
+                    groupedVariants[g].push({ ...v, originalIndex: idx });
                 });
-                varHtml += `</div><input type="hidden" id="selectedVariantIndex" value="">`;
+
+                let varHtml = '';
+                for(const [groupName, vars] of Object.entries(groupedVariants)) {
+                    varHtml += `<div class="mb-4"><label class="block text-[11px] font-black uppercase tracking-wider text-slate-500 mb-3">${groupName}</label><div class="flex flex-wrap gap-3">`;
+                    
+                    vars.forEach(v => {
+                        const isOut = v.stock <= 0;
+                        const hasImg = v.image && v.image.trim() !== '';
+                        const btnClass = `var-btn var-btn-${v.originalIndex} relative flex flex-col items-center justify-center p-1.5 rounded-2xl border-2 transition-all cursor-pointer ${isOut ? 'opacity-50 cursor-not-allowed border-slate-100 bg-slate-50' : 'border-slate-100 bg-white hover:border-orange-200'}`;
+                        
+                        let innerContent = '';
+                        if(hasImg) {
+                            innerContent = `
+                                <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 mb-1.5">
+                                    <img src="${v.image}" class="w-full h-full object-cover">
+                                </div>
+                                <span class="text-[10px] font-bold text-slate-700 px-1 truncate max-w-[60px] text-center">${v.name}</span>
+                            `;
+                        } else {
+                            innerContent = `<div class="px-4 py-2"><span class="text-xs font-bold text-slate-700">${v.name}</span></div>`;
+                        }
+
+                        varHtml += `
+                            <button onclick="window.selectVariant(${v.originalIndex})" id="varBtn-${v.originalIndex}" class="${btnClass}" ${isOut ? 'disabled' : ''} title="${v.name}">
+                                ${isOut ? `<div class="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center rounded-xl z-10"><i data-lucide="x" class="w-4 h-4 text-slate-800"></i></div>` : ''}
+                                ${innerContent}
+                            </button>
+                        `;
+                    });
+                    varHtml += `</div></div>`;
+                }
+
+                varHtml += `<input type="hidden" id="selectedVariantIndex" value="">`;
                 variantContainer.innerHTML = varHtml;
                 variantContainer.classList.remove('hidden');
+                
+                // İlk varyantı otomatik seç (opsiyonel, kaldırılabilir)
+                // if(product.variants[0] && product.variants[0].stock > 0) window.selectVariant(0);
+
             } else {
                 variantContainer.innerHTML = '<input type="hidden" id="selectedVariantIndex" value="">';
                 variantContainer.classList.add('hidden');
@@ -1804,7 +1881,9 @@
             document.getElementById('detailAddToCartBtn').onclick = () => { window.addToCart(id); };
 
             const reviewsContainer = document.getElementById('detailReviewsContainer');
+            const reviewsSectionWrapper = document.getElementById('reviewsSectionWrapper');
             reviewsContainer.innerHTML = '<div class="text-center py-4"><i data-lucide="loader-2" class="w-4 h-4 animate-spin inline text-orange-500"></i></div>';
+            reviewsSectionWrapper.classList.remove('hidden');
             
             const rq = query(reviewsRef, where("productId", "==", id));
             getDocs(rq).then(async snap => {
@@ -1852,12 +1931,9 @@
                 let reviewFormHtml = '';
                 if (auth.currentUser && !auth.currentUser.isAnonymous) {
                     const buyerUid = auth.currentUser.uid;
-                    
                     let isStoreOwner = false;
                     const storeDoc = dbStores.find(s => s.id === product.storeId);
-                    if (storeDoc && storeDoc.ownerUid === buyerUid) {
-                        isStoreOwner = true;
-                    }
+                    if (storeDoc && storeDoc.ownerUid === buyerUid) isStoreOwner = true;
 
                     if (isStoreOwner) {
                         reviewFormHtml = `
@@ -1867,28 +1943,21 @@
                         `;
                     } else {
                         let alreadyReviewed = false;
-                        if(!snap.empty) {
-                            snap.forEach(d => {
-                                if (d.data().userId === buyerUid) alreadyReviewed = true;
-                            });
-                        }
+                        if(!snap.empty) snap.forEach(d => { if (d.data().userId === buyerUid) alreadyReviewed = true; });
 
                         if (alreadyReviewed) {
                             reviewFormHtml = `
                                 <div class="mt-6 bg-slate-100 p-4 rounded-2xl border border-slate-200 text-center">
-                                    <p class="text-xs font-bold text-slate-500">✨ Bu ürün için bu Google hesabı ile zaten bir değerlendirmeniz bulunuyor. Her hesap ürüne yalnızca 1 kez yorum yapabilir.</p>
+                                    <p class="text-xs font-bold text-slate-500">✨ Bu ürün için bu Google hesabı ile zaten bir değerlendirmeniz bulunuyor.</p>
                                 </div>
                             `;
                         } else {
                             const ordersQ = query(ordersRef, where("buyerUid", "==", buyerUid), where("status", "==", "delivered"));
                             const ordersSnap = await getDocs(ordersQ);
-                            
                             let hasBoughtAndReceived = false;
                             ordersSnap.forEach(docSnap => {
                                 const ord = docSnap.data();
-                                if (ord.items && ord.items.some(item => (item.product?.id === id || item.productId === id))) {
-                                    hasBoughtAndReceived = true;
-                                }
+                                if (ord.items && ord.items.some(item => (item.product?.id === id || item.productId === id))) hasBoughtAndReceived = true;
                             });
 
                             if (hasBoughtAndReceived) {
@@ -1927,13 +1996,20 @@
                         </div>
                     `;
                 }
-
                 reviewsContainer.innerHTML = revHtml + reviewFormHtml;
             });
             
             document.getElementById('productDetailModal').classList.remove('hidden');
             setTimeout(() => { document.getElementById('productDetailPanel').classList.remove('scale-95', 'opacity-0'); }, 10);
             lucide.createIcons();
+        };
+
+        // Accordion Toggle Logic
+        window.toggleAccordion = (id) => {
+            const content = document.getElementById(id + 'Content');
+            const icon = document.getElementById(id + 'Icon');
+            content.classList.toggle('open');
+            icon.classList.toggle('open');
         };
 
         window.submitVerifiedReview = async (e, pId) => {
@@ -1969,7 +2045,7 @@
             }
         };
 
-        // Gelişmiş Varyant Seçimi (Anında Fiyat ve Resim Değişimi)
+        // Yenilenmiş Varyant Seçimi (Görseli Odaklayan Sistem)
         window.selectVariant = (idx) => {
             const productId = document.getElementById('detailProductId').value;
             const product = dbProducts.find(p => p.id === productId);
@@ -1977,35 +2053,49 @@
             const variant = product.variants[idx];
 
             document.querySelectorAll('.var-btn').forEach(b => {
-                b.classList.remove('border-orange-500', 'text-orange-600', 'bg-orange-50');
-                b.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+                b.classList.remove('border-orange-500', 'bg-orange-50');
+                b.classList.add('border-slate-100', 'bg-white');
+                // İç metni koyult
+                const txt = b.querySelector('span');
+                if(txt) txt.classList.replace('text-orange-600', 'text-slate-700');
             });
+            
             const btn = document.getElementById(`varBtn-${idx}`);
-            btn.classList.remove('border-slate-200', 'bg-white', 'text-slate-700');
-            btn.classList.add('border-orange-500', 'text-orange-600', 'bg-orange-50');
+            btn.classList.remove('border-slate-100', 'bg-white');
+            btn.classList.add('border-orange-500', 'bg-orange-50');
+            const txt = btn.querySelector('span');
+            if(txt) txt.classList.replace('text-slate-700', 'text-orange-600');
+            
             document.getElementById('selectedVariantIndex').value = idx;
 
-            // Fiyatı Değiştir (Varyanta özel fiyat varsa onu, yoksa ürünün ana fiyatını gösterir)
             const varPrice = variant.price || product.price;
             document.getElementById('detailPrice').innerText = varPrice.toLocaleString('tr-TR') + ' TL';
             
-            // Varyant seçildiğinde eski indirim etiketini gizler
             document.getElementById('detailOriginalPrice').classList.add('hidden');
             document.getElementById('detailDiscountBadge').classList.add('hidden');
 
-            // Resmi Değiştir (Varyanta özel fotoğraf eklenmişse ana resim o olur)
             if(variant.image) {
                 document.getElementById('detailMainImage').src = variant.image;
             }
         };
 
-        window.changeDetailMedia = (url) => {
+        window.changeDetailMedia = (url, element) => {
             const img = document.getElementById('detailMainImage');
             img.src = url; 
+            
+            // Tüm küçük resimlerin stilini sıfırla
+            document.querySelectorAll('.thumb-item').forEach(el => {
+                el.classList.remove('ring-2', 'ring-orange-500', 'ring-offset-1');
+                el.classList.add('border', 'border-slate-300', 'opacity-60');
+            });
+            
+            // Tıklanana aktif stili ver
+            element.classList.remove('border', 'border-slate-300', 'opacity-60');
+            element.classList.add('ring-2', 'ring-orange-500', 'ring-offset-1');
         };
 
         window.closeProductDetail = () => {
-            window.navigateTo('/', false); // Sadece URL'yi temizle
+            window.navigateTo('/', false);
             document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
             setTimeout(() => { 
                 document.getElementById('productDetailModal').classList.add('hidden'); 
@@ -2070,7 +2160,6 @@
             if(store.isPremium || store.packageType === 'premium') document.getElementById('spPremium').classList.remove('hidden');
             else document.getElementById('spPremium').classList.add('hidden');
 
-            // Sosyal Medya İkonları (SVG Olarak Garantili Gösterim)
             const socialLinksContainer = document.getElementById('spSocialLinks');
             let socialHtml = '';
             
@@ -2189,7 +2278,7 @@
         };
 
         window.closeStoreProfile = () => {
-            window.navigateTo('/', false); // URL'yi köke al, state pushlama
+            window.navigateTo('/', false); 
             document.getElementById('storeProfileModal').classList.add('hidden');
             document.body.style.overflow = 'auto'; 
             
@@ -2380,7 +2469,6 @@
             document.getElementById('cartCountBadge').innerText = totalQty;
             document.getElementById('cartCountBadge').classList.toggle('hidden', totalQty === 0);
             
-            // Mağaza Profili İçerisindeki Sepet Sayısını da Güncelle
             const spCartBadge = document.getElementById('spCartCountBadge');
             if(spCartBadge) {
                 spCartBadge.innerText = totalQty;
@@ -2442,7 +2530,6 @@
                 const buyerUid = auth.currentUser ? auth.currentUser.uid : 'misafir';
                 const buyerEmail = (auth.currentUser && !auth.currentUser.isAnonymous) ? auth.currentUser.email : 'Misafir';
                 
-                // Siparişi veritabanına kaydederken varyant özel fiyatı korunsun
                 const newOrder = {
                     storeId: storeId,
                     storeName: orderData.storeName,
@@ -2453,7 +2540,7 @@
                         product: i.product,
                         variant: i.variant,
                         quantity: i.quantity,
-                        price: i.dynamicPrice || i.product.price // özel fiyat
+                        price: i.dynamicPrice || i.product.price 
                     })), 
                     totalAmount: orderData.total,
                     status: 'pending',
@@ -2472,11 +2559,19 @@
             if(phone.length === 10 && !phone.startsWith('90')) phone = '90' + phone;
 
             let message = `Merhaba *${orderData.storeName}*, Kıbrıs Bazar üzerinden sipariş vermek istiyorum:\n\n`;
+            
+            const currentUrl = window.location.origin; 
+            
             orderData.items.forEach((item, index) => {
                 const iPrice = item.dynamicPrice || item.product.price;
-                message += `${index+1}. ${item.product.title} ${item.variant ? `(Seçim: ${item.variant})` : ''} - ${item.quantity} Adet x ${iPrice} TL\n`;
+                const slugTitle = window.slugify(item.product.title);
+                const slugCat = window.slugify(item.product.category);
+                const productUrl = `${currentUrl}/${slugCat}/${slugTitle}-p-${item.product.id}`;
+
+                message += `${index+1}. ${item.product.title} ${item.variant ? `(Seçim: ${item.variant})` : ''} - ${item.quantity} Adet x ${iPrice.toLocaleString('tr-TR')} TL\n`;
+                message += `🔗 Ürün Linki: ${productUrl}\n\n`; 
             });
-            message += `\n*Ödenecek Tutar: ${orderData.total.toLocaleString('tr-TR')} TL*`;
+            message += `-------------------\n*Ödenecek Tutar: ${orderData.total.toLocaleString('tr-TR')} TL*`;
 
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
             
@@ -2685,69 +2780,6 @@
             } catch (err) {
                 console.error(err);
                 window.showMessage("Hata oluştu.", "error");
-            }
-        };
-
-        window.submitInlineReview = async (e, pId) => {
-            e.preventDefault();
-            const form = e.target;
-            const btn = form.querySelector('button[type="submit"]');
-            btn.disabled = true;
-
-            // SIKIŞTIRILMIŞ GÜVENLİK DUVARI:
-            if (!auth.currentUser || auth.currentUser.isAnonymous) {
-                window.showMessage("Yorum yapmak için Google ile giriş yapmalısınız.", "error");
-                btn.disabled = false;
-                return;
-            }
-
-            const buyerUid = auth.currentUser.uid;
-
-            // 1. Satıcı kendi ürününe yorum yapamaz
-            const product = dbProducts.find(p => p.id === pId);
-            if (product) {
-                const storeDoc = dbStores.find(s => s.id === product.storeId);
-                if (storeDoc && storeDoc.ownerUid === buyerUid) {
-                    window.showMessage("Kendi mağazanıza ait ürünleri değerlendiremezsiniz.", "error");
-                    form.innerHTML = `<div class="text-[10px] font-bold text-rose-500 bg-rose-50 border border-rose-100 p-3 rounded-lg text-center">Kendi ürününüze yorum yapamazsınız.</div>`;
-                    return;
-                }
-            }
-
-            // 2. Bir kullanıcı aynı ürüne sadece 1 yorum yapabilir
-            const rq = query(reviewsRef, where("productId", "==", pId), where("userId", "==", buyerUid));
-            const checkSnap = await getDocs(rq);
-            
-            if(!checkSnap.empty) {
-                window.showMessage("Bu ürün için daha önce değerlendirme yaptınız. Her ürüne 1 yorum yapılabilir.", "error");
-                form.innerHTML = `<div class="text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 p-3 rounded-lg text-center">Bu ürün değerlendirildi.</div>`;
-                return;
-            }
-
-            const rating = parseInt(form.querySelector('select').value);
-            const comment = form.querySelector('textarea').value; 
-
-            try {
-                const userName = auth.currentUser.email ? auth.currentUser.email.split('@')[0] : 'User';
-                const reviewData = {
-                    productId: pId,
-                    userId: buyerUid,
-                    userName: userName,
-                    rating: rating,
-                    comment: comment,
-                    status: 'pending',
-                    createdAt: Date.now()
-                };
-                
-                await addDoc(reviewsRef, reviewData);
-                window.showMessage("Yorumunuz onaya gönderildi.");
-                
-                form.innerHTML = `<div class="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 p-3 rounded-lg text-center flex flex-col items-center gap-1"><i data-lucide="check-circle" class="w-5 h-5"></i> Değerlendirmeniz onaya gönderildi</div>`;
-                lucide.createIcons();
-            } catch (err) {
-                console.error(err);
-                window.showMessage("Hata oluştu.", "error");
-                btn.disabled = false;
             }
         };
 
