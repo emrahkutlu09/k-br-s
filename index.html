@@ -630,6 +630,8 @@
         let activeCategory = '';
         let activeDistrict = '';
         let spMapInstance = null; 
+        let spActiveCategory = '';
+        let spStoreProducts = [];
         
         window.slugify = (text) => {
             if(!text) return 'urun';
@@ -2092,10 +2094,11 @@
         window.closeProductDetail = () => {
             window.navigateTo('', false); 
             document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { document.getElementById('productDetailModal').classList.add('hidden'); }, 300);
-            
-            const seoSection = document.getElementById('homeSeoSection');
-            if(seoSection && !window.location.pathname.includes('/magaza/')) seoSection.classList.remove('hidden');
+            setTimeout(() => { 
+                document.getElementById('productDetailModal').classList.add('hidden'); 
+                const seoSection = document.getElementById('homeSeoSection');
+                if(seoSection && !window.location.hash.includes('/magaza/')) seoSection.classList.remove('hidden');
+            }, 300);
         };
 
         window.openStoreProfileFromDetail = () => {
