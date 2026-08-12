@@ -576,7 +576,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, signInWithRedirect, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, query, where, getDocs, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -1237,15 +1237,11 @@
         window.loginWithGoogle = async (e) => {
             if(e && typeof e.stopPropagation === 'function') e.stopPropagation(); 
             try { 
-                await signInWithPopup(auth, googleProvider); 
-                window.showMessage("Giriş başarılı."); 
-                document.getElementById('userDropdown').classList.add('hidden'); 
-                isUserMenuOpen = false; 
-                if (typeof updateCartUI === 'function') updateCartUI();
+                await signInWithRedirect(auth, googleProvider); 
             } 
             catch(err) { 
                 console.error("Firebase Giriş Hatası:", err);
-                window.showMessage("Giriş iptal edildi veya başarısız oldu.", "error"); 
+                window.showMessage("Giriş işlemi başlatılamadı.", "error"); 
             }
         };
 
