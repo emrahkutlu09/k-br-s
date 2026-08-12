@@ -143,7 +143,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16 gap-4">
                     
-                    <div class="flex items-center gap-3 cursor-pointer" onclick="window.navigateTo('')">
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="window.navigateTo('/')">
                         <img id="navLogo" src="" class="h-9 object-contain hidden" alt="Logo">
                         <span id="navBrandName" class="text-xl sm:text-2xl font-black tracking-tighter text-slate-900">KIBRIS<span class="text-orange-500">BAZAR</span></span>
                     </div>
@@ -497,7 +497,7 @@
                      <button onclick="window.closeStoreProfile()" class="flex items-center gap-2 text-slate-600 hover:text-orange-500 font-bold text-sm transition bg-white py-1.5 px-3 rounded-lg border border-slate-200 hover:border-orange-200"><i data-lucide="arrow-left" class="w-4 h-4 rtl:rotate-180"></i> <span class="hidden sm:inline" data-i18n="go_back">Geri Dön</span></button>
                  </div>
                  
-                 <div class="w-1/3 flex justify-center items-center cursor-pointer" onclick="window.navigateTo('')">
+                 <div class="w-1/3 flex justify-center items-center cursor-pointer" onclick="window.navigateTo('/')">
                      <span class="text-xl sm:text-2xl font-black tracking-tighter text-slate-900">KIBRIS<span class="text-orange-500">BAZAR</span></span>
                  </div>
                  
@@ -627,6 +627,8 @@
         window.slugify = (text) => {
             if(!text) return 'urun';
             return text.toString().toLowerCase()
+                .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+                .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
                 .replace(/\s+/g, '-')
                 .replace(/[^\w\-]+/g, '')
                 .replace(/\-\-+/g, '-')
@@ -634,28 +636,50 @@
                 .replace(/-+$/, '');
         };
 
-        // KESİN ÇÖZÜM: 404 HATASINI ÖNLEMEK İÇİN YALNIZCA HASH (#) KULLANAN ROUTING SİSTEMİ
-        window.navigateTo = (url, updateState = true) => {
+        // 🚀 SEO İÇİN YENİ HTML5 HISTORY API YÖNLENDİRME SİSTEMİ 🚀
+        window.navigateTo = (path, updateState = true) => {
             if (updateState) {
-                window.location.hash = url;
+                window.history.pushState({}, '', path);
             }
             window.handleRoute();
         };
 
         window.handleRoute = () => {
-            const hash = window.location.hash;
+            const path = window.location.pathname;
+            const hash = window.location.hash; // Eski URL'lerden (hash) gelenleri desteklemek için
             
-            if (hash.startsWith('#/magaza/')) {
-                const storeId = hash.replace('#/magaza/', '');
+            let targetType = null;
+            let targetId = null;
+
+            // URL Ayrıştırma Mantığı
+            if (path.includes('/magaza/')) {
+                targetType = 'magaza';
+                const cleanPath = path.split('/magaza/')[1].replace(/\/$/, '');
+                const parts = cleanPath.split('-');
+                targetId = parts[parts.length - 1]; // Slug sonundaki ID
+            } else if (path.includes('/urun/')) {
+                targetType = 'urun';
+                const cleanPath = path.split('/urun/')[1].replace(/\/$/, '');
+                const parts = cleanPath.split('-');
+                targetId = parts[parts.length - 1];
+            } else if (hash.startsWith('#/magaza/')) {
+                targetType = 'magaza';
+                targetId = hash.replace('#/magaza/', '').split('-').pop();
+            } else if (hash.startsWith('#/urun/')) {
+                targetType = 'urun';
+                targetId = hash.replace('#/urun/', '').split('-').pop();
+            }
+            
+            // Ekran Yönlendirmeleri
+            if (targetType === 'magaza' && targetId) {
                 if(!document.getElementById('productDetailModal').classList.contains('hidden')) {
                     document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
                     setTimeout(() => document.getElementById('productDetailModal').classList.add('hidden'), 300);
                 }
-                window.openStoreProfile(storeId, false);
+                window.openStoreProfile(targetId, false);
             } 
-            else if (hash.startsWith('#/urun/')) {
-                const productId = hash.replace('#/urun/', '');
-                window.openProductDetail(productId, false);
+            else if (targetType === 'urun' && targetId) {
+                window.openProductDetail(targetId, false);
             } 
             else {
                 if(!document.getElementById('productDetailModal').classList.contains('hidden')) {
@@ -673,11 +697,11 @@
                 window.renderHome(document.getElementById('searchInput').value);
             }
             
-            applyTranslations();
+            applyTranslations(); // Meta etiketleri ve çevirileri güncelle
         };
 
-        // Geri/İleri tuşlarına basıldığında sayfanın sorunsuz değişmesini sağlar
-        window.addEventListener('hashchange', () => {
+        // Geri/İleri tuşlarına basıldığında sayfanın History API ile sorunsuz değişmesini sağlar
+        window.addEventListener('popstate', () => {
             window.handleRoute();
         });
 
@@ -1163,23 +1187,25 @@
                 if (tObj[key]) el.placeholder = tObj[key];
             });
 
-            // META ETİKETLERİNİ DİNAMİK OLARAK GÜNCELLE
-            const metaDesc = document.getElementById('metaDesc');
-            const ogTitle = document.getElementById('ogTitle');
-            const ogDesc = document.getElementById('ogDesc');
-            const twitterTitle = document.getElementById('twitterTitle');
-            const twitterDesc = document.getElementById('twitterDesc');
-
-            if(metaDesc && tObj.seo_desc) metaDesc.content = tObj.seo_desc;
-            if(ogTitle && tObj.seo_title) ogTitle.content = tObj.seo_title;
-            if(ogDesc && tObj.seo_desc) ogDesc.content = tObj.seo_desc;
-            if(twitterTitle && tObj.seo_title) twitterTitle.content = tObj.seo_title;
-            if(twitterDesc && tObj.seo_desc) twitterDesc.content = tObj.seo_desc;
-
+            // NORMAL SAYFALAR İÇİN META SIFIRLAMA
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
+            
+            // Eğer ürün veya mağaza detayındaysak onların kendi içinde ayarlanıyor, dokunma!
             if(!document.getElementById('productDetailModal').classList.contains('hidden') || !document.getElementById('storeProfileModal').classList.contains('hidden')) {
+                // Modallar kendi SEO meta kodunu kendisi yönetiyor
             } else {
                 document.title = (tObj.seo_title) ? tObj.seo_title : `${pName} | ${tObj.homeTitle}`;
+                const metaDesc = document.getElementById('metaDesc');
+                const ogTitle = document.getElementById('ogTitle');
+                const ogDesc = document.getElementById('ogDesc');
+                const twitterTitle = document.getElementById('twitterTitle');
+                const twitterDesc = document.getElementById('twitterDesc');
+
+                if(metaDesc && tObj.seo_desc) metaDesc.content = tObj.seo_desc;
+                if(ogTitle && tObj.seo_title) ogTitle.content = tObj.seo_title;
+                if(ogDesc && tObj.seo_desc) ogDesc.content = tObj.seo_desc;
+                if(twitterTitle && tObj.seo_title) twitterTitle.content = tObj.seo_title;
+                if(twitterDesc && tObj.seo_desc) twitterDesc.content = tObj.seo_desc;
             }
 
             if(typeof window.renderCategories === 'function') window.renderCategories();
@@ -1280,7 +1306,6 @@
             }
         }
 
-        // Fisher-Yates Karıştırma (Shuffle) Algoritması
         const shuffleArray = (array) => {
             let arr = [...array];
             for (let i = arr.length - 1; i > 0; i--) {
@@ -1704,14 +1729,28 @@
             const product = dbProducts.find(p => p.id === id);
             if(!product) return;
             
+            // SEO UYUMLU URL (SLUG + ID)
             if (updateState) {
-                // 404 hatasını önlemek için HASH yapısına geçildi
-                window.navigateTo('#/urun/' + id);
+                const slug = window.slugify(product.title);
+                window.navigateTo(`/urun/${slug}-${id}`);
                 return;
             }
 
+            // 🚀 DİNAMİK SEO META ETİKETLERİ GÜNCELLEMESİ 🚀
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
-            document.title = `${product.title} - ${product.storeName} | ${pName}`;
+            const pageTitle = `${product.title} - ${product.storeName} | ${pName}`;
+            const pageDesc = product.description ? product.description.substring(0, 160).replace(/\n/g, ' ') : `${product.title} fırsatını ${product.storeName} mağazasından inceleyin.`;
+            const mainImg = (product.images && product.images.length > 0) ? product.images[0] : '';
+
+            document.title = pageTitle;
+            document.getElementById('metaDesc').content = pageDesc;
+            document.getElementById('ogTitle').content = pageTitle;
+            document.getElementById('ogDesc').content = pageDesc;
+            if (mainImg) document.querySelector('meta[property="og:image"]').content = mainImg;
+            document.getElementById('twitterTitle').content = pageTitle;
+            document.getElementById('twitterDesc').content = pageDesc;
+            if (mainImg) document.querySelector('meta[name="twitter:image"]').content = mainImg;
+            // 🚀 ----------------------------------------- 🚀
             
             const seoSection = document.getElementById('homeSeoSection');
             if(seoSection) seoSection.classList.add('hidden');
@@ -1720,7 +1759,6 @@
             document.getElementById('detailMainImage').src = images[0];
             document.getElementById('detailMainImage').classList.remove('hidden');
             
-            // Alt Galeriler - Tam Görünür ve Kaydırmalı
             let thumbHtml = '';
             images.forEach(imgUrl => { 
                 thumbHtml += `<div onclick="window.changeDetailMedia('${imgUrl}')" class="snap-start shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden cursor-pointer border-2 border-slate-200 hover:border-orange-400 transition-colors shadow-sm bg-white"><img src="${imgUrl}" class="w-full h-full object-cover"/></div>`; 
@@ -1729,14 +1767,12 @@
 
             document.getElementById('detailTitle').innerText = product.title;
             
-            // Açıklama Metni (Her zaman açık, okunaklı kutu)
             const descStr = product.description ? product.description.trim() : "";
             const descContainer = document.getElementById('detailDescContainer');
             if(descStr !== "") {
                 document.getElementById('detailDescription').innerText = descStr;
                 descContainer.classList.remove('hidden');
             } else {
-                // Açıklama yoksa nezaketen bilgi ver veya kutuyu gizle
                 document.getElementById('detailDescription').innerHTML = "<i>Bu ürün için açıklama belirtilmemiş.</i>";
                 descContainer.classList.remove('hidden');
             }
@@ -1775,12 +1811,10 @@
                 document.getElementById('detailStoreLogoIcon').classList.remove('hidden');
             }
 
-            // Gelişmiş Varyant İşlemleri (Çift İsimleri Engeller, Yuvarlak İkon Yapar)
             const variantContainer = document.getElementById('detailVariantContainer');
             if (product.variants && product.variants.length > 0) {
                 const groups = {};
                 product.variants.forEach((v, idx) => {
-                    // KESİN ÇÖZÜM: Boşlukları sil (trim) ve büyük harf yap.
                     const rawGroup = v.group || 'Seçenek';
                     const g = rawGroup.trim().toUpperCase(); 
                     if(!groups[g]) groups[g] = [];
@@ -1796,7 +1830,6 @@
                     vars.forEach(v => {
                         const isOut = v.stock <= 0;
                         const activeBorder = "border-slate-200"; 
-                        // Resim varsa yuvarlak kutucuk, resim yoksa normal buton tasarımı
                         if (v.image) {
                             varHtml += `
                             <div onclick="${isOut ? '' : `window.selectVariant(${v.originalIndex})`}" id="varBtn-${v.originalIndex}" class="var-btn flex flex-col items-center gap-2 cursor-pointer ${isOut ? 'opacity-50 cursor-not-allowed' : 'group'} w-16">
@@ -1979,7 +2012,6 @@
             }
         };
 
-        // Gelişmiş Varyant Seçimi ve Stillemesi
         window.selectVariant = (idx) => {
             const productId = document.getElementById('detailProductId').value;
             const product = dbProducts.find(p => p.id === productId);
@@ -2027,12 +2059,12 @@
         };
 
         window.closeProductDetail = () => {
-            window.navigateTo('', false); 
+            window.navigateTo('/', false); 
             document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
             setTimeout(() => { 
                 document.getElementById('productDetailModal').classList.add('hidden'); 
                 const seoSection = document.getElementById('homeSeoSection');
-                if(seoSection && !window.location.hash.includes('/magaza/')) seoSection.classList.remove('hidden');
+                if(seoSection && !window.location.pathname.includes('/magaza/')) seoSection.classList.remove('hidden');
             }, 300);
         };
 
@@ -2055,13 +2087,27 @@
             const store = dbStores.find(s => s.id === storeId);
             if(!store) return;
 
+            // SEO UYUMLU URL
             if (updateState) {
-                window.navigateTo('#/magaza/' + storeId);
+                const slug = window.slugify(store.name);
+                window.navigateTo(`/magaza/${slug}-${storeId}`);
                 return;
             }
 
+            // 🚀 DİNAMİK SEO META ETİKETLERİ 🚀
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
-            document.title = `${store.name} | ${pName}`;
+            const pageTitle = `${store.name} Mağazası | ${pName}`;
+            const pageDesc = `${store.name} mağazasının tüm ürünlerini inceleyin ve komisyonsuz alışveriş yapın.`;
+            
+            document.title = pageTitle;
+            document.getElementById('metaDesc').content = pageDesc;
+            document.getElementById('ogTitle').content = pageTitle;
+            document.getElementById('ogDesc').content = pageDesc;
+            if (store.logoUrl) document.querySelector('meta[property="og:image"]').content = store.logoUrl;
+            document.getElementById('twitterTitle').content = pageTitle;
+            document.getElementById('twitterDesc').content = pageDesc;
+            if (store.logoUrl) document.querySelector('meta[name="twitter:image"]').content = store.logoUrl;
+            // 🚀 ------------------------ 🚀
 
             const seoSection = document.getElementById('homeSeoSection');
             if(seoSection) seoSection.classList.add('hidden');
@@ -2208,12 +2254,12 @@
         };
 
         window.closeStoreProfile = () => {
-            window.navigateTo('', false); 
+            window.navigateTo('/', false); 
             document.getElementById('storeProfileModal').classList.add('hidden');
             document.body.style.overflow = 'auto'; 
             
             const seoSection = document.getElementById('homeSeoSection');
-            if(seoSection && !window.location.hash.includes('/urun/')) seoSection.classList.remove('hidden');
+            if(seoSection && !window.location.pathname.includes('/urun/')) seoSection.classList.remove('hidden');
         };
 
         window.renderStoreProfileCategories = () => {
@@ -2492,12 +2538,12 @@
             orderData.items.forEach((item, index) => {
                 const iPrice = item.dynamicPrice || item.product.price;
                 
-                // Müşterinin bulunduğu platformun adresini alarak tam ürün linki oluşturur
-                const baseUrl = window.location.origin + window.location.pathname;
-                const productUrl = `${baseUrl}#/urun/${item.product.id}`;
+                const baseUrl = window.location.origin;
+                const slug = window.slugify(item.product.title);
+                const productUrl = `${baseUrl}/urun/${slug}-${item.product.id}`;
                 
                 message += `${index+1}. ${item.product.title} ${item.variant ? `(Seçim: ${item.variant})` : ''} - ${item.quantity} Adet x ${iPrice} TL\n`;
-                message += `🔗 Link: ${productUrl}\n\n`; // Ürün linki eklendi
+                message += `🔗 Link: ${productUrl}\n\n`;
             });
             message += `*Ödenecek Tutar: ${orderData.total.toLocaleString('tr-TR')} TL*`;
 
