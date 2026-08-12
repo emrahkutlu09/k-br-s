@@ -2091,6 +2091,16 @@
 
         window.closeProductDetail = () => {
             window.navigateTo('', false); 
+            document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { document.getElementById('productDetailModal').classList.add('hidden'); }, 300);
+            
+            const seoSection = document.getElementById('homeSeoSection');
+            if(seoSection && !window.location.pathname.includes('/magaza/')) seoSection.classList.remove('hidden');
+        };
+
+        window.openStoreProfileFromDetail = () => {
+            const storeId = document.getElementById('detailStoreIdHidden').value;
+            if (storeId) {
                 window.closeProductDetail();
                 setTimeout(() => { 
                     window.openStoreProfile(storeId); 
