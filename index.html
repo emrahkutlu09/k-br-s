@@ -583,7 +583,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, query, where, getDocs, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -597,6 +597,12 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        
+        // SADECE GOOGLE GİRİŞİNİ KALICI YAPMAK İÇİN EKLENEN KOD
+        setPersistence(auth, browserLocalPersistence).catch((error) => {
+            console.error("Kalıcı oturum ayarlanırken hata:", error);
+        });
+        
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
 
@@ -1243,15 +1249,25 @@
             setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-2'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             const btnText = document.getElementById('navUserText');
-            if (user && !user.isAnonymous) {
-                btnText.setAttribute('data-i18n', 'my_profile');
-                btnText.innerText = window.t('my_profile') || "Profilim";
-                document.getElementById('unauthMenu').classList.add('hidden');
-                document.getElementById('authMenu').classList.remove('hidden');
-                document.getElementById('dropdownEmail').innerText = user.email;
+            if (user) {
+                if (!user.isAnonymous) {
+                    btnText.setAttribute('data-i18n', 'my_profile');
+                    btnText.innerText = window.t('my_profile') || "Profilim";
+                    document.getElementById('unauthMenu').classList.add('hidden');
+                    document.getElementById('authMenu').classList.remove('hidden');
+                    document.getElementById('dropdownEmail').innerText = user.email;
+                } else {
+                    btnText.removeAttribute('data-i18n');
+                    btnText.innerText = "Giriş Yap";
+                    document.getElementById('unauthMenu').classList.remove('hidden');
+                    document.getElementById('authMenu').classList.add('hidden');
+                }
             } else {
+                // Oturum tamamen kapalıysa anonim girişi burada yap (sayfa yenilenmesinde google oturumunu ezmemek için)
+                try { await signInAnonymously(auth); } catch(e) { console.warn("Anonim giriş kapalı."); }
+                
                 btnText.removeAttribute('data-i18n');
                 btnText.innerText = "Giriş Yap";
                 document.getElementById('unauthMenu').classList.remove('hidden');
@@ -1327,7 +1343,10 @@
         async function initApp() {
             lucide.createIcons();
             updateCartUI();
-            if(!auth.currentUser) { try { await signInAnonymously(auth); } catch (error) { console.warn("Anonim giriş kapalı."); } }
+            
+            // DİKKAT: Eski kodda yer alan hemen anonim girişi silinmiştir.
+            // Sayfa yenilendiğinde "auth.currentUser" null döndüğü an Google oturumunu eziyordu.
+            // Bu görev artık yukarıdaki "onAuthStateChanged" observer'ına verilmiştir.
 
             onSnapshot(settingsRef, (docSnap) => {
                 if (docSnap.exists()) {
