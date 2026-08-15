@@ -1710,18 +1710,9 @@
                         parsedPrice = parseFloat(cleanPrice) || 0;
                     }
                     
-                    let matchedCategory = 'Ev, Mobilya & Yaşam';
-                    if (kategoriKey && row[kategoriKey]) {
-                        const csvCatText = row[kategoriKey].toString().toLocaleLowerCase('tr-TR').trim();
-                        if (csvCatText) {
-                            for (const dbCat of dbCategories) {
-                                const dbCatLower = dbCat.name.toLocaleLowerCase('tr-TR').trim();
-                                if (dbCatLower.includes(csvCatText) || csvCatText.includes(dbCatLower)) {
-                                    matchedCategory = dbCat.name;
-                                    break; 
-                                }
-                            }
-                        }
+                    let matchedCategory = 'Diğer'; 
+                    if (kategoriKey && row[kategoriKey] && row[kategoriKey].toString().trim() !== '') {
+                        matchedCategory = row[kategoriKey].toString().trim();
                     }
 
                     const productData = {
