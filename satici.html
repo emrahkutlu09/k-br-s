@@ -1048,7 +1048,7 @@
                 html += `
                     <div class="border border-slate-200 rounded-3xl p-3 relative group bg-white shadow-sm hover:shadow-xl hover:border-orange-200 transition-all flex flex-col">
                         <div class="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-3 bg-slate-100">
-                            <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Product Image">
+                            <img src="${img}" onerror="this.onerror=null; this.src='https://placehold.co/400x500/cbd5e1/475569?text=Gorsel+Yuklenemedi';" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Product Image">
                         </div>
                         <div class="flex-1 px-1">
                             <div class="text-[10px] font-bold text-slate-500 bg-slate-100 inline-block px-2 py-1 rounded-lg mb-2 line-clamp-1" title="${p.category}">${p.category}</div>
@@ -1081,7 +1081,7 @@
             row.id = `var-${variantCount}`;
             
             const imgPreviewHtml = imageUrl 
-                ? `<img src="${imageUrl}" class="w-full h-full object-cover rounded-lg">`
+                ? `<img src="${imageUrl}" onerror="this.onerror=null; this.src='https://placehold.co/100x100/cbd5e1/475569?text=X';" class="w-full h-full object-cover rounded-lg">`
                 : `<i data-lucide="image" class="w-5 h-5"></i>`;
 
             row.innerHTML = `
@@ -1375,172 +1375,6 @@
             });
         };
 
-        function renderOrders() {
-            const tbody = document.getElementById('ordersTableBody');
-            if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-400 font-bold bg-white">Sipariş bulunmuyor.</td></tr>'; return; }
-            
-            const sortedOrders = [...myOrders].sort((a,b) => b.createdAt - a.createdAt);
-            let html = '';
-            
-            sortedOrders.forEach(o => {
-                const date = new Date(o.createdAt).toLocaleDateString('tr-TR', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
-                let statusHtml = '';
-                if(o.status === 'pending') statusHtml = '<span class="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="clock" class="w-3 h-3 inline mb-0.5"></i> Yeni</span>';
-                else if(o.status === 'processing') statusHtml = '<span class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="package" class="w-3 h-3 inline mb-0.5"></i> Hazırlanıyor</span>';
-                else if(o.status === 'shipped') statusHtml = '<span class="bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="truck" class="w-3 h-3 inline mb-0.5"></i> Kargoda</span>';
-                else if(o.status === 'delivered') statusHtml = '<span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="check-circle" class="w-3 h-3 inline mb-0.5"></i> Teslim Edildi</span>';
-                else if(o.status === 'cancelled') statusHtml = '<span class="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider"><i data-lucide="x-circle" class="w-3 h-3 inline mb-0.5"></i> İptal</span>';
-
-                let itemsHtml = o.items.map(i => {
-                    const pId = i.product?.id || i.productId;
-                    const pTitle = i.product?.title || i.title;
-                    const slug = window.slugify(pTitle);
-                    const linkHtml = pId ? `<a href="index.html#/urun/${slug}-${pId}" target="_blank" class="text-blue-500 hover:text-blue-700 inline-flex items-center ml-1 align-middle" title="Ürüne Git"><i data-lucide="external-link" class="w-3 h-3"></i></a>` : '';
-                    return `<div class="mb-1 last:mb-0"><span class="font-black text-slate-800">${i.quantity || i.qty}x</span> ${pTitle} ${i.variant ? `<span class="text-[10px] text-purple-600">(${i.variant})</span>` : ''}${linkHtml}</div>`;
-                }).join('');
-
-                html += `
-                    <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="px-6 py-4 font-mono text-xs font-bold text-slate-500">#${o.id.substring(0,6).toUpperCase()}</td>
-                        <td class="px-6 py-4"><div class="text-sm font-black text-slate-800">${o.customerName}</div><div class="text-[10px] font-bold text-slate-400 mt-1">${date}</div></td>
-                        <td class="px-6 py-4 text-xs text-slate-600 max-w-[200px] truncate whitespace-normal leading-relaxed">${itemsHtml}</td>
-                        <td class="px-6 py-4 font-black text-orange-600 text-base">${o.totalAmount.toLocaleString('tr-TR')} TL</td>
-                        <td class="px-6 py-4">${statusHtml}</td>
-                        <td class="px-6 py-4 text-right">
-                            <select onchange="window.updateOrderStatus('${o.id}', this.value)" class="text-xs font-bold bg-white border border-slate-200 text-slate-700 rounded-lg p-2 outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer shadow-sm">
-                                <option value="" disabled selected>Durum Değiştir</option>
-                                <option value="processing">Hazırlanıyor</option>
-                                <option value="shipped">Kargoda</option>
-                                <option value="delivered">Teslim Edildi</option>
-                                <option value="cancelled">İptal Et</option>
-                            </select>
-                        </td>
-                    </tr>
-                `;
-            });
-            tbody.innerHTML = html;
-            lucide.createIcons();
-        }
-
-        window.updateOrderStatus = async (orderId, newStatus) => {
-            try { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'orders', orderId), { status: newStatus }); window.showMessage("Sipariş durumu başarıyla güncellendi."); }
-            catch(err) { window.showMessage("Durum güncellenirken hata oluştu.", "error"); }
-        };
-
-        window.createMockOrder = async () => {
-            if(myProducts.length === 0) { window.showMessage("Önce ürün eklemelisiniz.", "error"); return; }
-            const p = myProducts[0];
-            const mock = {
-                storeId: myStore.id, customerName: "Test Müşteri", customerPhone: "05330000000",
-                items: [{title: p.title, quantity: 1, price: p.price}], totalAmount: p.price,
-                status: 'pending', createdAt: Date.now()
-            };
-            await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'orders')), mock);
-            window.showMessage("Test siparişi oluşturuldu.");
-        };
-
-        function populateSettingsForm() {
-            document.getElementById('settingsName').value = myStore.name || '';
-            document.getElementById('settingsWhatsapp').value = myStore.whatsapp || '';
-            document.getElementById('settingsDistrict').value = myStore.district || 'Girne';
-            
-            document.getElementById('settingsWebsite').value = myStore.website || '';
-            document.getElementById('settingsInstagram').value = myStore.instagram || '';
-            document.getElementById('settingsFacebook').value = myStore.facebook || '';
-
-            if(myStore.coverUrl) {
-                document.getElementById('settingsCoverPreview').src = myStore.coverUrl;
-                document.getElementById('settingsCoverPreview').classList.remove('hidden');
-            }
-            if(myStore.logoUrl) {
-                document.getElementById('settingsLogoPreview').src = myStore.logoUrl;
-                document.getElementById('settingsLogoPreview').classList.remove('hidden');
-            }
-        }
-
-        window.previewImage = (input, previewId) => {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = document.getElementById(previewId);
-                    img.src = e.target.result;
-                    img.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-
-        window.saveStoreSettings = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnSaveSettings');
-            
-            const newStoreName = document.getElementById('settingsName').value.trim();
-            
-            // İsim değiştiyse benzersizlik kontrolü yap
-            if (newStoreName !== myStore.name) {
-                btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Kontrol Ediliyor...`;
-                const isAvailable = await checkStoreNameAvailability(newStoreName);
-                if (!isAvailable) {
-                    window.showMessage(`"${newStoreName}" mağaza adı başka bir işletme tarafından kullanılıyor.`, "error");
-                    btn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> Değişiklikleri Kaydet`;
-                    btn.disabled = false;
-                    lucide.createIcons();
-                    return;
-                }
-            }
-
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Kaydediliyor...`;
-            btn.disabled = true;
-
-            try {
-                let coverUrl = myStore.coverUrl || null;
-                const coverInputEl = document.getElementById('settingsCoverInput');
-                if (coverInputEl.files.length > 0) {
-                    coverUrl = await uploadFileToCloudinary(coverInputEl.files[0], 'image');
-                }
-
-                let logoUrl = myStore.logoUrl || null;
-                const logoInputEl = document.getElementById('settingsLogoInput');
-                if (logoInputEl.files.length > 0) {
-                    logoUrl = await uploadFileToCloudinary(logoInputEl.files[0], 'image');
-                }
-
-                const updates = {
-                    name: newStoreName,
-                    whatsapp: document.getElementById('settingsWhatsapp').value,
-                    district: document.getElementById('settingsDistrict').value,
-                    lat: parseFloat(document.getElementById('settingsLat').value),
-                    lng: parseFloat(document.getElementById('settingsLng').value),
-                    website: document.getElementById('settingsWebsite').value.trim(),
-                    instagram: document.getElementById('settingsInstagram').value.replace('@', '').trim(),
-                    facebook: document.getElementById('settingsFacebook').value.trim(),
-                    coverUrl: coverUrl,
-                    logoUrl: logoUrl
-                };
-
-                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), updates);
-                window.showMessage("Mağaza ayarları ve konumunuz başarıyla kaydedildi.");
-                
-                if(updates.name !== myStore.name || updates.district !== myStore.district || updates.whatsapp !== myStore.whatsapp) {
-                    const batch = writeBatch(db);
-                    myProducts.forEach(p => {
-                        const pRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id);
-                        batch.update(pRef, { storeName: updates.name, district: updates.district, storeWhatsapp: updates.whatsapp });
-                    });
-                    await batch.commit();
-                }
-
-            } catch (err) {
-                console.error(err);
-                window.showMessage("Ayarlar kaydedilirken hata oluştu.", "error");
-            }
-
-            btn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> Değişiklikleri Kaydet`;
-            btn.disabled = false;
-            lucide.createIcons();
-        };
-
         window.openBulkPriceModal = () => { document.getElementById('bulkPriceModal').classList.remove('hidden'); updateCategoryDropdowns(); };
         window.executeBulkPriceUpdate = async (e) => {
             e.preventDefault();
@@ -1710,6 +1544,7 @@
                         parsedPrice = parseFloat(cleanPrice) || 0;
                     }
                     
+                    // GÜNCELLEME: Eşleştirme kaldırıldı. Kategori ne yazılmışsa o alınıyor. Boşsa "Diğer" atanıyor.
                     let matchedCategory = 'Diğer'; 
                     if (kategoriKey && row[kategoriKey] && row[kategoriKey].toString().trim() !== '') {
                         matchedCategory = row[kategoriKey].toString().trim();
