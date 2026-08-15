@@ -1625,38 +1625,6 @@
         };
 
         async function processImportedData(data, rawHeaders, headers, event) {
-            let baslikIndex = -1; let fiyatIndex = -1; let kategoriIndex = -1; let aciklamaIndex = -1;
-            const gorselSutunlari = [];
-
-            const cleanHeaders = rawHeaders.map(h => h.toString().toLowerCase().trim().replace(/['"]/g, '').replace(/^\ufeff/, ''));
-
-            cleanHeaders.forEach((k, index) => {
-                if (baslikIndex === -1 && (k.includes('baslik') || k.includes('başlık') || k.includes('title') || k.includes('name') || k === 'ürün adı')) {
-                    baslikIndex = index;
-                } else if (fiyatIndex === -1 && (k.includes('fiyat') || k.includes('price') || k.includes('sale'))) {
-                    fiyatIndex = index;
-                } else if (kategoriIndex === -1 && (k.includes('kategori') || k.includes('category'))) {
-                    kategoriIndex = index;
-                } else if (aciklamaIndex === -1 && (k.includes('aciklama') || k.includes('açıklama') || k.includes('desc') || k.includes('detay'))) {
-                    aciklamaIndex = index;
-                }
-                
-                if (k.includes('gorsel') || k.includes('görsel') || k.includes('image') || k.includes('resim') || k.includes('foto') || k.includes('src')) {
-                    gorselSutunlari.push(rawHeaders[index]);
-                }
-            });
-
-            if (baslikIndex === -1) {
-                window.showMessage("Format hatası: Ürün başlığı (baslik) sütunu bulunamadı.", "error");
-                event.target.value = ""; 
-                return;
-            }
-
-            const baslikKey = rawHeaders[baslikIndex];
-            const fiyatKey = fiyatIndex !== -1 ? rawHeaders[fiyatIndex] : null;
-            const kategoriKey = kategoriIndex !== -1 ? rawHeaders[kategoriIndex] : null;
-            const aciklamaKey = aciklamaIndex !== -1 ? rawHeaders[aciklamaIndex] : null;
-
             const pkg = myStore.packageType || 'free';
             const limit = pkg === 'free' ? 20 : (pkg === 'standard' ? 50 : 9999);
             const imageLimit = pkg === 'free' ? 1 : (pkg === 'standard' ? 3 : 999);
@@ -1677,58 +1645,68 @@
                 let addedCount = 0;
 
                 for (const row of data) {
-                    if (!row[baslikKey] || row[baslikKey].toString().trim() === '') continue; 
-                    
-                    const newDocRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products'));
-                    
-                    let images = [];
-                    gorselSutunlari.forEach(colKey => {
-                        if (row[colKey]) {
-                            const rawImgStr = row[colKey].toString().trim();
-                            const splitImages = rawImgStr.split(/[,;|\n]/);
-                            splitImages.forEach(imgUrl => {
-                                const cleanUrl = imgUrl.trim();
-                                if (cleanUrl !== '' && !cleanUrl.includes('BASE64') && cleanUrl.length > 5) {
-                                    images.push(cleanUrl);
+                    let extractedTitle = '';
+                    let extractedPrice = 0;
+                    let extractedCategory = 'Diğer';
+                    let extractedDesc = '';
+                    let extractedImages = [];
+
+                    // Sütun sıralarına güvenmek yerine satırdaki TÜM HÜCRELERİ dinamik tarıyoruz
+                    for (let key in row) {
+                        const cleanKey = key.toString().toLowerCase().trim().replace(/['"]/g, '').replace(/^\ufeff/, '');
+                        const cellValue = row[key] ? row[key].toString().trim() : '';
+
+                        if (cleanKey.includes('baslik') || cleanKey.includes('başlık') || cleanKey.includes('title') || cleanKey.includes('name') || cleanKey === 'ürün adı') {
+                            extractedTitle = cellValue;
+                        } else if (cleanKey.includes('fiyat') || cleanKey.includes('price') || cleanKey.includes('sale')) {
+                            if(cellValue !== '') {
+                                let cleanPrice = cellValue.replace(/[^0-9.,]/g, '');
+                                if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
+                                    cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
+                                } else if (cleanPrice.includes(',')) {
+                                    cleanPrice = cleanPrice.replace(',', '.');
                                 }
-                            });
+                                extractedPrice = parseFloat(cleanPrice) || 0;
+                            }
+                        } else if (cleanKey.includes('kategori') || cleanKey.includes('category')) {
+                            // Kategori hücresi boş değilse, YAZILAN KELİMEYİ BİREBİR AL. (Fuzzy Match Kaldırıldı)
+                            if (cellValue !== '') {
+                                extractedCategory = cellValue;
+                            }
+                        } else if (cleanKey.includes('aciklama') || cleanKey.includes('açıklama') || cleanKey.includes('desc') || cleanKey.includes('detay')) {
+                            extractedDesc = cellValue;
+                        } else if (cleanKey.includes('gorsel') || cleanKey.includes('görsel') || cleanKey.includes('image') || cleanKey.includes('resim') || cleanKey.includes('foto') || cleanKey.includes('src')) {
+                            if (cellValue !== '') {
+                                const splitImages = cellValue.split(/[,;|\n]/);
+                                splitImages.forEach(imgUrl => {
+                                    const cleanUrl = imgUrl.trim();
+                                    if (cleanUrl !== '' && !cleanUrl.includes('BASE64') && cleanUrl.length > 5) {
+                                        extractedImages.push(cleanUrl);
+                                    }
+                                });
+                            }
                         }
-                    });
-
-                    images = images.slice(0, imageLimit);
-                    if (images.length === 0) {
-                        images = ['https://placehold.co/400x500/cbd5e1/475569?text=Gorsel+Yok'];
                     }
 
-                    let parsedPrice = 0; 
-                    if (fiyatKey && row[fiyatKey]) {
-                        let cleanPrice = row[fiyatKey].toString().replace(/[^0-9.,]/g, '');
-                        if (cleanPrice.includes('.') && cleanPrice.includes(',')) {
-                            cleanPrice = cleanPrice.replace(/\./g, '').replace(',', '.');
-                        } else if (cleanPrice.includes(',')) {
-                            cleanPrice = cleanPrice.replace(',', '.');
-                        }
-                        parsedPrice = parseFloat(cleanPrice) || 0;
-                    }
-                    
-                    // YENİ ÖZELLİK: Artık eşleştirme (fuzzy match) yapılmaz.
-                    // Hücrede ne yazıyorsa aynen sisteme kaydedilir.
-                    let matchedCategory = 'Diğer'; 
-                    if (kategoriKey && row[kategoriKey] && row[kategoriKey].toString().trim() !== '') {
-                        matchedCategory = row[kategoriKey].toString().trim();
+                    if (extractedTitle === '') continue; // Başlığı olmayan geçersiz satırları atla
+
+                    extractedImages = extractedImages.slice(0, imageLimit);
+                    if (extractedImages.length === 0) {
+                        extractedImages = ['https://placehold.co/400x500/cbd5e1/475569?text=Gorsel+Yok'];
                     }
 
+                    const newDocRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products'));
                     const productData = {
                         storeId: myStore.id, 
                         storeName: myStore.name, 
                         storeWhatsapp: myStore.whatsapp, 
                         district: myStore.district,
-                        title: row[baslikKey].toString().trim(),
-                        description: (aciklamaKey && row[aciklamaKey]) ? row[aciklamaKey].toString().trim() : '',
-                        category: matchedCategory, 
-                        price: parsedPrice, 
-                        originalPrice: parsedPrice,
-                        images: images, 
+                        title: extractedTitle,
+                        description: extractedDesc,
+                        category: extractedCategory, 
+                        price: extractedPrice, 
+                        originalPrice: extractedPrice,
+                        images: extractedImages, 
                         variants: [], 
                         createdAt: Date.now()
                     };
