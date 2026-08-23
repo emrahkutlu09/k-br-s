@@ -211,7 +211,6 @@
                 </div>
             </div>
 
-            <!-- Categories bar (Desktop/Tablet mostly) -->
             <div class="border-t border-slate-100 bg-white shadow-sm relative">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center py-3 gap-4">
@@ -231,7 +230,7 @@
                             </div>
                         </div>
 
-                        <!-- 🚀 SIRALAMA FİLTRESİ BURAYA TAŞINDI 🚀 -->
+                        <!-- Sıralama Filtresi -->
                         <div class="relative group shrink-0">
                             <select id="mainSortSelect" onchange="window.handleSortChange(this.value)" class="text-[11px] sm:text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-8 py-2.5 outline-none focus:border-orange-500 shadow-sm cursor-pointer appearance-none hover:bg-slate-100 transition">
                                 <option value="newest" data-i18n="sort_newest">En Yeniler</option>
@@ -293,7 +292,6 @@
                     <div>
                         <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><i data-lucide="layers" class="w-3.5 h-3.5"></i> Kategoriler</h4>
                         <ul id="mobileCatList" class="space-y-1 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
-                            <!-- JS ile doldurulacak -->
                             <li class="p-3 text-center text-slate-400 text-xs"><i data-lucide="loader-2" class="w-4 h-4 animate-spin inline-block"></i></li>
                         </ul>
                     </div>
@@ -1369,18 +1367,22 @@
                     document.getElementById('authMenu').classList.remove('hidden');
                     document.getElementById('dropdownEmail').innerText = user.email;
                     
-                    // Mobil menü durumu
-                    document.getElementById('mobileUnauthMenu').classList.add('hidden');
-                    document.getElementById('mobileAuthMenu').classList.remove('hidden');
-                    document.getElementById('mobileDropdownEmail').innerText = user.email;
+                    const mUnauth = document.getElementById('mobileUnauthMenu');
+                    const mAuth = document.getElementById('mobileAuthMenu');
+                    if(mUnauth) mUnauth.classList.add('hidden');
+                    if(mAuth) mAuth.classList.remove('hidden');
+                    const mEmail = document.getElementById('mobileDropdownEmail');
+                    if(mEmail) mEmail.innerText = user.email;
                 } else {
                     btnText.removeAttribute('data-i18n');
                     btnText.innerText = "Giriş Yap";
                     document.getElementById('unauthMenu').classList.remove('hidden');
                     document.getElementById('authMenu').classList.add('hidden');
                     
-                    document.getElementById('mobileUnauthMenu').classList.remove('hidden');
-                    document.getElementById('mobileAuthMenu').classList.add('hidden');
+                    const mUnauth = document.getElementById('mobileUnauthMenu');
+                    const mAuth = document.getElementById('mobileAuthMenu');
+                    if(mUnauth) mUnauth.classList.remove('hidden');
+                    if(mAuth) mAuth.classList.add('hidden');
                 }
             } else {
                 try { await signInAnonymously(auth); } catch(e) { console.warn("Anonim giriş kapalı."); }
@@ -1390,8 +1392,10 @@
                 document.getElementById('unauthMenu').classList.remove('hidden');
                 document.getElementById('authMenu').classList.add('hidden');
                 
-                document.getElementById('mobileUnauthMenu').classList.remove('hidden');
-                document.getElementById('mobileAuthMenu').classList.add('hidden');
+                const mUnauth = document.getElementById('mobileUnauthMenu');
+                const mAuth = document.getElementById('mobileAuthMenu');
+                if(mUnauth) mUnauth.classList.remove('hidden');
+                if(mAuth) mAuth.classList.add('hidden');
             }
             if (typeof updateCartUI === 'function') updateCartUI();
         });
@@ -1434,10 +1438,10 @@
             if(isCatMenuOpen) { document.getElementById('userDropdown').classList.add('hidden'); isUserMenuOpen = false; }
         };
 
-        // YENİ: Mobil Menü Toggle Fonksiyonu
         window.toggleMobileMenu = () => {
             const drawer = document.getElementById('mobileMenuDrawer');
             const panel = document.getElementById('mobileMenuPanel');
+            if(!drawer || !panel) return;
             
             if(drawer.classList.contains('hidden')) { 
                 drawer.classList.remove('hidden'); 
@@ -1649,19 +1653,16 @@
 
             const tree = buildCategoryTree(dbCategories, "");
             
-            // Masaüstü Menü
             let dropHtml = `<li><button onclick="window.setCategory('')" class="w-full text-left py-2.5 px-4 font-black ${activeCategory === '' ? 'bg-orange-50 text-orange-600' : 'text-slate-800 hover:bg-slate-50 hover:text-orange-500'} transition-colors border-b border-slate-100 text-sm" data-i18n="all_categories">Tüm Kategoriler</button></li>`;
             dropHtml += generateDropdownHtml(tree, 0, false);
             dropdownList.innerHTML = dropHtml;
             
-            // Mobil Menü
             if(mobileCatList) {
                 let mobHtml = `<li><button onclick="window.setCategory('')" class="w-full text-left py-3 px-4 font-black rounded-xl ${activeCategory === '' ? 'bg-orange-50 text-orange-600 border border-orange-100' : 'text-slate-800 bg-slate-50 border border-slate-100'} transition-colors mb-2 text-sm" data-i18n="all_categories">Tüm Kategoriler</button></li>`;
                 mobHtml += generateDropdownHtml(tree, 0, true);
                 mobileCatList.innerHTML = mobHtml;
             }
 
-            // Hızlı Menü
             let quickHtml = '';
             tree.slice(0, 7).forEach(cat => {
                 const isActive = activeCategory === cat.name;
@@ -1677,10 +1678,12 @@
             activeCategory = cat;
             document.getElementById('catDropdownMenu').classList.add('hidden');
             isCatMenuOpen = false;
-            // Mobil menü açıksa kapat
-            if(!document.getElementById('mobileMenuDrawer').classList.contains('hidden')) {
+            
+            const mobileDrawer = document.getElementById('mobileMenuDrawer');
+            if(mobileDrawer && !mobileDrawer.classList.contains('hidden')) {
                 window.toggleMobileMenu();
             }
+            
             window.renderCategories();
             window.renderHome(document.getElementById('searchInput').value);
         };
@@ -1701,17 +1704,12 @@
             document.getElementById('searchInput').value = val;
             if(document.getElementById('searchInputMobile')) document.getElementById('searchInputMobile').value = val;
             
-            // Eğer mobilden arama yapılıyorsa ve drawer açıksa kapat
-            if(isMobile && !document.getElementById('mobileMenuDrawer').classList.contains('hidden')) {
+            const mobileDrawer = document.getElementById('mobileMenuDrawer');
+            if(isMobile && mobileDrawer && !mobileDrawer.classList.contains('hidden')) {
                 window.toggleMobileMenu();
             }
             
             window.renderHome(val);
-        };
-
-        window.handleSortChange = (val) => {
-            activeSort = val;
-            window.renderHome(document.getElementById('searchInput').value);
         };
 
         window.scrollFeatured = (direction) => {
