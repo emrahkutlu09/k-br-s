@@ -465,7 +465,7 @@
                             <div>
                                 <div class="text-[10px] font-bold text-slate-400 uppercase group-hover:text-orange-500 transition-colors" data-i18n="seller_profile_btn">Satıcı Profili & Tüm Ürünleri</div>
                                 <div class="font-black text-slate-800 text-lg flex items-center gap-1"><span id="detailStoreName"></span><i id="detailStoreShield" data-lucide="shield-check" class="w-4 h-4 text-emerald-500 hidden" title="Güvenilir Premium Satıcı"></i></div>
-                                <div class="text-xs font-bold text-slate-500 flex items-center gap-1 mt-0.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-orange-400"></i> <span id="detailDistrict"></span></div>
+                                <div id="spDistrictDetailContainer" class="text-xs font-bold text-slate-500 flex items-center gap-1 mt-0.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-orange-400"></i> <span id="detailDistrict"></span></div>
                             </div>
                         </div>
                         <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 group-hover:text-orange-500 transition-colors rtl:rotate-180"></i>
@@ -530,7 +530,7 @@
                          <div>
                              <h1 class="text-3xl sm:text-4xl font-black text-white flex items-center gap-2 tracking-tight"><span id="spName"></span> <span id="spPremium" class="hidden"><i data-lucide="award" class="w-6 h-6 text-purple-400"></i></span></h1>
                              <p class="text-slate-300 text-sm font-bold flex items-center gap-4 mt-2 mb-3">
-                                 <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-4 h-4 text-orange-400"></i> <span id="spDistrict"></span></span>
+                                 <span id="spDistrictContainer" class="flex items-center gap-1"><i data-lucide="map-pin" class="w-4 h-4 text-orange-400"></i> <span id="spDistrict"></span></span>
                                  <span class="flex items-center gap-1"><i data-lucide="heart" class="w-4 h-4 text-rose-400"></i> <span id="spFollowersCount">0</span> <span data-i18n="followers">Takipçi</span></span>
                              </p>
                              
@@ -1064,7 +1064,7 @@
                 seo_title: "Kibris Bazar | Бесплатная цифровая торговая площадка Кипра",
                 seo_desc: "Цифровая торговая площадка нового поколения на Северном Кипре без комиссий. Покупайте онлайн безопасно или откройте свой магазин бесплатно.",
                 seo_h1: "Цифровая торговая площадка нового поколения на Северном Кипре: Kibris Bazar",
-                seo_p1: "Переосмысливая опыт электронной коммерции на Северном Кипре, Kibris Bazar является крупнейшим цифровым рынком острова. Мы объединяем сотни местных предприятий.",
+                seo_p1: "Переосмысливая опыт электронной коммерции на Северном Кипре, Kibris Bazar, является крупнейшим цифровым рынком острова. Мы объединяем сотни местных предприятий.",
                 seo_h2_1: "Десятки тысяч товаров, покупки без комиссий",
                 seo_p2_1: "Kibris Bazar устраняет комиссии между покупателями и продавцами. Вы можете напрямую связаться с продавцом через WhatsApp.",
                 seo_h2_2: "Быстрая, безопасная и 100% местная электронная коммерция",
@@ -1843,11 +1843,21 @@
             }
 
             document.getElementById('detailStoreName').innerText = product.storeName;
-            document.getElementById('detailDistrict').innerText = product.district;
+            
+            // District (Bölge) Gösterimi ve Kontrolü (Konum Gizliyse Gizle)
+            const storeObj = dbStores.find(s => s.id === product.storeId);
+            
+            const distDetailContainer = document.getElementById('spDistrictDetailContainer');
+            if (storeObj && storeObj.showLocation === false) {
+                 if(distDetailContainer) distDetailContainer.classList.add('hidden');
+            } else {
+                 if(distDetailContainer) distDetailContainer.classList.remove('hidden');
+                 document.getElementById('detailDistrict').innerText = product.district;
+            }
+
             document.getElementById('detailStoreIdHidden').value = product.storeId;
             document.getElementById('detailProductId').value = product.id; 
             
-            const storeObj = dbStores.find(s => s.id === product.storeId);
             const isPremiumStore = storeObj && (storeObj.isPremium || storeObj.packageType === 'premium');
             const shieldIcon = document.getElementById('detailStoreShield');
             if(shieldIcon) {
@@ -1957,8 +1967,7 @@
                 if (auth.currentUser && !auth.currentUser.isAnonymous) {
                     const buyerUid = auth.currentUser.uid;
                     let isStoreOwner = false;
-                    const storeDoc = dbStores.find(s => s.id === product.storeId);
-                    if (storeDoc && storeDoc.ownerUid === buyerUid) isStoreOwner = true;
+                    if (storeObj && storeObj.ownerUid === buyerUid) isStoreOwner = true;
 
                     if (isStoreOwner) {
                         reviewFormHtml = `
@@ -2201,7 +2210,15 @@
             spStoreProducts = dbProducts.filter(p => p.storeId === storeId);
 
             document.getElementById('spName').innerText = store.name;
-            document.getElementById('spDistrict').innerText = store.district;
+            
+            // Eğer konum gizlendiyse ilçeyi de gizleyelim
+            const distContainer = document.getElementById('spDistrictContainer');
+            if (store.showLocation === false) {
+                 if (distContainer) distContainer.classList.add('hidden');
+            } else {
+                 if (distContainer) distContainer.classList.remove('hidden');
+                 document.getElementById('spDistrict').innerText = store.district;
+            }
             
             const followers = store.followers || [];
             document.getElementById('spFollowersCount').innerText = followers.length;
@@ -2271,7 +2288,8 @@
             }
 
             const mapWrapper = document.getElementById('spMapContainerWrapper');
-            if (store.lat && store.lng) {
+            // EĞER KONUM AÇIK DEĞİLSE HARİTAYI GÖSTERME (showLocation false ise)
+            if (store.lat && store.lng && store.showLocation !== false) {
                 mapWrapper.classList.remove('hidden');
                 const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${store.lat},${store.lng}`;
                 document.getElementById('spGoogleMapsLink').href = googleMapsUrl;
