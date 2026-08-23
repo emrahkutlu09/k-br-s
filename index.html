@@ -415,7 +415,8 @@
             <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="window.closeProductDetail()"></div>
             
             <div class="relative w-full max-w-7xl bg-white rounded-[2rem] shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden transform scale-95 opacity-0 transition-all duration-300 max-h-[95vh]" id="productDetailPanel">
-                <button onclick="window.closeProductDetail()" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto z-50 bg-white/90 backdrop-blur-md p-2.5 rounded-full shadow-md hover:bg-orange-50 hover:text-orange-500 text-slate-600 transition border border-slate-100"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <!-- Kapatma tuşunun kesilmesini önlemek için sağdan ve üstten boşluk artırıldı, z-index yükseltildi -->
+                <button onclick="window.closeProductDetail()" class="absolute top-4 right-5 sm:top-6 sm:right-6 rtl:left-5 rtl:right-auto z-[150] bg-white/95 backdrop-blur-md p-2.5 rounded-full shadow-xl hover:bg-rose-50 hover:text-rose-600 text-slate-700 transition border border-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
                 
                 <!-- SOL PANEL (shrink-0 eklendi, kaybolmaları engeller) -->
                 <div class="w-full md:w-1/2 lg:w-3/5 bg-slate-50/50 border-r border-slate-100 p-4 sm:p-8 flex flex-col h-full md:overflow-y-auto md:max-h-[95vh] no-scrollbar relative shrink-0">
@@ -456,9 +457,10 @@
                     
                     <div onclick="window.openStoreProfileFromDetail()" class="bg-slate-50 hover:bg-orange-50 cursor-pointer rounded-2xl p-4 border border-slate-200 mb-6 flex items-center justify-between transition-colors group shadow-sm shrink-0">
                         <div class="flex items-center gap-4">
-                            <div class="w-14 h-14 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 overflow-hidden" id="detailStoreLogoContainer">
+                            <!-- Logonun kesilmemesi için p-1 ve object-contain özellikleri eklendi -->
+                            <div class="w-14 h-14 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 overflow-hidden p-1" id="detailStoreLogoContainer">
                                 <i data-lucide="store" class="w-6 h-6" id="detailStoreLogoIcon"></i>
-                                <img id="detailStoreLogo" src="" class="w-full h-full object-cover hidden">
+                                <img id="detailStoreLogo" src="" class="w-full h-full object-contain rounded-full hidden">
                             </div>
                             <div>
                                 <div class="text-[10px] font-bold text-slate-400 uppercase group-hover:text-orange-500 transition-colors" data-i18n="seller_profile_btn">Satıcı Profili & Tüm Ürünleri</div>
@@ -519,9 +521,10 @@
                 <img id="spCover" src="" class="w-full h-full object-cover opacity-50 hidden">
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
                 <div class="absolute bottom-0 left-0 w-full p-6 sm:p-8 max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-end gap-5">
-                     <div class="w-20 h-20 sm:w-28 sm:h-28 rounded-[2rem] bg-white p-1 shadow-2xl shrink-0 border-4 border-slate-900 overflow-hidden">
-                         <img id="spLogo" src="" class="w-full h-full object-cover rounded-[1.5rem] bg-slate-100 hidden">
-                         <div id="spLogoFallback" class="w-full h-full rounded-[1.5rem] bg-slate-100 flex items-center justify-center"><i data-lucide="store" class="w-10 h-10 text-slate-400"></i></div>
+                     <!-- Logonun yarım görünmesini engellemek için object-contain ve p-1.5 eklendi -->
+                     <div class="w-20 h-20 sm:w-28 sm:h-28 rounded-[2rem] bg-white p-1.5 shadow-2xl shrink-0 border-4 border-slate-900 overflow-hidden flex items-center justify-center">
+                         <img id="spLogo" src="" class="w-full h-full object-contain rounded-[1.2rem] hidden">
+                         <div id="spLogoFallback" class="w-full h-full rounded-[1.2rem] bg-slate-50 flex items-center justify-center"><i data-lucide="store" class="w-8 h-8 sm:w-10 sm:h-10 text-slate-300"></i></div>
                      </div>
                      <div class="pb-1 w-full flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 z-10">
                          <div>
