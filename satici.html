@@ -128,7 +128,6 @@
         <div class="bg-slate-900 text-white p-4 sm:px-8 flex justify-between items-center shadow-md z-20 relative border-b border-slate-800">
             <div><span class="text-xl font-black text-white tracking-tight">KOBİ<span class="text-orange-500">PANEL</span></span></div>
             <div class="flex items-center gap-3 sm:gap-4">
-                <!-- MAĞAZAMI PAYLAŞ BUTONU -->
                 <button onclick="window.shareMyStore()" class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-2 shadow-sm" title="Mağaza Bağlantısını Paylaş">
                     <i data-lucide="share-2" class="w-4 h-4"></i> <span class="hidden sm:inline">Mağazamı Paylaş</span>
                 </button>
@@ -251,6 +250,15 @@
                     </div>
                     <div class="flex flex-wrap justify-end gap-2 w-full sm:w-auto mt-3 sm:mt-0">
                         <div class="flex gap-2 w-full sm:w-auto">
+                            <button onclick="window.exportToCSV()" class="flex-1 sm:flex-none bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 border border-emerald-200 shadow-sm" title="Ürünleri Excel/CSV olarak indir">
+                                <i data-lucide="download" class="w-4 h-4"></i> Dışa Aktar
+                            </button>
+                            <button onclick="document.getElementById('csvImportInput').click()" class="flex-1 sm:flex-none bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 border border-blue-200 shadow-sm" title="CSV veya XLSX dosyasından toplu ürün yükle">
+                                <i data-lucide="upload" class="w-4 h-4"></i> İçe Aktar
+                            </button>
+                            <input type="file" id="csvImportInput" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="hidden" onchange="window.importFromFile(event)">
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto">
                             <button onclick="window.openBulkPriceModal()" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm">
                                 <i data-lucide="percent" class="w-4 h-4"></i> Toplu Fiyat
                             </button>
@@ -261,19 +269,9 @@
                     </div>
                 </div>
 
-                <!-- Dinamik Kategori ve Yeni Filtreler -->
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-2 border-b border-slate-200">
-                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar w-full sm:w-auto" id="vendorCategoryFilter">
-                        <!-- Dinamik Kategoriler JS ile Doldurulacak -->
-                    </div>
-                    
-                    <div class="flex items-center gap-3 shrink-0 bg-slate-50 p-1.5 rounded-xl border border-slate-200 w-full sm:w-auto">
-                        <select id="vendorSortSelect" onchange="window.filterVendorProducts(currentFilterCategory)" class="w-full sm:w-auto bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer shadow-sm">
-                            <option value="newest">Sırala: En Yeniler</option>
-                            <option value="price_asc">Sırala: En Düşük Fiyat</option>
-                            <option value="price_desc">Sırala: En Yüksek Fiyat</option>
-                        </select>
-                    </div>
+                <!-- Dinamik Kategori Filtreleri -->
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 border-b border-slate-200" id="vendorCategoryFilter">
+                    <!-- Dinamik Kategoriler JS ile Doldurulacak -->
                 </div>
                 
                 <div id="vendorProductsContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
@@ -312,7 +310,7 @@
                         <ul class="space-y-3 text-sm font-medium text-purple-100 mb-8 flex-1">
                             <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Sınırsız İlan Yükleme</li>
                             <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Sınırsız Görsel Yükleme</li>
-                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Gelişmiş Varyant (Seçenek) Sistemi</li>
+                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Gelişmiş Varyant Sistemi</li>
                             <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Özel "VIP" Mağaza Rozeti</li>
                         </ul>
                         <button onclick="window.requestPackageUpgrade('premium')" class="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-400 hover:to-fuchsia-400 text-white font-black py-3.5 rounded-xl text-sm transition shadow-lg shadow-purple-500/40">Premium VIP Talep Et</button>
@@ -407,29 +405,29 @@
                                         </div>
                                     </div>
                                 </div>
-                                <p class="text-[10px] text-slate-400 mt-3 font-medium">Bu bağlantılar mağaza profilinizde görünecektir. Müşterileriniz ikonlara tıklayarak sizi ziyaret edebilir. Boş bırakırsanız gizlenir.</p>
                             </div>
                             
-                            <!-- Harita Konum Seçici Modülü -->
-                            <div class="sm:col-span-2 mt-4">
+                            <!-- Harita Konum Seçici Modülü (Güncellendi) -->
+                            <div class="sm:col-span-2 mt-4 bg-slate-50 p-5 rounded-2xl border border-slate-200">
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-500 mb-1 flex items-center gap-1">
-                                            <i data-lucide="map-pin" class="w-4 h-4 text-orange-500"></i> Mağaza Konumu (Haritadan Seçin)
-                                        </label>
-                                        <p class="text-xs text-slate-500">Müşterilerinizin fiziksel dükkanınızı kolayca bulabilmesi için haritaya tıklayarak veya kırmızı iğneyi sürükleyerek konumunuzu işaretleyin.</p>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                                        <input type="checkbox" id="settingsShowLocation" class="sr-only peer" checked>
-                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
-                                        <span class="ml-3 text-xs font-bold text-slate-700">Müşterilere Göster</span>
+                                    <label class="block text-sm font-black text-slate-800 flex items-center gap-2">
+                                        <i data-lucide="map-pin" class="w-5 h-5 text-orange-500"></i> Mağaza Konumu
+                                    </label>
+                                    
+                                    <!-- Konumu Göster / Gizle Toggle Şalteri -->
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="settingsShowLocation" class="sr-only peer" onchange="window.toggleMapVisibility(this.checked)">
+                                        <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+                                        <span class="ms-3 text-xs font-bold text-slate-600">Konumu Müşterilere Göster</span>
                                     </label>
                                 </div>
                                 
-                                <div class="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-inner mb-2">
-                                    <div id="storeLocationMap" class="w-full h-72 sm:h-96 bg-slate-100"></div>
+                                <div id="mapContainerWrapper" class="transition-all duration-300">
+                                    <p class="text-xs text-slate-500 mb-4">Müşterilerinizin fiziksel dükkanınızı kolayca bulabilmesi için haritaya tıklayarak veya kırmızı iğneyi sürükleyerek konumunuzu işaretleyin. Eğer konum paylaşmak istemiyorsanız yukarıdaki şalteri kapatabilirsiniz.</p>
+                                    <div class="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
+                                        <div id="storeLocationMap" class="w-full h-72 sm:h-96 bg-slate-200"></div>
+                                    </div>
                                 </div>
-                                <button type="button" onclick="window.clearStoreLocation()" class="text-xs font-bold text-rose-500 hover:underline flex items-center gap-1"><i data-lucide="trash-2" class="w-3 h-3"></i> İşaretli Konumu Temizle</button>
                                 
                                 <input type="hidden" id="settingsLat">
                                 <input type="hidden" id="settingsLng">
@@ -459,23 +457,11 @@
                 <form onsubmit="window.saveProduct(event)" class="space-y-6">
                     <input type="hidden" id="pEditingId" value="">
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" id="pFreeDelivery" class="w-5 h-5 text-emerald-500 rounded border-slate-300 focus:ring-emerald-500">
-                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1"><i data-lucide="truck" class="w-4 h-4 text-emerald-500"></i> Ücretsiz Teslimat</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" id="pCashOnDelivery" class="w-5 h-5 text-blue-500 rounded border-slate-300 focus:ring-blue-500">
-                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1"><i data-lucide="banknote" class="w-4 h-4 text-blue-500"></i> Kapıda Ödeme</span>
-                        </label>
-                    </div>
-
                     <div class="bg-blue-50 p-5 rounded-2xl border border-blue-100">
                         <label class="block text-xs font-bold text-slate-700 mb-3 flex items-center justify-between">Ürün Fotoğrafları <span id="mediaLimitText" class="text-blue-600 font-bold bg-blue-100 px-2 py-1 rounded"></span></label>
                         <input type="file" id="pImages" accept="image/*" multiple class="w-full text-sm file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer transition shadow-sm"/>
                         <p class="text-xs text-blue-600/70 mt-3 font-medium" id="mediaWarningText"><i data-lucide="info" class="w-4 h-4 inline mb-0.5"></i> Fotoğrafları sürükleyerek sıralayabilir veya çarpı (X) tuşu ile silebilirsiniz. Yeni seçtikleriniz mevcutların sonuna eklenir.</p>
                         
-                        <!-- İnteraktif Medya Önizleme Galerisi -->
                         <div id="pMediaPreviewContainer" class="flex gap-3 mt-4 overflow-x-auto pb-2 no-scrollbar min-h-[90px] items-center border border-blue-200/60 bg-white/60 p-3 rounded-xl">
                             <span class="text-xs text-slate-400 italic">Henüz fotoğraf seçilmedi.</span>
                         </div>
@@ -499,10 +485,23 @@
                         </div>
                     </div>
 
-                    <!-- Gelişmiş Varyant (Seçenek) Sistemi (Premium Özel) -->
+                    <!-- Müşteri Avantaj Etiketleri (Yeni Eklendi) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-2">Özel Etiketler (İlanın üzerinde rozet olarak görünür)</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <label class="flex items-center gap-3 cursor-pointer bg-white p-3 rounded-lg border border-slate-100 shadow-sm hover:border-orange-300 transition">
+                                <input type="checkbox" id="pFreeDelivery" class="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-500">
+                                <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="truck" class="w-4 h-4 text-[#0ea5e9]"></i> Ücretsiz Teslimat</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer bg-white p-3 rounded-lg border border-slate-100 shadow-sm hover:border-orange-300 transition">
+                                <input type="checkbox" id="pCashOnDelivery" class="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-500">
+                                <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="banknote" class="w-4 h-4 text-emerald-500"></i> Kapıda Ödeme</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Gelişmiş Varyant (Seçenek) Sistemi -->
                     <div class="bg-gradient-to-br from-purple-50 to-white p-5 rounded-2xl border-2 border-purple-100 relative overflow-hidden">
-                        
-                        <!-- Kilit Ekranı (Eğer Premium Değilse) -->
                         <div id="premiumVariantLock" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-center p-6 transition-all hidden">
                             <i data-lucide="lock" class="w-10 h-10 text-purple-400 mb-3"></i>
                             <h4 class="font-black text-purple-900 text-lg mb-2">Gelişmiş Varyant Sistemi</h4>
@@ -519,7 +518,6 @@
                                 <button type="button" onclick="window.addVariantRow()" class="text-xs font-black bg-purple-600 text-white px-3 py-1.5 rounded-lg hover:bg-purple-700 transition flex items-center gap-1 shadow-sm"><i data-lucide="plus" class="w-3 h-3"></i> Yeni Ekle</button>
                             </div>
                             
-                            <!-- Varyant Listesi Konteyneri -->
                             <div id="variantsContainer" class="space-y-3"></div>
                         </div>
                     </div>
@@ -574,53 +572,6 @@
                     <div class="pt-2">
                         <button type="submit" id="btnBulkUpdate" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl transition flex items-center justify-center gap-2 shadow-xl shadow-slate-900/20 text-lg">
                             <i data-lucide="zap" class="w-5 h-5"></i> Güncellemeyi Başlat
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toplu Etiket Güncelleme Modalı -->
-    <div id="bulkTagModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden flex flex-col shadow-2xl transform transition-all">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-black text-xl text-slate-900 flex items-center gap-2"><i data-lucide="tags" class="w-6 h-6 text-indigo-500"></i> Toplu Etiket</h3>
-                <button onclick="document.getElementById('bulkTagModal').classList.add('hidden')" class="text-slate-400 hover:text-rose-500 bg-white shadow-sm border border-slate-200 p-2 rounded-full transition"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <div class="p-6">
-                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 text-xs text-indigo-800 font-medium mb-6 leading-relaxed flex gap-3">
-                    <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5"></i>
-                    <p>Seçtiğiniz kategorideki (veya tüm) ilanlara <b>Ücretsiz Teslimat</b> ve <b>Kapıda Ödeme</b> etiketlerini topluca ekleyebilir veya kaldırabilirsiniz.</p>
-                </div>
-                <form onsubmit="window.executeBulkTagUpdate(event)" class="space-y-6">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-2">Hangi İlanlara Uygulansın?</label>
-                        <select id="bulkTagCategory" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors cursor-pointer">
-                            <!-- JS Dinamik Dolacak -->
-                        </select>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-2">Ücretsiz Teslimat Etiketi</label>
-                            <select id="bulkTagFreeDelivery" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-black outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-colors cursor-pointer">
-                                <option value="ignore" class="text-slate-500">Değiştirme (Dokunma)</option>
-                                <option value="add" class="text-emerald-600">Ekle (Aktif Et)</option>
-                                <option value="remove" class="text-rose-600">Kaldır (Pasif Et)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-2">Kapıda Ödeme Etiketi</label>
-                            <select id="bulkTagCashOnDelivery" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-black outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors cursor-pointer">
-                                <option value="ignore" class="text-slate-500">Değiştirme (Dokunma)</option>
-                                <option value="add" class="text-emerald-600">Ekle (Aktif Et)</option>
-                                <option value="remove" class="text-rose-600">Kaldır (Pasif Et)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="pt-2">
-                        <button type="submit" id="btnBulkTagUpdate" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl transition flex items-center justify-center gap-2 shadow-xl shadow-slate-900/20 text-lg">
-                            <i data-lucide="check" class="w-5 h-5"></i> Etiketleri Güncelle
                         </button>
                     </div>
                 </form>
@@ -751,7 +702,6 @@
 
         window.logoutUser = () => { signOut(auth).then(() => { window.location.reload(); }); };
 
-        // 🌟 MAĞAZAMI PAYLAŞ FONKSİYONU 🌟
         window.shareMyStore = () => {
             if(!myStore) return;
             const slug = window.slugify(myStore.name);
@@ -774,7 +724,6 @@
             }
         };
 
-        // 🌟 BENZERSİZ MAĞAZA ADI KONTROL FONKSİYONU 🌟
         async function checkStoreNameAvailability(requestedName) {
             const q = query(storesRef);
             const snapshot = await getDocs(q);
@@ -784,7 +733,6 @@
             snapshot.forEach(doc => {
                 const existingStore = doc.data();
                 if (myStore && doc.id === myStore.id) return;
-                
                 if (window.slugify(existingStore.name) === requestedSlug) {
                     isAvailable = false;
                 }
@@ -844,6 +792,7 @@
                 status: 'pending',
                 packageType: 'free',
                 isPremium: false,
+                showLocation: true, 
                 createdAt: Date.now(),
                 followers: []
             };
@@ -905,14 +854,15 @@
         let locationMap;
         let locationMarker;
 
-        window.clearStoreLocation = () => {
-            document.getElementById('settingsLat').value = '';
-            document.getElementById('settingsLng').value = '';
-            if (locationMarker && locationMap) {
-                locationMap.removeLayer(locationMarker);
-                locationMarker = null;
+        // Harita Göster/Gizle Şalteri
+        window.toggleMapVisibility = (isVisible) => {
+            const wrapper = document.getElementById('mapContainerWrapper');
+            if(isVisible) {
+                wrapper.classList.remove('hidden');
+                setTimeout(() => { if(locationMap) locationMap.invalidateSize(); }, 300);
+            } else {
+                wrapper.classList.add('hidden');
             }
-            window.showMessage("Konum haritadan kaldırıldı. Ayarları kaydetmeyi unutmayın.");
         };
 
         function initLocationMap() {
@@ -930,33 +880,22 @@
                 attribution: '&copy; OpenStreetMap Kıbrıs Bazar'
             }).addTo(locationMap);
 
-            if (myStore?.lat && myStore?.lng) {
-                locationMarker = L.marker([startLat, startLng], {draggable: true}).addTo(locationMap);
-                
-                locationMarker.on('dragend', function(e) {
-                    const pos = locationMarker.getLatLng();
-                    document.getElementById('settingsLat').value = pos.lat;
-                    document.getElementById('settingsLng').value = pos.lng;
-                });
-            }
+            locationMarker = L.marker([startLat, startLng], {draggable: true}).addTo(locationMap);
+
+            locationMarker.on('dragend', function(e) {
+                const pos = locationMarker.getLatLng();
+                document.getElementById('settingsLat').value = pos.lat;
+                document.getElementById('settingsLng').value = pos.lng;
+            });
             
             locationMap.on('click', function(e) {
-                if (!locationMarker) {
-                    locationMarker = L.marker(e.latlng, {draggable: true}).addTo(locationMap);
-                    locationMarker.on('dragend', function(ev) {
-                        const pos = locationMarker.getLatLng();
-                        document.getElementById('settingsLat').value = pos.lat;
-                        document.getElementById('settingsLng').value = pos.lng;
-                    });
-                } else {
-                    locationMarker.setLatLng(e.latlng);
-                }
+                locationMarker.setLatLng(e.latlng);
                 document.getElementById('settingsLat').value = e.latlng.lat;
                 document.getElementById('settingsLng').value = e.latlng.lng;
             });
 
-            document.getElementById('settingsLat').value = myStore?.lat || '';
-            document.getElementById('settingsLng').value = myStore?.lng || '';
+            document.getElementById('settingsLat').value = startLat;
+            document.getElementById('settingsLng').value = startLng;
             
             setTimeout(() => locationMap.invalidateSize(), 400);
         }
@@ -1009,6 +948,7 @@
             onSnapshot(productsRef, (snapshot) => {
                 myProducts = [];
                 snapshot.forEach(d => { if(d.data().storeId === myStore.id) myProducts.push({id: d.id, ...d.data()}); });
+                initCategoryFilters(); 
                 renderProducts();
                 calculateStats();
             });
@@ -1023,7 +963,6 @@
             onSnapshot(categoriesRef, (snapshot) => {
                 dbCategories = [];
                 snapshot.forEach(d => dbCategories.push({id: d.id, ...d.data()}));
-                initCategoryFilters();
                 updateCategoryDropdowns();
             });
         }
@@ -1092,29 +1031,26 @@
 
         function initCategoryFilters() {
             const container = document.getElementById('vendorCategoryFilter');
-            let html = `<button onclick="window.filterVendorProducts('')" class="px-5 py-2 rounded-full text-xs font-bold transition bg-slate-800 text-white filter-btn shadow-sm" data-cat="">Tüm İlanlar</button>`;
+            if(!container) return;
             
-            const uniqueCategories = [...new Set(dbCategories.map(c => c.name))].sort();
+            let html = `<button onclick="window.filterVendorProducts('')" class="px-5 py-2 rounded-full text-xs font-bold transition ${currentFilterCategory === '' ? 'bg-slate-800 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'} filter-btn whitespace-nowrap" data-cat="">Tüm İlanlar</button>`;
+            
+            // Satıcının sadece KENDİ ürünlerinde kullandığı benzersiz kategorileri alıyoruz
+            const uniqueCategories = [...new Set(myProducts.map(p => p.category))].filter(Boolean).sort();
 
             uniqueCategories.forEach(catName => {
-                html += `<button onclick="window.filterVendorProducts('${catName}')" class="px-5 py-2 rounded-full text-xs font-bold transition bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 filter-btn whitespace-nowrap" data-cat="${catName}">${catName}</button>`;
+                const isActive = currentFilterCategory === catName;
+                const activeClass = isActive ? 'bg-slate-800 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100';
+                html += `<button onclick="window.filterVendorProducts('${catName}')" class="px-5 py-2 rounded-full text-xs font-bold transition ${activeClass} filter-btn whitespace-nowrap" data-cat="${catName}">${catName}</button>`;
             });
             
-            if(uniqueCategories.length === 0) html += `<span class="text-xs text-slate-400 py-2 px-3">Kategori yok.</span>`;
+            if(uniqueCategories.length === 0) html += `<span class="text-xs text-slate-400 py-2 px-3">Henüz ilanınız yok.</span>`;
             container.innerHTML = html;
         }
 
         window.filterVendorProducts = (cat) => {
             currentFilterCategory = cat;
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                if(btn.dataset.cat === cat) { 
-                    btn.classList.add('bg-slate-800', 'text-white', 'shadow-sm'); 
-                    btn.classList.remove('bg-white', 'border', 'border-slate-200', 'text-slate-600'); 
-                } else { 
-                    btn.classList.remove('bg-slate-800', 'text-white', 'shadow-sm'); 
-                    btn.classList.add('bg-white', 'border', 'border-slate-200', 'text-slate-600'); 
-                }
-            });
+            initCategoryFilters(); 
             renderProducts();
         };
 
@@ -1122,16 +1058,6 @@
             const container = document.getElementById('vendorProductsContainer');
             let displayList = myProducts;
             if(currentFilterCategory) displayList = displayList.filter(p => p.category === currentFilterCategory);
-
-            // Satıcı panelindeki sıralamayı uygula
-            const sortPref = document.getElementById('vendorSortSelect') ? document.getElementById('vendorSortSelect').value : 'newest';
-            if (sortPref === 'newest') {
-                displayList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-            } else if (sortPref === 'price_asc') {
-                displayList.sort((a, b) => a.price - b.price);
-            } else if (sortPref === 'price_desc') {
-                displayList.sort((a, b) => b.price - a.price);
-            }
 
             if(displayList.length === 0) { 
                 container.innerHTML = '<div class="col-span-full py-16 text-center text-slate-400 font-bold bg-white rounded-3xl border border-slate-200 border-dashed">Bu kritere uygun ilan bulunamadı.</div>'; 
@@ -1142,22 +1068,26 @@
             displayList.forEach(p => {
                 const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500/cbd5e1/475569?text=Gorsel';
                 const hasVariants = p.variants && p.variants.length > 0;
+                const discount = p.originalPrice > p.price ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
                 
+                // Müşteri Avantaj Etiketleri (Ribbon / Kurdela stili)
                 let ribbonHtml = '<div class="absolute top-2 left-0 flex flex-col gap-1 items-start z-10 pointer-events-none">';
-                if (p.originalPrice > p.price) {
-                     const discount = Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100);
-                     ribbonHtml += `<div class="bg-rose-500 text-white text-[9px] font-black px-2 py-0.5 rounded-r shadow-md">-%${discount}</div>`;
+                if (discount > 0) {
+                     ribbonHtml += `<div class="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-r shadow-md">-%${discount}</div>`;
                 }
-                if (p.freeDelivery) ribbonHtml += `<div class="bg-[#0ea5e9] text-white text-[8px] font-black px-2 py-0.5 rounded-r shadow-md flex items-center gap-1 uppercase tracking-wider"><i data-lucide="truck" class="w-2.5 h-2.5 shrink-0"></i> Ücretsiz Teslimat</div>`;
-                if (p.cashOnDelivery) ribbonHtml += `<div class="bg-emerald-500 text-white text-[8px] font-black px-2 py-0.5 rounded-r shadow-md flex items-center gap-1 uppercase tracking-wider"><i data-lucide="banknote" class="w-2.5 h-2.5 shrink-0"></i> Kapıda Ödeme</div>`;
+                if (p.freeDelivery) {
+                     ribbonHtml += `<div class="bg-[#0ea5e9] text-white text-[9px] font-black px-2 py-0.5 rounded-r shadow-md flex items-center gap-1 uppercase tracking-wider"><i data-lucide="truck" class="w-3 h-3 shrink-0"></i> Ücretsiz Teslimat</div>`;
+                }
+                if (p.cashOnDelivery) {
+                     ribbonHtml += `<div class="bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-r shadow-md flex items-center gap-1 uppercase tracking-wider"><i data-lucide="banknote" class="w-3 h-3 shrink-0"></i> Kapıda Ödeme</div>`;
+                }
                 ribbonHtml += '</div>';
-
+                
                 html += `
                     <div class="border border-slate-200 rounded-3xl p-3 relative group bg-white shadow-sm hover:shadow-xl hover:border-orange-200 transition-all flex flex-col">
                         <div class="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-3 bg-slate-100">
-                            <!-- Kırık resim onleyicisi burada (onerror) -->
                             <img src="${img}" onerror="this.onerror=null; this.src='https://placehold.co/400x500/cbd5e1/475569?text=Gorsel+Yuklenemedi';" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Product Image">
-                            ${(p.originalPrice > p.price || p.freeDelivery || p.cashOnDelivery) ? ribbonHtml : ''}
+                            ${ribbonHtml}
                         </div>
                         <div class="flex-1 px-1">
                             <div class="text-[10px] font-bold text-slate-500 bg-slate-100 inline-block px-2 py-1 rounded-lg mb-2 line-clamp-1" title="${p.category}">${p.category}</div>
@@ -1318,8 +1248,11 @@
             document.getElementById('pTitle').value = "";
             document.getElementById('pDesc').value = "";
             document.getElementById('pPrice').value = "";
+            
+            // Checkboxları sıfırla
             document.getElementById('pFreeDelivery').checked = false;
             document.getElementById('pCashOnDelivery').checked = false;
+
             document.getElementById('variantsContainer').innerHTML = ""; 
             
             updateCategoryDropdowns();
@@ -1358,9 +1291,11 @@
 
             document.getElementById('pTitle').value = p.title;
             document.getElementById('pDesc').value = p.description || "";
+            
+            // Checkboxları doldur
             document.getElementById('pFreeDelivery').checked = p.freeDelivery || false;
             document.getElementById('pCashOnDelivery').checked = p.cashOnDelivery || false;
-            
+
             updateCategoryDropdowns();
             const catSelect = document.getElementById('pCategory');
             if([...catSelect.options].some(opt => opt.value === p.category)) {
@@ -1456,12 +1391,19 @@
                 }
 
                 const productData = {
-                    storeId: myStore.id, storeName: myStore.name, storeWhatsapp: myStore.whatsapp, district: myStore.district,
-                    title: document.getElementById('pTitle').value, description: document.getElementById('pDesc').value,
-                    category: document.getElementById('pCategory').value, price: price,
+                    storeId: myStore.id, 
+                    storeName: myStore.name, 
+                    storeWhatsapp: myStore.whatsapp, 
+                    district: myStore.district,
+                    title: document.getElementById('pTitle').value, 
+                    description: document.getElementById('pDesc').value,
+                    category: document.getElementById('pCategory').value, 
+                    price: price,
                     freeDelivery: document.getElementById('pFreeDelivery').checked,
                     cashOnDelivery: document.getElementById('pCashOnDelivery').checked,
-                    images: finalImages, variants: variants, updatedAt: Date.now()
+                    images: finalImages, 
+                    variants: variants, 
+                    updatedAt: Date.now()
                 };
 
                 if (editId) {
@@ -1563,12 +1505,6 @@
             document.getElementById('settingsInstagram').value = myStore.instagram || '';
             document.getElementById('settingsFacebook').value = myStore.facebook || '';
 
-            if (myStore.showLocation !== undefined) {
-                document.getElementById('settingsShowLocation').checked = myStore.showLocation;
-            } else {
-                document.getElementById('settingsShowLocation').checked = true;
-            }
-
             if(myStore.coverUrl) {
                 document.getElementById('settingsCoverPreview').src = myStore.coverUrl;
                 document.getElementById('settingsCoverPreview').classList.remove('hidden');
@@ -1577,6 +1513,11 @@
                 document.getElementById('settingsLogoPreview').src = myStore.logoUrl;
                 document.getElementById('settingsLogoPreview').classList.remove('hidden');
             }
+
+            // Harita görünürlüğü toggle durumunu ayarla
+            const showLocation = myStore.showLocation !== false; // Varsayılan olarak true
+            document.getElementById('settingsShowLocation').checked = showLocation;
+            window.toggleMapVisibility(showLocation);
         }
 
         window.previewImage = (input, previewId) => {
@@ -1627,18 +1568,20 @@
                     logoUrl = await uploadFileToCloudinary(logoInputEl.files[0], 'image');
                 }
 
+                const showLocation = document.getElementById('settingsShowLocation').checked;
+
                 const updates = {
                     name: newStoreName,
                     whatsapp: document.getElementById('settingsWhatsapp').value,
                     district: document.getElementById('settingsDistrict').value,
-                    lat: document.getElementById('settingsLat').value ? parseFloat(document.getElementById('settingsLat').value) : null,
-                    lng: document.getElementById('settingsLng').value ? parseFloat(document.getElementById('settingsLng').value) : null,
-                    showLocation: document.getElementById('settingsShowLocation').checked,
+                    lat: parseFloat(document.getElementById('settingsLat').value),
+                    lng: parseFloat(document.getElementById('settingsLng').value),
                     website: document.getElementById('settingsWebsite').value.trim(),
                     instagram: document.getElementById('settingsInstagram').value.replace('@', '').trim(),
                     facebook: document.getElementById('settingsFacebook').value.trim(),
                     coverUrl: coverUrl,
-                    logoUrl: logoUrl
+                    logoUrl: logoUrl,
+                    showLocation: showLocation
                 };
 
                 await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), updates);
@@ -1700,62 +1643,6 @@
             } catch(err) { window.showMessage("Toplu güncelleme hatası.", "error"); }
             
             btn.innerHTML = `<i data-lucide="zap" class="w-5 h-5"></i> Güncellemeyi Başlat`; 
-            btn.disabled = false;
-            lucide.createIcons();
-        };
-
-        window.openBulkTagModal = () => { 
-            document.getElementById('bulkTagModal').classList.remove('hidden'); 
-            
-            let optionsHtml = '';
-            if (dbCategories.length === 0) {
-                optionsHtml = '<option value="Diğer">Diğer (Kategori Bulunamadı)</option>';
-            } else {
-                const tree = buildCategoryTree(dbCategories, "");
-                optionsHtml = generateDropdownOptions(tree, 0);
-            }
-            document.getElementById('bulkTagCategory').innerHTML = '<option value="ALL">Tüm Ürünlerim</option>' + optionsHtml;
-        };
-
-        window.executeBulkTagUpdate = async (e) => {
-            e.preventDefault();
-            const cat = document.getElementById('bulkTagCategory').value;
-            const freeDeliveryAction = document.getElementById('bulkTagFreeDelivery').value;
-            const cashOnDeliveryAction = document.getElementById('bulkTagCashOnDelivery').value;
-            
-            if (freeDeliveryAction === 'ignore' && cashOnDeliveryAction === 'ignore') {
-                window.showMessage("Herhangi bir işlem seçmediniz.", "error");
-                return;
-            }
-
-            const btn = document.getElementById('btnBulkTagUpdate'); 
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> İşleniyor...`; 
-            btn.disabled = true;
-            lucide.createIcons();
-
-            const targets = cat === 'ALL' ? myProducts : myProducts.filter(p => p.category === cat);
-            if(targets.length === 0) { window.showMessage("Etkilenecek ürün bulunamadı.", "error"); btn.innerHTML = `<i data-lucide="check" class="w-5 h-5"></i> Etiketleri Güncelle`; btn.disabled = false; lucide.createIcons(); return; }
-
-            try {
-                const batch = writeBatch(db);
-                targets.forEach(p => {
-                    const pRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id);
-                    const updates = { updatedAt: Date.now() };
-                    
-                    if (freeDeliveryAction === 'add') updates.freeDelivery = true;
-                    else if (freeDeliveryAction === 'remove') updates.freeDelivery = false;
-                    
-                    if (cashOnDeliveryAction === 'add') updates.cashOnDelivery = true;
-                    else if (cashOnDeliveryAction === 'remove') updates.cashOnDelivery = false;
-                    
-                    batch.update(pRef, updates);
-                });
-                await batch.commit();
-                window.showMessage(`${targets.length} ilanın etiketleri başarıyla güncellendi.`);
-                document.getElementById('bulkTagModal').classList.add('hidden');
-            } catch(err) { window.showMessage("Toplu etiket güncelleme hatası.", "error"); }
-            
-            btn.innerHTML = `<i data-lucide="check" class="w-5 h-5"></i> Etiketleri Güncelle`; 
             btn.disabled = false;
             lucide.createIcons();
         };
