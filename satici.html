@@ -411,14 +411,24 @@
                             
                             <!-- Harita Konum Seçici Modülü -->
                             <div class="sm:col-span-2 mt-4">
-                                <label class="block text-xs font-bold text-slate-500 mb-2 flex items-center gap-1">
-                                    <i data-lucide="map-pin" class="w-4 h-4 text-orange-500"></i> Mağaza Konumu (Haritadan Seçin)
-                                </label>
-                                <p class="text-xs text-slate-500 mb-4">Müşterilerinizin fiziksel dükkanınızı kolayca bulabilmesi için haritaya tıklayarak veya kırmızı iğneyi sürükleyerek konumunuzu işaretleyin.</p>
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 mb-1 flex items-center gap-1">
+                                            <i data-lucide="map-pin" class="w-4 h-4 text-orange-500"></i> Mağaza Konumu (Haritadan Seçin)
+                                        </label>
+                                        <p class="text-xs text-slate-500">Müşterilerinizin fiziksel dükkanınızı kolayca bulabilmesi için haritaya tıklayarak veya kırmızı iğneyi sürükleyerek konumunuzu işaretleyin.</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                        <input type="checkbox" id="settingsShowLocation" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+                                        <span class="ml-3 text-xs font-bold text-slate-700">Müşterilere Göster</span>
+                                    </label>
+                                </div>
                                 
-                                <div class="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
+                                <div class="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-inner mb-2">
                                     <div id="storeLocationMap" class="w-full h-72 sm:h-96 bg-slate-100"></div>
                                 </div>
+                                <button type="button" onclick="window.clearStoreLocation()" class="text-xs font-bold text-rose-500 hover:underline flex items-center gap-1"><i data-lucide="trash-2" class="w-3 h-3"></i> İşaretli Konumu Temizle</button>
                                 
                                 <input type="hidden" id="settingsLat">
                                 <input type="hidden" id="settingsLng">
@@ -714,7 +724,6 @@
 
             snapshot.forEach(doc => {
                 const existingStore = doc.data();
-                // Eğer güncelleme yapılıyorsa ve kendi ID'si ise izin ver
                 if (myStore && doc.id === myStore.id) return;
                 
                 if (window.slugify(existingStore.name) === requestedSlug) {
@@ -732,7 +741,6 @@
             
             const storeName = document.getElementById('regName').value.trim();
 
-            // 1. İsim Müsaitlik Kontrolü
             btnText.innerText = "İsim Kontrol Ediliyor..."; btn.disabled = true;
             const isAvailable = await checkStoreNameAvailability(storeName);
 
@@ -838,6 +846,16 @@
         let locationMap;
         let locationMarker;
 
+        window.clearStoreLocation = () => {
+            document.getElementById('settingsLat').value = '';
+            document.getElementById('settingsLng').value = '';
+            if (locationMarker && locationMap) {
+                locationMap.removeLayer(locationMarker);
+                locationMarker = null;
+            }
+            window.showMessage("Konum haritadan kaldırıldı. Ayarları kaydetmeyi unutmayın.");
+        };
+
         function initLocationMap() {
             if(locationMap) {
                 setTimeout(() => locationMap.invalidateSize(), 300);
@@ -853,22 +871,33 @@
                 attribution: '&copy; OpenStreetMap Kıbrıs Bazar'
             }).addTo(locationMap);
 
-            locationMarker = L.marker([startLat, startLng], {draggable: true}).addTo(locationMap);
-
-            locationMarker.on('dragend', function(e) {
-                const pos = locationMarker.getLatLng();
-                document.getElementById('settingsLat').value = pos.lat;
-                document.getElementById('settingsLng').value = pos.lng;
-            });
+            if (myStore?.lat && myStore?.lng) {
+                locationMarker = L.marker([startLat, startLng], {draggable: true}).addTo(locationMap);
+                
+                locationMarker.on('dragend', function(e) {
+                    const pos = locationMarker.getLatLng();
+                    document.getElementById('settingsLat').value = pos.lat;
+                    document.getElementById('settingsLng').value = pos.lng;
+                });
+            }
             
             locationMap.on('click', function(e) {
-                locationMarker.setLatLng(e.latlng);
+                if (!locationMarker) {
+                    locationMarker = L.marker(e.latlng, {draggable: true}).addTo(locationMap);
+                    locationMarker.on('dragend', function(ev) {
+                        const pos = locationMarker.getLatLng();
+                        document.getElementById('settingsLat').value = pos.lat;
+                        document.getElementById('settingsLng').value = pos.lng;
+                    });
+                } else {
+                    locationMarker.setLatLng(e.latlng);
+                }
                 document.getElementById('settingsLat').value = e.latlng.lat;
                 document.getElementById('settingsLng').value = e.latlng.lng;
             });
 
-            document.getElementById('settingsLat').value = startLat;
-            document.getElementById('settingsLng').value = startLng;
+            document.getElementById('settingsLat').value = myStore?.lat || '';
+            document.getElementById('settingsLng').value = myStore?.lng || '';
             
             setTimeout(() => locationMap.invalidateSize(), 400);
         }
@@ -1449,6 +1478,12 @@
             document.getElementById('settingsInstagram').value = myStore.instagram || '';
             document.getElementById('settingsFacebook').value = myStore.facebook || '';
 
+            if (myStore.showLocation !== undefined) {
+                document.getElementById('settingsShowLocation').checked = myStore.showLocation;
+            } else {
+                document.getElementById('settingsShowLocation').checked = true;
+            }
+
             if(myStore.coverUrl) {
                 document.getElementById('settingsCoverPreview').src = myStore.coverUrl;
                 document.getElementById('settingsCoverPreview').classList.remove('hidden');
@@ -1511,8 +1546,9 @@
                     name: newStoreName,
                     whatsapp: document.getElementById('settingsWhatsapp').value,
                     district: document.getElementById('settingsDistrict').value,
-                    lat: parseFloat(document.getElementById('settingsLat').value),
-                    lng: parseFloat(document.getElementById('settingsLng').value),
+                    lat: document.getElementById('settingsLat').value ? parseFloat(document.getElementById('settingsLat').value) : null,
+                    lng: document.getElementById('settingsLng').value ? parseFloat(document.getElementById('settingsLng').value) : null,
+                    showLocation: document.getElementById('settingsShowLocation').checked,
                     website: document.getElementById('settingsWebsite').value.trim(),
                     instagram: document.getElementById('settingsInstagram').value.replace('@', '').trim(),
                     facebook: document.getElementById('settingsFacebook').value.trim(),
@@ -1651,7 +1687,6 @@
                     let extractedDesc = '';
                     let extractedImages = [];
 
-                    // Sütun sıralarına güvenmek yerine satırdaki TÜM HÜCRELERİ dinamik tarıyoruz
                     for (let key in row) {
                         const cleanKey = key.toString().toLowerCase().trim().replace(/['"]/g, '').replace(/^\ufeff/, '');
                         const cellValue = row[key] ? row[key].toString().trim() : '';
@@ -1669,7 +1704,6 @@
                                 extractedPrice = parseFloat(cleanPrice) || 0;
                             }
                         } else if (cleanKey.includes('kategori') || cleanKey.includes('category')) {
-                            // Kategori hücresi boş değilse, YAZILAN KELİMEYİ BİREBİR AL. (Fuzzy Match Kaldırıldı)
                             if (cellValue !== '') {
                                 extractedCategory = cellValue;
                             }
@@ -1688,7 +1722,7 @@
                         }
                     }
 
-                    if (extractedTitle === '') continue; // Başlığı olmayan geçersiz satırları atla
+                    if (extractedTitle === '') continue; 
 
                     extractedImages = extractedImages.slice(0, imageLimit);
                     if (extractedImages.length === 0) {
