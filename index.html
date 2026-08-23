@@ -1692,6 +1692,9 @@
                 displayProducts.sort((a, b) => b.price - a.price);
             }
 
+            // DÜZELTME: Filtre çubuğu artık HER SAYFADA (Ana sayfa dahil) EN ÜSTTE görünecek.
+            html += filterBarHtml;
+
             if (!searchQuery && !activeCategory && !activeDistrict && !filterFreeDelivery && !filterCashOnDelivery && currentSort === 'newest') {
                 // Ana Sayfa - Varsayılan Görünüm (Bannerlar, Premium vb.)
                 const mainBgContent = appSettings.mainBanner.image ? `<img src="${appSettings.mainBanner.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 z-0"></div>`;
@@ -1770,7 +1773,6 @@
                 
                 let finalForYou = shuffleArray([...poolPremium, ...poolStandard, ...poolFree]);
 
-                html += filterBarHtml; // Ana sayfaya filtre çubuğunu ekle
                 html += `<div class="mb-5"><h2 class="text-xl font-black text-slate-900">${window.t('for_you')}</h2></div>`;
                 if(finalForYou.length > 0) {
                     html += `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">`;
@@ -1815,7 +1817,6 @@
                 const translatedActiveCat = activeCategory ? window.getCategoryTranslation(activeCategory) : '';
                 const filterTitleText = searchQuery ? `'${searchQuery}' ${window.t('search_results_for')}` : translatedActiveCat ? `${translatedActiveCat}` : window.t('filtered_products');
 
-                html += filterBarHtml; // Arama/Kategori sayfasına filtre çubuğunu ekle
                 html += `<div class="flex justify-between items-end mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-100"><div><h2 class="text-xl font-black text-slate-900">${filterTitleText}</h2></div><span class="text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1.5 rounded-full">${displayProducts.length} ${window.t('products_found')}</span></div>`;
 
                 if (displayProducts.length === 0) {
