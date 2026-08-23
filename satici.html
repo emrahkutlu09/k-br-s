@@ -118,8 +118,13 @@
         <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center space-y-4 shadow-2xl border border-slate-100">
             <i data-lucide="clock" class="w-12 h-12 text-amber-500 mx-auto animate-pulse"></i>
             <h2 class="text-xl font-black text-slate-900">Onay Bekleniyor</h2>
-            <p class="text-sm text-slate-500 leading-relaxed">Mağaza başvurunuz başarıyla alındı. Yöneticilerimiz onayladıktan sonra panele erişebilirsiniz.</p>
-            <button onclick="window.logoutUser()" class="text-xs font-bold text-rose-500 mt-2 hover:underline block mx-auto">Çıkış Yap</button>
+            <p class="text-sm text-slate-500 leading-relaxed mb-4">Mağaza başvurunuz başarıyla alındı. Yöneticilerimiz onayladıktan sonra panele erişebilirsiniz.</p>
+            
+            <button onclick="window.resendApprovalMessage()" class="w-full bg-[#25D366] hover:bg-[#1DA851] text-white font-black py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-green-500/30">
+                <i data-lucide="message-circle" class="w-5 h-5"></i> Admin'e WhatsApp'tan Bildir
+            </button>
+
+            <button onclick="window.logoutUser()" class="text-xs font-bold text-rose-500 mt-2 hover:underline block mx-auto pt-2">Farklı Bir Hesapla Çıkış Yap</button>
         </div>
     </div>
 
@@ -847,12 +852,24 @@
             try {
                 await setDoc(doc(storesRef), newStore);
                 window.showMessage("Doğrulama başarılı! Mağaza başvurunuz alındı.");
+                
+                // 🚀 YENİ: Başvuru başarılı olduğunda direkt Admin'e WhatsApp'tan otomatik mesaj at (sekme aç)
+                const message = `Merhaba, Kıbrıs Bazar'da yeni bir mağaza açılış talebim var. Sisteme az önce kayıt oldum, onayınızı bekliyorum.\n\n*Mağaza Adı:* ${regData.name}\n*Bölge:* ${regData.district}\n*İletişim Numarası:* ${regData.whatsapp}`;
+                window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
+                
                 checkStoreStatus();
             } catch(err) {
                 window.showMessage("Kayıt hatası.", "error");
                 showScreen('registerScreen');
             }
         }
+        
+        // 🚀 YENİ: Tarayıcı engelleyicisi nedeniyle WhatsApp açılmazsa diye manuel buton fonksiyonu
+        window.resendApprovalMessage = () => {
+            if(!myStore) return;
+            const message = `Merhaba, Kıbrıs Bazar'da yeni bir mağaza açılış talebim var. Sisteme kayıt oldum, onayınızı bekliyorum.\n\n*Mağaza Adı:* ${myStore.name}\n*Bölge:* ${myStore.district}\n*İletişim Numarası:* ${myStore.whatsapp}`;
+            window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
+        };
 
         function checkStoreStatus() {
             showScreen('fullScreenLoader');
