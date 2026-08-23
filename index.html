@@ -1645,7 +1645,55 @@
 
             let html = '';
 
-            if (!searchQuery && !activeCategory && !activeDistrict) {
+            // --- YENİ: Filtreleme Durumu State'leri ---
+            const currentSort = window.currentSortPreference || 'newest'; // 'newest', 'price_asc', 'price_desc'
+            const filterFreeDelivery = window.filterFreeDeliveryActive || false;
+            const filterCashOnDelivery = window.filterCashOnDeliveryActive || false;
+
+            // Filtreleme Çubuğu HTML'i
+            const filterBarHtml = `
+                <div class="mb-6 bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                        <label class="flex items-center gap-2 cursor-pointer bg-slate-50 hover:bg-slate-100 px-3 py-2 rounded-xl transition border border-slate-200 w-full sm:w-auto">
+                            <input type="checkbox" id="checkFreeDelivery" onchange="window.toggleFreeDeliveryFilter(this.checked)" ${filterFreeDelivery ? 'checked' : ''} class="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-500">
+                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="truck" class="w-3.5 h-3.5 text-[#0ea5e9]"></i> Ücretsiz Teslimat</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer bg-slate-50 hover:bg-slate-100 px-3 py-2 rounded-xl transition border border-slate-200 w-full sm:w-auto">
+                            <input type="checkbox" id="checkCashOnDelivery" onchange="window.toggleCashOnDeliveryFilter(this.checked)" ${filterCashOnDelivery ? 'checked' : ''} class="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-500">
+                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="banknote" class="w-3.5 h-3.5 text-emerald-500"></i> Kapıda Ödeme</span>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                        <span class="text-xs font-bold text-slate-400 whitespace-nowrap hidden sm:inline">Sırala:</span>
+                        <select id="sortSelect" onchange="window.changeSortPreference(this.value)" class="w-full sm:w-auto bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer">
+                            <option value="newest" ${currentSort === 'newest' ? 'selected' : ''}>En Yeniler</option>
+                            <option value="price_asc" ${currentSort === 'price_asc' ? 'selected' : ''}>En Düşük Fiyat</option>
+                            <option value="price_desc" ${currentSort === 'price_desc' ? 'selected' : ''}>En Yüksek Fiyat</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+
+            // Filtreleri Uygula
+            if (filterFreeDelivery) {
+                displayProducts = displayProducts.filter(p => p.freeDelivery === true);
+            }
+            if (filterCashOnDelivery) {
+                displayProducts = displayProducts.filter(p => p.cashOnDelivery === true);
+            }
+
+            // Sıralamayı Uygula
+            if (currentSort === 'newest') {
+                displayProducts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            } else if (currentSort === 'price_asc') {
+                displayProducts.sort((a, b) => a.price - b.price);
+            } else if (currentSort === 'price_desc') {
+                displayProducts.sort((a, b) => b.price - a.price);
+            }
+
+            if (!searchQuery && !activeCategory && !activeDistrict && !filterFreeDelivery && !filterCashOnDelivery && currentSort === 'newest') {
+                // Ana Sayfa - Varsayılan Görünüm (Bannerlar, Premium vb.)
                 const mainBgContent = appSettings.mainBanner.image ? `<img src="${appSettings.mainBanner.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 z-0"></div>`;
                 const side1BgContent = appSettings.sideBanner1.image ? `<img src="${appSettings.sideBanner1.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-rose-400 z-0"></div>`;
                 const side2BgContent = appSettings.sideBanner2.image ? `<img src="${appSettings.sideBanner2.image}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-1000 group-hover:scale-105" />` : `<div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 z-0"></div>`;
@@ -1722,6 +1770,7 @@
                 
                 let finalForYou = shuffleArray([...poolPremium, ...poolStandard, ...poolFree]);
 
+                html += filterBarHtml; // Ana sayfaya filtre çubuğunu ekle
                 html += `<div class="mb-5"><h2 class="text-xl font-black text-slate-900">${window.t('for_you')}</h2></div>`;
                 if(finalForYou.length > 0) {
                     html += `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">`;
@@ -1766,6 +1815,7 @@
                 const translatedActiveCat = activeCategory ? window.getCategoryTranslation(activeCategory) : '';
                 const filterTitleText = searchQuery ? `'${searchQuery}' ${window.t('search_results_for')}` : translatedActiveCat ? `${translatedActiveCat}` : window.t('filtered_products');
 
+                html += filterBarHtml; // Arama/Kategori sayfasına filtre çubuğunu ekle
                 html += `<div class="flex justify-between items-end mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-100"><div><h2 class="text-xl font-black text-slate-900">${filterTitleText}</h2></div><span class="text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1.5 rounded-full">${displayProducts.length} ${window.t('products_found')}</span></div>`;
 
                 if (displayProducts.length === 0) {
@@ -1778,6 +1828,22 @@
             }
             mainContent.innerHTML = html;
             lucide.createIcons();
+        };
+
+        // --- YENİ: Filtreleme Fonksiyonları ---
+        window.toggleFreeDeliveryFilter = (isActive) => {
+            window.filterFreeDeliveryActive = isActive;
+            window.renderHome(document.getElementById('searchInput').value);
+        };
+
+        window.toggleCashOnDeliveryFilter = (isActive) => {
+            window.filterCashOnDeliveryActive = isActive;
+            window.renderHome(document.getElementById('searchInput').value);
+        };
+
+        window.changeSortPreference = (sortType) => {
+            window.currentSortPreference = sortType;
+            window.renderHome(document.getElementById('searchInput').value);
         };
 
         window.openProductDetail = (id, updateState = true) => {
