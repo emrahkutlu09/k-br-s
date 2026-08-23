@@ -247,7 +247,7 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h3 class="text-lg font-black text-slate-800">Ürün Yönetimi</h3>
-                        <p class="text-xs font-bold text-slate-500 mt-1">İlanlarınızı ekleyin, dışa/içe aktarın ve ürünlerinizi toplu yönetin.</p>
+                        <p class="text-xs font-bold text-slate-500 mt-1">İlanlarınızı ekleyin, dışa/içe aktarın ve fiyatlarını toplu güncelleyin.</p>
                     </div>
                     <div class="flex flex-wrap justify-end gap-2 w-full sm:w-auto mt-3 sm:mt-0">
                         <div class="flex gap-2 w-full sm:w-auto">
@@ -1049,11 +1049,6 @@
 
             const pCategorySelect = document.getElementById('pCategory');
             if (pCategorySelect) pCategorySelect.innerHTML = optionsHtml;
-
-            const bulkCategorySelect = document.getElementById('bulkCategory');
-            if (bulkCategorySelect) {
-                bulkCategorySelect.innerHTML = '<option value="ALL">Tüm Ürünlerim</option>' + optionsHtml;
-            }
         }
 
         function buildCategoryTree(categories, parentId) {
@@ -1080,7 +1075,7 @@
             return html;
         }
 
-        // AKILLI KATEGORİ FİLTRELEME (Sadece İlan Eklenen Kategoriler)
+        // AKILLI KATEGORİ FİLTRELEME & TOPLU İŞLEM DROPDOWN GÜNCELLEMESİ
         function initCategoryFilters() {
             const container = document.getElementById('vendorCategoryFilter');
             let html = `<button onclick="window.filterVendorProducts('')" class="px-5 py-2 rounded-full text-xs font-bold transition ${currentFilterCategory === '' ? 'bg-slate-800 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'} filter-btn whitespace-nowrap" data-cat="">Tüm İlanlar</button>`;
@@ -1088,13 +1083,22 @@
             // Satıcının kendi ürünlerinde kullandığı eşsiz kategorileri bul
             const uniqueCategories = [...new Set(myProducts.map(p => p.category))].filter(c => c).sort();
 
+            let bulkHtml = '<option value="ALL" class="font-black text-slate-800">-- Tüm İlanlarım --</option>';
+
             uniqueCategories.forEach(catName => {
                 const isActive = currentFilterCategory === catName;
                 html += `<button onclick="window.filterVendorProducts('${catName}')" class="px-5 py-2 rounded-full text-xs font-bold transition ${isActive ? 'bg-slate-800 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'} filter-btn whitespace-nowrap" data-cat="${catName}">${catName}</button>`;
+                bulkHtml += `<option value="${catName}">${catName}</option>`;
             });
             
             if(uniqueCategories.length === 0) html += `<span class="text-xs text-slate-400 py-2 px-3">Henüz ilan eklenmedi.</span>`;
             container.innerHTML = html;
+
+            // Toplu işlem kategorilerini de güncelle (Sadece ilan eklenenler)
+            const bulkCategorySelect = document.getElementById('bulkCategory');
+            if(bulkCategorySelect) {
+                bulkCategorySelect.innerHTML = bulkHtml;
+            }
         }
 
         window.filterVendorProducts = (cat) => {
@@ -1641,7 +1645,7 @@
             lucide.createIcons();
         };
 
-        window.openBulkPriceModal = () => { document.getElementById('bulkPriceModal').classList.remove('hidden'); updateCategoryDropdowns(); };
+        window.openBulkPriceModal = () => { document.getElementById('bulkPriceModal').classList.remove('hidden'); };
         
         window.toggleBulkActionType = (type) => {
             if(type === 'price') {
