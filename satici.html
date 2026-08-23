@@ -128,6 +128,7 @@
         <div class="bg-slate-900 text-white p-4 sm:px-8 flex justify-between items-center shadow-md z-20 relative border-b border-slate-800">
             <div><span class="text-xl font-black text-white tracking-tight">KOBİ<span class="text-orange-500">PANEL</span></span></div>
             <div class="flex items-center gap-3 sm:gap-4">
+                <!-- MAĞAZAMI PAYLAŞ BUTONU -->
                 <button onclick="window.shareMyStore()" class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-2 shadow-sm" title="Mağaza Bağlantısını Paylaş">
                     <i data-lucide="share-2" class="w-4 h-4"></i> <span class="hidden sm:inline">Mağazamı Paylaş</span>
                 </button>
@@ -246,7 +247,7 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h3 class="text-lg font-black text-slate-800">Ürün Yönetimi</h3>
-                        <p class="text-xs font-bold text-slate-500 mt-1">İlanlarınızı ekleyin, dışa/içe aktarın ve fiyatlarını toplu güncelleyin.</p>
+                        <p class="text-xs font-bold text-slate-500 mt-1">İlanlarınızı ekleyin, dışa/içe aktarın ve ürünlerinizi toplu yönetin.</p>
                     </div>
                     <div class="flex flex-wrap justify-end gap-2 w-full sm:w-auto mt-3 sm:mt-0">
                         <div class="flex gap-2 w-full sm:w-auto">
@@ -260,7 +261,7 @@
                         </div>
                         <div class="flex gap-2 w-full sm:w-auto">
                             <button onclick="window.openBulkPriceModal()" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm">
-                                <i data-lucide="percent" class="w-4 h-4"></i> Toplu Fiyat
+                                <i data-lucide="layers" class="w-4 h-4"></i> Toplu İşlemler
                             </button>
                             <button onclick="window.openAddProduct()" id="btnAddProduct" class="flex-1 sm:flex-none bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20">
                                 <i data-lucide="plus-circle" class="w-4 h-4"></i> Yeni İlan Ekle
@@ -310,7 +311,7 @@
                         <ul class="space-y-3 text-sm font-medium text-purple-100 mb-8 flex-1">
                             <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Sınırsız İlan Yükleme</li>
                             <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Sınırsız Görsel Yükleme</li>
-                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Gelişmiş Varyant Sistemi</li>
+                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Gelişmiş Varyant (Seçenek) Sistemi</li>
                             <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Özel "VIP" Mağaza Rozeti</li>
                         </ul>
                         <button onclick="window.requestPackageUpgrade('premium')" class="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-400 hover:to-fuchsia-400 text-white font-black py-3.5 rounded-xl text-sm transition shadow-lg shadow-purple-500/40">Premium VIP Talep Et</button>
@@ -405,28 +406,33 @@
                                         </div>
                                     </div>
                                 </div>
+                                <p class="text-[10px] text-slate-400 mt-3 font-medium">Bu bağlantılar mağaza profilinizde görünecektir. Müşterileriniz ikonlara tıklayarak sizi ziyaret edebilir. Boş bırakırsanız gizlenir.</p>
                             </div>
                             
-                            <!-- Harita Konum Seçici Modülü (Güncellendi) -->
-                            <div class="sm:col-span-2 mt-4 bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                                    <label class="block text-sm font-black text-slate-800 flex items-center gap-2">
-                                        <i data-lucide="map-pin" class="w-5 h-5 text-orange-500"></i> Mağaza Konumu
-                                    </label>
-                                    
-                                    <!-- Konumu Göster / Gizle Toggle Şalteri -->
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="settingsShowLocation" class="sr-only peer" onchange="window.toggleMapVisibility(this.checked)">
-                                        <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
-                                        <span class="ms-3 text-xs font-bold text-slate-600">Konumu Müşterilere Göster</span>
-                                    </label>
+                            <!-- Harita Konum Seçici Modülü -->
+                            <div class="sm:col-span-2 mt-4 pt-4 border-t border-slate-100">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 flex items-center gap-1">
+                                            <i data-lucide="map-pin" class="w-4 h-4 text-orange-500"></i> Mağaza Konumu (Haritadan Seçin)
+                                        </label>
+                                        <p class="text-[10px] text-slate-500 mt-1">Müşterilerinizin dükkanınızı bulabilmesi için haritaya tıklayarak veya kırmızı iğneyi sürükleyerek konumunuzu işaretleyin.</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <!-- Harita Göster/Gizle Şalteri -->
+                                        <label class="flex items-center gap-2 cursor-pointer bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition border border-slate-200">
+                                            <input type="checkbox" id="settingsShowLocation" class="w-3.5 h-3.5 text-orange-500 rounded border-slate-300 focus:ring-orange-500 cursor-pointer">
+                                            <span class="text-[10px] font-bold text-slate-700 whitespace-nowrap">Müşterilere Göster</span>
+                                        </label>
+                                        <!-- Konumu Temizle Butonu -->
+                                        <button type="button" onclick="window.clearStoreLocation()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-bold border border-rose-200 flex items-center gap-1 transition">
+                                            <i data-lucide="trash-2" class="w-3 h-3"></i> Temizle
+                                        </button>
+                                    </div>
                                 </div>
                                 
-                                <div id="mapContainerWrapper" class="transition-all duration-300">
-                                    <p class="text-xs text-slate-500 mb-4">Müşterilerinizin fiziksel dükkanınızı kolayca bulabilmesi için haritaya tıklayarak veya kırmızı iğneyi sürükleyerek konumunuzu işaretleyin. Eğer konum paylaşmak istemiyorsanız yukarıdaki şalteri kapatabilirsiniz.</p>
-                                    <div class="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
-                                        <div id="storeLocationMap" class="w-full h-72 sm:h-96 bg-slate-200"></div>
-                                    </div>
+                                <div class="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
+                                    <div id="storeLocationMap" class="w-full h-72 sm:h-96 bg-slate-100"></div>
                                 </div>
                                 
                                 <input type="hidden" id="settingsLat">
@@ -462,6 +468,7 @@
                         <input type="file" id="pImages" accept="image/*" multiple class="w-full text-sm file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer transition shadow-sm"/>
                         <p class="text-xs text-blue-600/70 mt-3 font-medium" id="mediaWarningText"><i data-lucide="info" class="w-4 h-4 inline mb-0.5"></i> Fotoğrafları sürükleyerek sıralayabilir veya çarpı (X) tuşu ile silebilirsiniz. Yeni seçtikleriniz mevcutların sonuna eklenir.</p>
                         
+                        <!-- İnteraktif Medya Önizleme Galerisi -->
                         <div id="pMediaPreviewContainer" class="flex gap-3 mt-4 overflow-x-auto pb-2 no-scrollbar min-h-[90px] items-center border border-blue-200/60 bg-white/60 p-3 rounded-xl">
                             <span class="text-xs text-slate-400 italic">Henüz fotoğraf seçilmedi.</span>
                         </div>
@@ -485,23 +492,28 @@
                         </div>
                     </div>
 
-                    <!-- Müşteri Avantaj Etiketleri (Yeni Eklendi) -->
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-2">Özel Etiketler (İlanın üzerinde rozet olarak görünür)</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                            <label class="flex items-center gap-3 cursor-pointer bg-white p-3 rounded-lg border border-slate-100 shadow-sm hover:border-orange-300 transition">
-                                <input type="checkbox" id="pFreeDelivery" class="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-500">
-                                <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="truck" class="w-4 h-4 text-[#0ea5e9]"></i> Ücretsiz Teslimat</span>
-                            </label>
-                            <label class="flex items-center gap-3 cursor-pointer bg-white p-3 rounded-lg border border-slate-100 shadow-sm hover:border-orange-300 transition">
-                                <input type="checkbox" id="pCashOnDelivery" class="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-500">
-                                <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="banknote" class="w-4 h-4 text-emerald-500"></i> Kapıda Ödeme</span>
-                            </label>
-                        </div>
+                    <!-- Ücretsiz Teslimat ve Kapıda Ödeme Etiketleri -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl cursor-pointer transition">
+                            <input type="checkbox" id="pFreeDelivery" class="w-5 h-5 text-orange-500 rounded border-slate-300 focus:ring-orange-500">
+                            <div>
+                                <div class="text-sm font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="truck" class="w-4 h-4 text-[#0ea5e9]"></i> Ücretsiz Teslimat</div>
+                                <div class="text-[10px] text-slate-400 mt-0.5">Müşteri kargo ücreti ödemez.</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl cursor-pointer transition">
+                            <input type="checkbox" id="pCashOnDelivery" class="w-5 h-5 text-orange-500 rounded border-slate-300 focus:ring-orange-500">
+                            <div>
+                                <div class="text-sm font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="banknote" class="w-4 h-4 text-emerald-500"></i> Kapıda Ödeme</div>
+                                <div class="text-[10px] text-slate-400 mt-0.5">Müşteri ürünü teslim alırken öder.</div>
+                            </div>
+                        </label>
                     </div>
 
-                    <!-- Gelişmiş Varyant (Seçenek) Sistemi -->
+                    <!-- Gelişmiş Varyant (Seçenek) Sistemi (Premium Özel) -->
                     <div class="bg-gradient-to-br from-purple-50 to-white p-5 rounded-2xl border-2 border-purple-100 relative overflow-hidden">
+                        
+                        <!-- Kilit Ekranı (Eğer Premium Değilse) -->
                         <div id="premiumVariantLock" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-center p-6 transition-all hidden">
                             <i data-lucide="lock" class="w-10 h-10 text-purple-400 mb-3"></i>
                             <h4 class="font-black text-purple-900 text-lg mb-2">Gelişmiş Varyant Sistemi</h4>
@@ -518,6 +530,7 @@
                                 <button type="button" onclick="window.addVariantRow()" class="text-xs font-black bg-purple-600 text-white px-3 py-1.5 rounded-lg hover:bg-purple-700 transition flex items-center gap-1 shadow-sm"><i data-lucide="plus" class="w-3 h-3"></i> Yeni Ekle</button>
                             </div>
                             
+                            <!-- Varyant Listesi Konteyneri -->
                             <div id="variantsContainer" class="space-y-3"></div>
                         </div>
                     </div>
@@ -537,26 +550,35 @@
         </div>
     </div>
 
-    <!-- Toplu Fiyat Güncelleme Modalı -->
+    <!-- Toplu İşlemler Modalı -->
     <div id="bulkPriceModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden flex flex-col shadow-2xl transform transition-all">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-black text-xl text-slate-900 flex items-center gap-2"><i data-lucide="percent" class="w-6 h-6 text-orange-500"></i> Toplu Fiyat Güncelle</h3>
+                <h3 class="font-black text-xl text-slate-900 flex items-center gap-2"><i data-lucide="layers" class="w-6 h-6 text-orange-500"></i> Toplu İşlemler</h3>
                 <button onclick="document.getElementById('bulkPriceModal').classList.add('hidden')" class="text-slate-400 hover:text-rose-500 bg-white shadow-sm border border-slate-200 p-2 rounded-full transition"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-6">
                 <div class="bg-orange-50 p-4 rounded-xl border border-orange-100 text-xs text-orange-800 font-medium mb-6 leading-relaxed flex gap-3">
                     <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5"></i>
-                    <p>Seçtiğiniz kategorideki (veya tüm) ilanların fiyatlarına otomatik olarak <b>ZAM</b> veya <b>İNDİRİM</b> uygulayın. İndirim yaparsanız eski fiyat üzeri çizili görünür.</p>
+                    <p>Seçtiğiniz kategorideki (veya tüm) ilanların fiyatlarına otomatik olarak ZAM/İNDİRİM uygulayabilir veya "Ücretsiz Kargo", "Kapıda Ödeme" etiketlerini toplu olarak ekleyip/kaldırabilirsiniz.</p>
                 </div>
-                <form onsubmit="window.executeBulkPriceUpdate(event)" class="space-y-6">
+                <form onsubmit="window.executeBulkAction(event)" class="space-y-6">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-2">Hangi İlanlara Uygulansın?</label>
                         <select id="bulkCategory" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors cursor-pointer">
                             <!-- JS Dinamik Dolacak -->
                         </select>
                     </div>
-                    <div class="grid grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-2">İşlem Türü Seçin</label>
+                        <select id="bulkActionType" onchange="window.toggleBulkActionType(this.value)" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-black outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors cursor-pointer">
+                            <option value="price">Fiyat Güncellemesi (Zam/İndirim)</option>
+                            <option value="labels">Etiket Güncellemesi (Kargo/Kapıda Ödeme)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Fiyat İşlemleri -->
+                    <div id="bulkPriceFields" class="grid grid-cols-2 gap-5">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-2">İşlem Yönü</label>
                             <select id="bulkAction" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-black outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors cursor-pointer">
@@ -569,6 +591,27 @@
                             <input type="number" id="bulkPercentage" required min="1" max="99" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-lg text-center font-black outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors text-slate-800" placeholder="15" />
                         </div>
                     </div>
+
+                    <!-- Etiket İşlemleri (Gizli Başlar) -->
+                    <div id="bulkLabelFields" class="grid grid-cols-2 gap-5 hidden">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-2">Ücretsiz Teslimat</label>
+                            <select id="bulkFreeDelivery" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-black outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors cursor-pointer">
+                                <option value="no_change" class="text-slate-500">Değiştirme</option>
+                                <option value="add" class="text-[#0ea5e9]">Hepsine Ekle (+)</option>
+                                <option value="remove" class="text-rose-600">Hepsinden Kaldır (-)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-2">Kapıda Ödeme</label>
+                            <select id="bulkCashOnDelivery" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-black outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors cursor-pointer">
+                                <option value="no_change" class="text-slate-500">Değiştirme</option>
+                                <option value="add" class="text-emerald-600">Hepsine Ekle (+)</option>
+                                <option value="remove" class="text-rose-600">Hepsinden Kaldır (-)</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="pt-2">
                         <button type="submit" id="btnBulkUpdate" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl transition flex items-center justify-center gap-2 shadow-xl shadow-slate-900/20 text-lg">
                             <i data-lucide="zap" class="w-5 h-5"></i> Güncellemeyi Başlat
@@ -702,6 +745,7 @@
 
         window.logoutUser = () => { signOut(auth).then(() => { window.location.reload(); }); };
 
+        // 🌟 MAĞAZAMI PAYLAŞ FONKSİYONU 🌟
         window.shareMyStore = () => {
             if(!myStore) return;
             const slug = window.slugify(myStore.name);
@@ -724,6 +768,7 @@
             }
         };
 
+        // 🌟 BENZERSİZ MAĞAZA ADI KONTROL FONKSİYONU 🌟
         async function checkStoreNameAvailability(requestedName) {
             const q = query(storesRef);
             const snapshot = await getDocs(q);
@@ -732,7 +777,9 @@
 
             snapshot.forEach(doc => {
                 const existingStore = doc.data();
+                // Eğer güncelleme yapılıyorsa ve kendi ID'si ise izin ver
                 if (myStore && doc.id === myStore.id) return;
+                
                 if (window.slugify(existingStore.name) === requestedSlug) {
                     isAvailable = false;
                 }
@@ -748,6 +795,7 @@
             
             const storeName = document.getElementById('regName').value.trim();
 
+            // 1. İsim Müsaitlik Kontrolü
             btnText.innerText = "İsim Kontrol Ediliyor..."; btn.disabled = true;
             const isAvailable = await checkStoreNameAvailability(storeName);
 
@@ -792,7 +840,6 @@
                 status: 'pending',
                 packageType: 'free',
                 isPremium: false,
-                showLocation: true, 
                 createdAt: Date.now(),
                 followers: []
             };
@@ -854,17 +901,6 @@
         let locationMap;
         let locationMarker;
 
-        // Harita Göster/Gizle Şalteri
-        window.toggleMapVisibility = (isVisible) => {
-            const wrapper = document.getElementById('mapContainerWrapper');
-            if(isVisible) {
-                wrapper.classList.remove('hidden');
-                setTimeout(() => { if(locationMap) locationMap.invalidateSize(); }, 300);
-            } else {
-                wrapper.classList.add('hidden');
-            }
-        };
-
         function initLocationMap() {
             if(locationMap) {
                 setTimeout(() => locationMap.invalidateSize(), 300);
@@ -899,6 +935,21 @@
             
             setTimeout(() => locationMap.invalidateSize(), 400);
         }
+
+        // KONUMU TEMİZLEME FONKSİYONU
+        window.clearStoreLocation = () => {
+            window.customConfirm("Mağaza konumunuzu tamamen temizlemek istediğinize emin misiniz? Harita müşterilere gösterilmeyecektir.", () => {
+                document.getElementById('settingsLat').value = "";
+                document.getElementById('settingsLng').value = "";
+                document.getElementById('settingsShowLocation').checked = false;
+                if(locationMarker) {
+                     // Haritadaki kalemi rastgele bir yere at veya gizle (Lefkoşa merkez)
+                     locationMarker.setLatLng([35.1856, 33.3823]);
+                     locationMap.setView([35.1856, 33.3823], 10);
+                }
+                window.showMessage("Konum bilgileri temizlendi. Değişiklikleri kaydetmeyi unutmayın.", "info");
+            });
+        };
 
         function updateDashboardHeader() {
             document.getElementById('storeNameDisplay').innerText = myStore.name;
@@ -948,7 +999,7 @@
             onSnapshot(productsRef, (snapshot) => {
                 myProducts = [];
                 snapshot.forEach(d => { if(d.data().storeId === myStore.id) myProducts.push({id: d.id, ...d.data()}); });
-                initCategoryFilters(); 
+                initCategoryFilters(); // Ürünler geldiğinde kategorileri güncelle
                 renderProducts();
                 calculateStats();
             });
@@ -1029,28 +1080,26 @@
             return html;
         }
 
+        // AKILLI KATEGORİ FİLTRELEME (Sadece İlan Eklenen Kategoriler)
         function initCategoryFilters() {
             const container = document.getElementById('vendorCategoryFilter');
-            if(!container) return;
-            
             let html = `<button onclick="window.filterVendorProducts('')" class="px-5 py-2 rounded-full text-xs font-bold transition ${currentFilterCategory === '' ? 'bg-slate-800 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'} filter-btn whitespace-nowrap" data-cat="">Tüm İlanlar</button>`;
             
-            // Satıcının sadece KENDİ ürünlerinde kullandığı benzersiz kategorileri alıyoruz
-            const uniqueCategories = [...new Set(myProducts.map(p => p.category))].filter(Boolean).sort();
+            // Satıcının kendi ürünlerinde kullandığı eşsiz kategorileri bul
+            const uniqueCategories = [...new Set(myProducts.map(p => p.category))].filter(c => c).sort();
 
             uniqueCategories.forEach(catName => {
                 const isActive = currentFilterCategory === catName;
-                const activeClass = isActive ? 'bg-slate-800 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100';
-                html += `<button onclick="window.filterVendorProducts('${catName}')" class="px-5 py-2 rounded-full text-xs font-bold transition ${activeClass} filter-btn whitespace-nowrap" data-cat="${catName}">${catName}</button>`;
+                html += `<button onclick="window.filterVendorProducts('${catName}')" class="px-5 py-2 rounded-full text-xs font-bold transition ${isActive ? 'bg-slate-800 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'} filter-btn whitespace-nowrap" data-cat="${catName}">${catName}</button>`;
             });
             
-            if(uniqueCategories.length === 0) html += `<span class="text-xs text-slate-400 py-2 px-3">Henüz ilanınız yok.</span>`;
+            if(uniqueCategories.length === 0) html += `<span class="text-xs text-slate-400 py-2 px-3">Henüz ilan eklenmedi.</span>`;
             container.innerHTML = html;
         }
 
         window.filterVendorProducts = (cat) => {
             currentFilterCategory = cat;
-            initCategoryFilters(); 
+            initCategoryFilters(); // Butonların rengini güncelle
             renderProducts();
         };
 
@@ -1068,9 +1117,9 @@
             displayList.forEach(p => {
                 const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500/cbd5e1/475569?text=Gorsel';
                 const hasVariants = p.variants && p.variants.length > 0;
-                const discount = p.originalPrice > p.price ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
                 
-                // Müşteri Avantaj Etiketleri (Ribbon / Kurdela stili)
+                // SATICI PANELİ - ŞERİT (RİBBON) ETİKETLER
+                const discount = p.originalPrice > p.price ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
                 let ribbonHtml = '<div class="absolute top-2 left-0 flex flex-col gap-1 items-start z-10 pointer-events-none">';
                 if (discount > 0) {
                      ribbonHtml += `<div class="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-r shadow-md">-%${discount}</div>`;
@@ -1086,6 +1135,7 @@
                 html += `
                     <div class="border border-slate-200 rounded-3xl p-3 relative group bg-white shadow-sm hover:shadow-xl hover:border-orange-200 transition-all flex flex-col">
                         <div class="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-3 bg-slate-100">
+                            <!-- Kırık resim onleyicisi burada (onerror) -->
                             <img src="${img}" onerror="this.onerror=null; this.src='https://placehold.co/400x500/cbd5e1/475569?text=Gorsel+Yuklenemedi';" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Product Image">
                             ${ribbonHtml}
                         </div>
@@ -1248,12 +1298,10 @@
             document.getElementById('pTitle').value = "";
             document.getElementById('pDesc').value = "";
             document.getElementById('pPrice').value = "";
+            document.getElementById('variantsContainer').innerHTML = ""; 
             
-            // Checkboxları sıfırla
             document.getElementById('pFreeDelivery').checked = false;
             document.getElementById('pCashOnDelivery').checked = false;
-
-            document.getElementById('variantsContainer').innerHTML = ""; 
             
             updateCategoryDropdowns();
             
@@ -1292,10 +1340,9 @@
             document.getElementById('pTitle').value = p.title;
             document.getElementById('pDesc').value = p.description || "";
             
-            // Checkboxları doldur
             document.getElementById('pFreeDelivery').checked = p.freeDelivery || false;
             document.getElementById('pCashOnDelivery').checked = p.cashOnDelivery || false;
-
+            
             updateCategoryDropdowns();
             const catSelect = document.getElementById('pCategory');
             if([...catSelect.options].some(opt => opt.value === p.category)) {
@@ -1391,19 +1438,12 @@
                 }
 
                 const productData = {
-                    storeId: myStore.id, 
-                    storeName: myStore.name, 
-                    storeWhatsapp: myStore.whatsapp, 
-                    district: myStore.district,
-                    title: document.getElementById('pTitle').value, 
-                    description: document.getElementById('pDesc').value,
-                    category: document.getElementById('pCategory').value, 
-                    price: price,
+                    storeId: myStore.id, storeName: myStore.name, storeWhatsapp: myStore.whatsapp, district: myStore.district,
+                    title: document.getElementById('pTitle').value, description: document.getElementById('pDesc').value,
+                    category: document.getElementById('pCategory').value, price: price,
                     freeDelivery: document.getElementById('pFreeDelivery').checked,
                     cashOnDelivery: document.getElementById('pCashOnDelivery').checked,
-                    images: finalImages, 
-                    variants: variants, 
-                    updatedAt: Date.now()
+                    images: finalImages, variants: variants, updatedAt: Date.now()
                 };
 
                 if (editId) {
@@ -1504,6 +1544,8 @@
             document.getElementById('settingsWebsite').value = myStore.website || '';
             document.getElementById('settingsInstagram').value = myStore.instagram || '';
             document.getElementById('settingsFacebook').value = myStore.facebook || '';
+            
+            document.getElementById('settingsShowLocation').checked = myStore.showLocation !== false;
 
             if(myStore.coverUrl) {
                 document.getElementById('settingsCoverPreview').src = myStore.coverUrl;
@@ -1513,11 +1555,6 @@
                 document.getElementById('settingsLogoPreview').src = myStore.logoUrl;
                 document.getElementById('settingsLogoPreview').classList.remove('hidden');
             }
-
-            // Harita görünürlüğü toggle durumunu ayarla
-            const showLocation = myStore.showLocation !== false; // Varsayılan olarak true
-            document.getElementById('settingsShowLocation').checked = showLocation;
-            window.toggleMapVisibility(showLocation);
         }
 
         window.previewImage = (input, previewId) => {
@@ -1568,20 +1605,18 @@
                     logoUrl = await uploadFileToCloudinary(logoInputEl.files[0], 'image');
                 }
 
-                const showLocation = document.getElementById('settingsShowLocation').checked;
-
                 const updates = {
                     name: newStoreName,
                     whatsapp: document.getElementById('settingsWhatsapp').value,
                     district: document.getElementById('settingsDistrict').value,
                     lat: parseFloat(document.getElementById('settingsLat').value),
                     lng: parseFloat(document.getElementById('settingsLng').value),
+                    showLocation: document.getElementById('settingsShowLocation').checked,
                     website: document.getElementById('settingsWebsite').value.trim(),
                     instagram: document.getElementById('settingsInstagram').value.replace('@', '').trim(),
                     facebook: document.getElementById('settingsFacebook').value.trim(),
                     coverUrl: coverUrl,
-                    logoUrl: logoUrl,
-                    showLocation: showLocation
+                    logoUrl: logoUrl
                 };
 
                 await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'stores', myStore.id), updates);
@@ -1607,11 +1642,23 @@
         };
 
         window.openBulkPriceModal = () => { document.getElementById('bulkPriceModal').classList.remove('hidden'); updateCategoryDropdowns(); };
-        window.executeBulkPriceUpdate = async (e) => {
+        
+        window.toggleBulkActionType = (type) => {
+            if(type === 'price') {
+                document.getElementById('bulkPriceFields').classList.remove('hidden');
+                document.getElementById('bulkLabelFields').classList.add('hidden');
+                document.getElementById('bulkPercentage').required = true;
+            } else {
+                document.getElementById('bulkPriceFields').classList.add('hidden');
+                document.getElementById('bulkLabelFields').classList.remove('hidden');
+                document.getElementById('bulkPercentage').required = false;
+            }
+        };
+
+        window.executeBulkAction = async (e) => {
             e.preventDefault();
             const cat = document.getElementById('bulkCategory').value;
-            const action = document.getElementById('bulkAction').value;
-            const percent = parseFloat(document.getElementById('bulkPercentage').value);
+            const actionType = document.getElementById('bulkActionType').value;
             
             const btn = document.getElementById('btnBulkUpdate'); 
             btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> İşleniyor...`; 
@@ -1625,15 +1672,29 @@
                 const batch = writeBatch(db);
                 targets.forEach(p => {
                     const pRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', p.id);
-                    const oldPrice = p.price;
-                    let newPrice = 0;
-                    if(action === 'increase') newPrice = oldPrice + (oldPrice * (percent / 100));
-                    else newPrice = oldPrice - (oldPrice * (percent / 100));
-                    
-                    newPrice = Math.round(newPrice * 100) / 100;
-                    
-                    const updates = { price: newPrice, updatedAt: Date.now() };
-                    if(action === 'decrease') updates.originalPrice = oldPrice; 
+                    let updates = { updatedAt: Date.now() };
+
+                    if (actionType === 'price') {
+                        const action = document.getElementById('bulkAction').value;
+                        const percent = parseFloat(document.getElementById('bulkPercentage').value);
+                        const oldPrice = p.price;
+                        let newPrice = 0;
+                        if(action === 'increase') newPrice = oldPrice + (oldPrice * (percent / 100));
+                        else newPrice = oldPrice - (oldPrice * (percent / 100));
+                        
+                        newPrice = Math.round(newPrice * 100) / 100;
+                        updates.price = newPrice;
+                        if(action === 'decrease') updates.originalPrice = oldPrice; 
+                    } else if (actionType === 'labels') {
+                        const fd = document.getElementById('bulkFreeDelivery').value;
+                        const cod = document.getElementById('bulkCashOnDelivery').value;
+                        
+                        if (fd === 'add') updates.freeDelivery = true;
+                        else if (fd === 'remove') updates.freeDelivery = false;
+                        
+                        if (cod === 'add') updates.cashOnDelivery = true;
+                        else if (cod === 'remove') updates.cashOnDelivery = false;
+                    }
                     
                     batch.update(pRef, updates);
                 });
@@ -1651,13 +1712,15 @@
             if (myProducts.length === 0) { window.showMessage("Dışa aktarılacak ürün bulunmuyor.", "error"); return; }
             
             const separator = ';';
-            let csvContent = `Baslik${separator}Kategori${separator}Fiyat${separator}Aciklama${separator}Gorseller${separator}Varyantlar\n`;
+            let csvContent = `Baslik${separator}Kategori${separator}Fiyat${separator}Aciklama${separator}UcretsizKargo${separator}KapidaOdeme${separator}Gorseller${separator}Varyantlar\n`;
             
             myProducts.forEach(p => {
                 const baslik = `"${(p.title || '').replace(/"/g, '""')}"`;
                 const kategori = `"${p.category || ''}"`;
                 const fiyat = p.price || 0;
                 const aciklama = `"${(p.description || '').replace(/"/g, '""')}"`;
+                const kargo = p.freeDelivery ? "Evet" : "Hayir";
+                const kapida = p.cashOnDelivery ? "Evet" : "Hayir";
                 
                 let cleanImages = [];
                 if(p.images && p.images.length > 0) {
@@ -1674,7 +1737,7 @@
                 }
                 const varyantlar = `"${varsStr}"`;
                 
-                csvContent += `${baslik}${separator}${kategori}${separator}${fiyat}${separator}${aciklama}${separator}${gorseller}${separator}${varyantlar}\n`;
+                csvContent += `${baslik}${separator}${kategori}${separator}${fiyat}${separator}${aciklama}${separator}${kargo}${separator}${kapida}${separator}${gorseller}${separator}${varyantlar}\n`;
             });
             
             const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' }); 
@@ -1714,7 +1777,10 @@
                     let extractedCategory = 'Diğer';
                     let extractedDesc = '';
                     let extractedImages = [];
+                    let extractedFreeDel = false;
+                    let extractedCOD = false;
 
+                    // Sütun sıralarına güvenmek yerine satırdaki TÜM HÜCRELERİ dinamik tarıyoruz
                     for (let key in row) {
                         const cleanKey = key.toString().toLowerCase().trim().replace(/['"]/g, '').replace(/^\ufeff/, '');
                         const cellValue = row[key] ? row[key].toString().trim() : '';
@@ -1732,11 +1798,17 @@
                                 extractedPrice = parseFloat(cleanPrice) || 0;
                             }
                         } else if (cleanKey.includes('kategori') || cleanKey.includes('category')) {
-                            if (cellValue !== '') {
-                                extractedCategory = cellValue;
-                            }
+                            if (cellValue !== '') extractedCategory = cellValue;
                         } else if (cleanKey.includes('aciklama') || cleanKey.includes('açıklama') || cleanKey.includes('desc') || cleanKey.includes('detay')) {
                             extractedDesc = cellValue;
+                        } else if (cleanKey.includes('kargo') || cleanKey.includes('teslimat') || cleanKey.includes('delivery')) {
+                            if (cellValue.toLowerCase() === 'evet' || cellValue.toLowerCase() === 'var' || cellValue === '1' || cellValue.toLowerCase() === 'true') {
+                                extractedFreeDel = true;
+                            }
+                        } else if (cleanKey.includes('kapida') || cleanKey.includes('ödeme') || cleanKey.includes('cod')) {
+                            if (cellValue.toLowerCase() === 'evet' || cellValue.toLowerCase() === 'var' || cellValue === '1' || cellValue.toLowerCase() === 'true') {
+                                extractedCOD = true;
+                            }
                         } else if (cleanKey.includes('gorsel') || cleanKey.includes('görsel') || cleanKey.includes('image') || cleanKey.includes('resim') || cleanKey.includes('foto') || cleanKey.includes('src')) {
                             if (cellValue !== '') {
                                 const splitImages = cellValue.split(/[,;|\n]/);
@@ -1750,7 +1822,7 @@
                         }
                     }
 
-                    if (extractedTitle === '') continue; 
+                    if (extractedTitle === '') continue; // Başlığı olmayan geçersiz satırları atla
 
                     extractedImages = extractedImages.slice(0, imageLimit);
                     if (extractedImages.length === 0) {
@@ -1768,6 +1840,8 @@
                         category: extractedCategory, 
                         price: extractedPrice, 
                         originalPrice: extractedPrice,
+                        freeDelivery: extractedFreeDel,
+                        cashOnDelivery: extractedCOD,
                         images: extractedImages, 
                         variants: [], 
                         createdAt: Date.now()
