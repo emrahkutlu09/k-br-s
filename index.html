@@ -2480,11 +2480,11 @@
 
                         html += `
                             <div class="flex gap-4 relative">
-                                <button onclick="window.removeFromCart('${item.cartItemId}')" class="absolute top-0 right-0 rtl:left-0 rtl:right-auto p-1 text-slate-300 hover:text-rose-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                <img src="${itemImage}" class="w-20 h-20 object-cover rounded-xl bg-slate-50 shrink-0"/>
+                                <button onclick="window.removeFromCart('${item.cartItemId}')" class="absolute top-0 right-0 rtl:left-0 rtl:right-auto p-1 text-slate-300 hover:text-rose-500 transition z-10"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <img src="${itemImage}" onclick="window.toggleCart(); setTimeout(() => window.openProductDetail('${item.product.id}'), 300);" class="w-20 h-20 object-cover rounded-xl bg-slate-50 shrink-0 cursor-pointer hover:opacity-80 transition" title="Ürüne Git"/>
                                 <div class="flex-1 flex flex-col justify-between">
                                     <div>
-                                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 pr-6 rtl:pr-0 rtl:pl-6">${item.product.title}</h4>
+                                        <h4 onclick="window.toggleCart(); setTimeout(() => window.openProductDetail('${item.product.id}'), 300);" class="text-sm font-bold text-slate-800 line-clamp-2 pr-6 rtl:pr-0 rtl:pl-6 cursor-pointer hover:text-orange-500 transition" title="Ürüne Git">${item.product.title}</h4>
                                         ${item.variant ? `<span class="text-[10px] font-bold text-orange-500 mt-1 bg-orange-50 px-1.5 py-0.5 rounded inline-block">${item.variant}</span>` : ''}
                                     </div>
                                     <div class="flex items-center justify-between mt-2">
