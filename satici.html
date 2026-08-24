@@ -178,7 +178,7 @@
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 border-b border-slate-200">
                 <button onclick="window.switchTab('stats')" id="tabBtn-stats" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-900 text-white shadow-md shrink-0 transition flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Genel Bakış</button>
                 <button onclick="window.switchTab('orders')" id="tabBtn-orders" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="shopping-cart" class="w-4 h-4"></i> Siparişler</button>
-                <button onclick="window.switchTab('products')" id="tabBtn-products" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="package" class="w-4 h-4"></i> İlanlarım</button>
+                <button onclick="window.switchTab('products')" id="tabBtn-products" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="package" class="w-4 h-4"></i> Ürünlerim</button>
                 <button onclick="window.switchTab('packages')" id="tabBtn-packages" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4"></i> Abonelik</button>
                 <button onclick="window.switchTab('settings')" id="tabBtn-settings" class="px-5 py-2.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4"></i> Ayarlar</button>
             </div>
@@ -209,7 +209,7 @@
                     </div>
                     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between cursor-pointer hover:bg-slate-50 transition" onclick="window.switchTab('packages')">
                         <div class="flex items-start justify-between mb-3">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Aktif İlanlar</span>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Aktif Ürünler</span>
                             <i data-lucide="package" class="w-6 h-6 text-purple-500"></i>
                         </div>
                         <h4 class="text-3xl font-black text-slate-900"><span id="statActiveProducts">0</span><span class="text-sm text-slate-400 font-medium"> / <span id="statMaxProducts">Limit</span></span></h4>
@@ -247,12 +247,12 @@
                 </div>
             </div>
 
-            <!-- İlanlar Sekmesi -->
+            <!-- Ürünler Sekmesi -->
             <div id="tab-products" class="hidden space-y-6 animate-fade-in">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
                     <div>
                         <h3 class="text-lg font-black text-slate-800">Ürün Yönetimi</h3>
-                        <p class="text-xs font-bold text-slate-500 mt-1">İlanlarınızı ekleyin, dışa/içe aktarın ve fiyatlarını toplu güncelleyin.</p>
+                        <p class="text-xs font-bold text-slate-500 mt-1">Ürünlerinizi ekleyin, dışa/içe aktarın ve fiyatlarını toplu güncelleyin.</p>
                     </div>
                     <div class="flex flex-wrap justify-end gap-2 w-full sm:w-auto mt-3 sm:mt-0">
                         <div class="flex gap-2 w-full sm:w-auto">
@@ -269,7 +269,7 @@
                                 <i data-lucide="layers" class="w-4 h-4"></i> Toplu Güncelleme
                             </button>
                             <button onclick="window.openAddProduct()" id="btnAddProduct" class="flex-1 sm:flex-none bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20">
-                                <i data-lucide="plus-circle" class="w-4 h-4"></i> Yeni İlan Ekle
+                                <i data-lucide="plus-circle" class="w-4 h-4"></i> Yeni Ürün Ekle
                             </button>
                         </div>
                     </div>
@@ -303,8 +303,8 @@
                         <h4 class="font-black text-slate-800 mb-1 text-xl">Ücretsiz</h4>
                         <p class="text-xs text-slate-500 mb-6">Başlangıç için temel özellikler.</p>
                         <ul class="space-y-3 text-sm font-medium text-slate-600 mb-8 flex-1">
-                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> Max 20 İlan</li>
-                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> İlan Başına 1 Fotoğraf</li>
+                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> Max 20 Ürün</li>
+                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-500"></i> Ürün Başına 1 Fotoğraf</li>
                             <li class="flex items-center gap-3 text-slate-400"><i data-lucide="x" class="w-5 h-5"></i> Varyant Sistemi Yok</li>
                             <li class="flex items-center gap-3 text-slate-400"><i data-lucide="x" class="w-5 h-5"></i> VIP Rozet Yok</li>
                         </ul>
@@ -314,8 +314,8 @@
                         <h4 class="font-black text-blue-900 mb-1 text-xl">Standart Paket</h4>
                         <p class="text-xs text-blue-600 mb-6">Büyüyen işletmeler için.</p>
                         <ul class="space-y-3 text-sm font-medium text-slate-700 mb-8 flex-1">
-                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-blue-500"></i> Max 50 İlan</li>
-                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-blue-500"></i> İlan Başına 3 Fotoğraf</li>
+                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-blue-500"></i> Max 50 Ürün</li>
+                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-blue-500"></i> Ürün Başına 3 Fotoğraf</li>
                             <li class="flex items-center gap-3 text-slate-400"><i data-lucide="x" class="w-5 h-5"></i> Varyant Sistemi Yok</li>
                             <li class="flex items-center gap-3 text-slate-400"><i data-lucide="x" class="w-5 h-5"></i> VIP Rozet Yok</li>
                         </ul>
@@ -326,7 +326,7 @@
                         <h4 class="font-black text-purple-200 mb-1 text-xl flex items-center gap-2"><i data-lucide="award" class="w-6 h-6"></i> Premium VIP</h4>
                         <p class="text-xs text-purple-300 mb-6">Sınırları tamamen ortadan kaldırın.</p>
                         <ul class="space-y-3 text-sm font-medium text-purple-100 mb-8 flex-1">
-                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Sınırsız İlan Yükleme</li>
+                            <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Sınırsız Ürün Yükleme</li>
                             <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Sınırsız Görsel Yükleme</li>
                             <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Gelişmiş Varyant (Seçenek) Sistemi</li>
                             <li class="flex items-center gap-3"><i data-lucide="check" class="w-5 h-5 text-emerald-400"></i> Özel "VIP" Mağaza Rozeti</li>
@@ -473,7 +473,7 @@
     <div id="productModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] shadow-2xl transform transition-all">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-black text-xl text-slate-900 flex items-center gap-2" id="productModalTitle"><i data-lucide="package-plus" class="w-6 h-6 text-orange-500"></i> İlan Ekle</h3>
+                <h3 class="font-black text-xl text-slate-900 flex items-center gap-2" id="productModalTitle"><i data-lucide="package-plus" class="w-6 h-6 text-orange-500"></i> Ürün Ekle</h3>
                 <button onclick="window.closeProductModal()" class="text-slate-400 hover:text-rose-500 bg-white shadow-sm border border-slate-200 p-2 rounded-full transition"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-6 overflow-y-auto">
@@ -492,7 +492,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-2">İlan Başlığı</label>
+                        <label class="block text-xs font-bold text-slate-500 mb-2">Ürün Başlığı</label>
                         <input type="text" id="pTitle" required class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors" placeholder="Örn: Hakiki Deri Erkek Cüzdan" />
                     </div>
                     
@@ -581,7 +581,7 @@
                 </div>
                 <form onsubmit="window.executeBulkAction(event)" class="space-y-6">
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-2">Hangi İlanlara Uygulansın?</label>
+                        <label class="block text-xs font-bold text-slate-500 mb-2">Hangi Ürünlere Uygulansın?</label>
                         <select id="bulkCategory" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors cursor-pointer">
                             <!-- JS Dinamik Dolacak -->
                         </select>
@@ -643,7 +643,7 @@
     <div id="bulkDeleteModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden flex flex-col shadow-2xl transform transition-all">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-rose-50">
-                <h3 class="font-black text-xl text-rose-700 flex items-center gap-2"><i data-lucide="trash-2" class="w-6 h-6"></i> Toplu İlan Silme</h3>
+                <h3 class="font-black text-xl text-rose-700 flex items-center gap-2"><i data-lucide="trash-2" class="w-6 h-6"></i> Toplu Ürün Silme</h3>
                 <button onclick="document.getElementById('bulkDeleteModal').classList.add('hidden')" class="text-slate-400 hover:text-rose-500 bg-white shadow-sm border border-slate-200 p-2 rounded-full transition"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-6">
@@ -656,7 +656,7 @@
                     <label class="flex items-start gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition bulk-delete-option" id="opt-selected">
                         <input type="radio" name="deleteType" value="selected" id="radioDeleteSelected" class="mt-1 w-4 h-4 text-rose-600 focus:ring-rose-500" required>
                         <div class="flex-1">
-                            <div class="font-bold text-slate-800 text-sm">Seçili İlanları Sil</div>
+                            <div class="font-bold text-slate-800 text-sm">Seçili Ürünleri Sil</div>
                             <div class="text-xs text-slate-500 mt-0.5">Şu anda <span id="delModalSelectedCount" class="font-black text-rose-600">0</span> ilan seçili.</div>
                         </div>
                     </label>
@@ -677,7 +677,7 @@
                     <label class="flex items-start gap-3 p-4 border border-rose-200 bg-rose-50 rounded-xl cursor-pointer hover:bg-rose-100 transition bulk-delete-option" id="opt-all">
                         <input type="radio" name="deleteType" value="all" class="mt-1 w-4 h-4 text-rose-600 focus:ring-rose-500" required>
                         <div class="flex-1">
-                            <div class="font-bold text-rose-800 text-sm">Tüm İlanlarımı Sil</div>
+                            <div class="font-bold text-rose-800 text-sm">Tüm Ürünlerimi Sil</div>
                             <div class="text-xs text-rose-600/80 mt-0.5">Mağazanızdaki bütün ilanlar kalıcı olarak silinir.</div>
                         </div>
                     </label>
@@ -1154,11 +1154,11 @@
 
         function initCategoryFilters() {
             const container = document.getElementById('vendorCategoryFilter');
-            let html = `<button onclick="window.filterVendorProducts('')" class="px-5 py-2 rounded-full text-xs font-bold transition ${currentFilterCategory === '' ? 'bg-slate-800 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'} filter-btn whitespace-nowrap" data-cat="">Tüm İlanlar</button>`;
+            let html = `<button onclick="window.filterVendorProducts('')" class="px-5 py-2 rounded-full text-xs font-bold transition ${currentFilterCategory === '' ? 'bg-slate-800 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'} filter-btn whitespace-nowrap" data-cat="">Tüm Ürünler</button>`;
             
             const uniqueCategories = [...new Set(myProducts.map(p => p.category))].filter(c => c).sort();
 
-            let bulkHtml = '<option value="ALL" class="font-black text-slate-800">-- Tüm İlanlarım --</option>';
+            let bulkHtml = '<option value="ALL" class="font-black text-slate-800">-- Tüm Ürünlerim --</option>';
 
             uniqueCategories.forEach(catName => {
                 const isActive = currentFilterCategory === catName;
@@ -1432,7 +1432,7 @@
             
             if(myProducts.length >= limit) { window.showMessage(`Paket limitinize (${limit}) ulaştınız. Yeni ürün eklemek için paketinizi yükseltin.`, "error"); return; }
             
-            document.getElementById('productModalTitle').innerHTML = `<i data-lucide="package-plus" class="w-6 h-6 text-orange-500"></i> İlan Ekle`;
+            document.getElementById('productModalTitle').innerHTML = `<i data-lucide="package-plus" class="w-6 h-6 text-orange-500"></i> Ürün Ekle`;
             document.getElementById('pEditingId').value = "";
             document.getElementById('pImages').value = "";
             activeMediaList = [];
@@ -1470,7 +1470,7 @@
             const p = myProducts.find(x => x.id === id);
             if(!p) return;
 
-            document.getElementById('productModalTitle').innerHTML = `<i data-lucide="edit-3" class="w-6 h-6 text-blue-500"></i> İlanı Düzenle`;
+            document.getElementById('productModalTitle').innerHTML = `<i data-lucide="edit-3" class="w-6 h-6 text-blue-500"></i> Ürünü Düzenle`;
             document.getElementById('pEditingId').value = p.id;
             document.getElementById('pImages').value = ""; 
             
@@ -1518,7 +1518,7 @@
             if(myProducts.length >= limit) { window.showMessage("Paket limitinize ulaştınız.", "error"); return; }
 
             let clone = {...p}; delete clone.id; clone.title = clone.title + " (Kopya)"; clone.createdAt = Date.now();
-            try { await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products')), clone); window.showMessage("İlan başarıyla çoğaltıldı."); }
+            try { await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products')), clone); window.showMessage("Ürün başarıyla çoğaltıldı."); }
             catch(err) { window.showMessage("Çoğaltma hatası.", "error"); }
         };
 
@@ -1591,7 +1591,7 @@
 
                 if (editId) {
                     await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', editId), productData);
-                    window.showMessage("İlan başarıyla güncellendi.");
+                    window.showMessage("Ürün başarıyla güncellendi.");
                 } else {
                     productData.createdAt = Date.now();
                     productData.originalPrice = price; 
@@ -1610,7 +1610,7 @@
 
         window.deleteProduct = (id) => {
             window.customConfirm("Bu ilanı kalıcı olarak silmek istediğinize emin misiniz?", async () => {
-                try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id)); window.showMessage("İlan başarıyla silindi."); }
+                try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id)); window.showMessage("Ürün başarıyla silindi."); }
                 catch(err) { window.showMessage("Silme hatası.", "error"); }
             });
         };
@@ -2002,7 +2002,7 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            window.showMessage("İlanlarınız Excel uyumlu CSV formatında indirildi.");
+            window.showMessage("Ürünleriniz Excel uyumlu CSV formatında indirildi.");
         };
 
         async function processImportedData(data, rawHeaders, headers, event) {
