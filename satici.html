@@ -210,7 +210,7 @@
                     </div>
                     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between cursor-pointer hover:bg-slate-50 transition" onclick="window.switchTab('packages')">
                         <div class="flex items-start justify-between mb-3">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Aktif Ürünler</span>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Eklenen İlanlar</span>
                             <i data-lucide="package" class="w-6 h-6 text-purple-500"></i>
                         </div>
                         <h4 class="text-3xl font-black text-slate-900"><span id="statActiveProducts">0</span><span class="text-sm text-slate-400 font-medium"> / <span id="statMaxProducts">Limit</span></span></h4>
@@ -592,6 +592,8 @@
                         <select id="bulkActionType" onchange="window.toggleBulkActionType(this.value)" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-black outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors cursor-pointer">
                             <option value="price">Fiyat Güncellemesi (Zam/İndirim)</option>
                             <option value="labels">Etiket Güncellemesi (Kargo/Kapıda Ödeme)</option>
+                            <!-- YENİ EKLENEN -->
+                            <option value="status">Durum Güncellemesi (Aktif/Pasif)</option>
                         </select>
                     </div>
                     
@@ -626,6 +628,17 @@
                                 <option value="no_change" class="text-slate-500">Değiştirme</option>
                                 <option value="add" class="text-emerald-600">Hepsine Ekle (+)</option>
                                 <option value="remove" class="text-rose-600">Hepsinden Kaldır (-)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- YENİ: Durum İşlemleri (Gizli Başlar) -->
+                    <div id="bulkStatusFields" class="grid grid-cols-1 gap-5 hidden">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-2">Toplu Durum İşlemi</label>
+                            <select id="bulkStatusValue" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm font-black outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-colors cursor-pointer">
+                                <option value="active" class="text-emerald-600">Seçili İlanları AKTİF Et (Yayına Al)</option>
+                                <option value="passive" class="text-rose-600">Seçili İlanları PASİF Yap (Gizle)</option>
                             </select>
                         </div>
                     </div>
@@ -1268,16 +1281,21 @@
 
                 // Seçim Durumları ve CSS Sınıfları
                 const isChecked = selectedProductIds.includes(p.id);
+                // 🚀 YENİ: Aktif/Pasif durumuna göre saydamlık
+                const activeOpacityClass = p.isActive !== false ? '' : 'opacity-60 grayscale-[50%]';
                 const borderClass = isChecked ? 'border-rose-400 ring-2 ring-rose-100' : 'border-slate-200 hover:border-orange-200';
                 const checkboxOpacityClass = isChecked ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100';
 
                 html += `
-                    <div class="border rounded-3xl p-3 relative group bg-white shadow-sm hover:shadow-xl transition-all flex flex-col ${borderClass}">
+                    <div class="border rounded-3xl p-3 relative group bg-white shadow-sm hover:shadow-xl transition-all flex flex-col ${borderClass} ${activeOpacityClass}">
                         
                         <!-- 🚀 YENİ: Seçim Checkbox'ı -->
                         <div class="absolute top-3 right-3 z-20 transition-opacity ${checkboxOpacityClass}">
                             <input type="checkbox" onchange="window.toggleProductSelection('${p.id}', this.checked)" class="w-6 h-6 rounded border-slate-300 text-rose-500 focus:ring-rose-500 cursor-pointer shadow-md bg-white" ${isChecked ? 'checked' : ''}>
                         </div>
+                        
+                        <!-- 🚀 YENİ: Pasif Etiketi -->
+                        ${p.isActive === false ? '<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 bg-slate-900/80 text-white font-black px-3 py-1 rounded-xl text-xs pointer-events-none">PASİF</div>' : ''}
 
                         <div class="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-3 bg-slate-100">
                             <img src="${img}" onerror="this.onerror=null; this.src='https://placehold.co/400x500/cbd5e1/475569?text=Gorsel+Yuklenemedi';" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Product Image">
@@ -1294,6 +1312,9 @@
                                 <span class="text-lg font-black text-slate-900">${p.price.toLocaleString('tr-TR')} TL</span>
                             </div>
                             <div class="flex gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                <!-- 🚀 YENİ EKLENEN AKTİF/PASİF BUTONU -->
+                                <button onclick="window.toggleProductStatus('${p.id}', ${p.isActive !== false})" class="${p.isActive !== false ? 'bg-emerald-50 text-emerald-500 hover:bg-emerald-500 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-500 hover:text-white'} p-2 rounded-xl transition shadow-sm" title="${p.isActive !== false ? 'Pasife Al (Gizle)' : 'Aktif Et (Göster)'}"><i data-lucide="${p.isActive !== false ? 'eye' : 'eye-off'}" class="w-4 h-4"></i></button>
+                                
                                 <button onclick="window.editProduct('${p.id}')" class="bg-blue-50 hover:bg-blue-500 text-blue-500 hover:text-white p-2 rounded-xl transition shadow-sm" title="Düzenle"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
                                 <button onclick="window.duplicateProduct('${p.id}')" class="bg-slate-100 hover:bg-slate-800 text-slate-600 hover:text-white p-2 rounded-xl transition shadow-sm" title="Kopyala Çoğalt"><i data-lucide="copy" class="w-4 h-4"></i></button>
                                 <button onclick="window.deleteProduct('${p.id}')" class="bg-rose-50 hover:bg-rose-500 text-rose-500 hover:text-white p-2 rounded-xl transition shadow-sm" title="Sil"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
@@ -1305,6 +1326,18 @@
             container.innerHTML = html;
             lucide.createIcons();
         }
+
+        // 🚀 YENİ: Tekil Ürün Aktif/Pasif Yapma Fonksiyonu
+        window.toggleProductStatus = async (id, currentStatus) => {
+            try {
+                const newStatus = !currentStatus;
+                const pRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id);
+                await updateDoc(pRef, { isActive: newStatus, updatedAt: Date.now() });
+                window.showMessage(newStatus ? "Ürün aktif edildi (Yayında)." : "Ürün pasife alındı (Gizlendi).");
+            } catch(err) {
+                window.showMessage("Durum güncellenirken hata oluştu.", "error");
+            }
+        };
 
         let variantCount = 0;
         window.addVariantRow = (group = 'Seçenek', name = '', price = '', imageUrl = '') => {
@@ -1596,6 +1629,7 @@
                 } else {
                     productData.createdAt = Date.now();
                     productData.originalPrice = price; 
+                    productData.isActive = true; // YENİ EKLENEN ÜRÜNLER VARSAYILAN OLARAK AKTİFTİR
                     await setDoc(doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products')), productData);
                     window.showMessage("Yeni ilan başarıyla yayınlandı.");
                 }
@@ -1899,14 +1933,19 @@
         window.openBulkPriceModal = () => { document.getElementById('bulkPriceModal').classList.remove('hidden'); };
         
         window.toggleBulkActionType = (type) => {
+            // YENİ: Seçime göre alanları göster/gizle
+            document.getElementById('bulkPriceFields').classList.add('hidden');
+            document.getElementById('bulkLabelFields').classList.add('hidden');
+            document.getElementById('bulkStatusFields').classList.add('hidden');
+            document.getElementById('bulkPercentage').required = false;
+
             if(type === 'price') {
                 document.getElementById('bulkPriceFields').classList.remove('hidden');
-                document.getElementById('bulkLabelFields').classList.add('hidden');
                 document.getElementById('bulkPercentage').required = true;
-            } else {
-                document.getElementById('bulkPriceFields').classList.add('hidden');
+            } else if (type === 'labels') {
                 document.getElementById('bulkLabelFields').classList.remove('hidden');
-                document.getElementById('bulkPercentage').required = false;
+            } else if (type === 'status') {
+                document.getElementById('bulkStatusFields').classList.remove('hidden');
             }
         };
 
@@ -1920,8 +1959,15 @@
             btn.disabled = true;
             lucide.createIcons();
 
-            const targets = cat === 'ALL' ? myProducts : myProducts.filter(p => p.category === cat);
-            if(targets.length === 0) { window.showMessage("Etkilenecek ürün bulunamadı.", "error"); btn.innerHTML = `<i data-lucide="zap" class="w-5 h-5"></i> Güncellemeyi Başlat`; btn.disabled = false; lucide.createIcons(); return; }
+            // YENİ: Sadece seçili olanları veya kategoriyi/tümünü güncelleme
+            let targets = [];
+            if (selectedProductIds.length > 0) {
+                 targets = myProducts.filter(p => selectedProductIds.includes(p.id));
+            } else {
+                 targets = cat === 'ALL' ? myProducts : myProducts.filter(p => p.category === cat);
+            }
+
+            if(targets.length === 0) { window.showMessage("Etkilenecek ürün bulunamadı. Lütfen ürün seçin veya kategori belirleyin.", "error"); btn.innerHTML = `<i data-lucide="zap" class="w-5 h-5"></i> Güncellemeyi Başlat`; btn.disabled = false; lucide.createIcons(); return; }
 
             try {
                 const batch = writeBatch(db);
@@ -1949,12 +1995,22 @@
                         
                         if (cod === 'add') updates.cashOnDelivery = true;
                         else if (cod === 'remove') updates.cashOnDelivery = false;
+                    } else if (actionType === 'status') {
+                        const statusVal = document.getElementById('bulkStatusValue').value;
+                        updates.isActive = (statusVal === 'active');
                     }
                     
                     batch.update(pRef, updates);
                 });
                 await batch.commit();
                 window.showMessage(`${targets.length} ilan başarıyla güncellendi.`);
+                
+                // Seçimleri temizle
+                selectedProductIds = [];
+                window.updateSelectionUI();
+                const cb = document.getElementById('selectAllCheckbox');
+                if(cb) cb.checked = false;
+
                 document.getElementById('bulkPriceModal').classList.add('hidden');
             } catch(err) { window.showMessage("Toplu güncelleme hatası.", "error"); }
             
@@ -2098,6 +2154,7 @@
                         cashOnDelivery: extractedCOD,
                         images: extractedImages, 
                         variants: [], 
+                        isActive: true, // İçe aktarılanlar varsayılan olarak aktiftir
                         createdAt: Date.now()
                     };
 
@@ -2200,4 +2257,3 @@
     </script>
 </body>
 </html>
-```eof
