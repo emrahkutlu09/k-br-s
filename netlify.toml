@@ -15,3 +15,7 @@
 [[edge_functions]]
   path = "/sitemap.xml"
   function = "sitemap"
+[[edge_functions]]
+  path = "/sitemap-products.xml"
+  function = "sitemap-products"
+
