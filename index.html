@@ -1643,7 +1643,8 @@
             if(seoSection) seoSection.classList.remove('hidden'); 
             
             const activeStoreIds = dbStores.filter(s => s.status === 'active' && (!s.expiryDate || s.expiryDate > Date.now())).map(s => s.id);
-            let displayProducts = dbProducts.filter(p => activeStoreIds.includes(p.storeId));
+            // PASİF ÜRÜNLERİ GİZLEME KURALI EKLENDİ
+            let displayProducts = dbProducts.filter(p => activeStoreIds.includes(p.storeId) && p.isActive !== false);
             
             const premiumStoreIds = dbStores.filter(s => s.isPremium || s.packageType === 'premium').map(s => s.id);
             const standardStoreIds = dbStores.filter(s => s.packageType === 'standard' && !s.isPremium).map(s => s.id);
@@ -2116,7 +2117,8 @@
             });
             
             const activeStoreIdsDetail = dbStores.filter(s => s.status === 'active' && (!s.expiryDate || s.expiryDate > Date.now())).map(s => s.id);
-            const similarProducts = dbProducts.filter(p => p.category === product.category && p.id !== product.id && activeStoreIdsDetail.includes(p.storeId));
+            // PASİF ÜRÜNLERİ GİZLEME KURALI EKLENDİ
+            const similarProducts = dbProducts.filter(p => p.category === product.category && p.id !== product.id && activeStoreIdsDetail.includes(p.storeId) && p.isActive !== false);
             
             const similarSection = document.getElementById('detailSimilarSection');
             const similarContainer = document.getElementById('detailSimilarContainer');
@@ -2281,7 +2283,8 @@
             if(seoSection) seoSection.classList.add('hidden');
 
             spActiveCategory = '';
-            spStoreProducts = dbProducts.filter(p => p.storeId === storeId);
+            // PASİF ÜRÜNLERİ GİZLEME KURALI EKLENDİ
+            spStoreProducts = dbProducts.filter(p => p.storeId === storeId && p.isActive !== false);
 
             document.getElementById('spName').innerText = store.name;
             document.getElementById('spDistrict').innerText = store.district;
