@@ -6,3 +6,7 @@
 [[edge_functions]]
   path = "/urun/*"
   function = "seo-bot"
+
+[[edge_functions]]
+  path = "/magaza/*"
+  function = "seo-bot"
