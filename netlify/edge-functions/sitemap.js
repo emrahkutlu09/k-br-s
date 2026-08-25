@@ -2,7 +2,7 @@ export default async (request, context) => {
   const baseUrl = "https://kibrisbazar.com";
   
   // API Key eklenmiş güvenli Firebase bağlantısı
-  const firestoreUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4f7/databases/(default)/documents/artifacts/kibris-pazar/public/data/products?pageSize=10000&key=AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY";
+  const firestoreUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4f7/databases/(default)/documents/artifacts/kibris-pazar/public/data/products?pageSize=100&key=AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY";
   
   let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
   
