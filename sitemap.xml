@@ -15,7 +15,7 @@
         <priority>0.8</priority>
     </url>
 
-    <!-- Örnek Ürün Sayfan (Bunu kendi ürün linklerinle çoğaltabilirsin) -->
+    <!-- Örnek Ürün Sayfan -->
     <url>
         <loc>https://kibrisbazar.com/urun/legom-koltuk-sari-km5KpefrWqohCOGBuDAt</loc>
         <changefreq>weekly</changefreq>
