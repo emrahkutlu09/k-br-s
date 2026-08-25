@@ -10,3 +10,8 @@
 [[edge_functions]]
   path = "/magaza/*"
   function = "seo-bot"
+
+# --- YENİ EKLENEN OTOMATİK SİTEMAP ROBOTU ---
+[[edge_functions]]
+  path = "/sitemap.xml"
+  function = "sitemap"
