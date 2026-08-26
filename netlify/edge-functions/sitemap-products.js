@@ -11,8 +11,8 @@ export default async (request, context) => {
   const page = match ? parseInt(match[1]) : 1;
   const pageSize = 1000; // Her alt sayfada tam 1000 ürün
 
-  const productsBaseUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4f7/databases/(default)/documents/artifacts/kibris-pazar/public/data/products?pageSize=300&key=AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY";
-  const storesBaseUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4f7/databases/(default)/documents/artifacts/kibris-pazar/public/data/stores?pageSize=300&key=AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY";
+const productsBaseUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4f7/databases/(default)/documents/artifacts/kibris-pazar/public/data/products?pageSize=300";
+  const storesBaseUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4f7/databases/(default)/documents/artifacts/kibris-pazar/public/data/stores?pageSize=300";
 
   const slugify = (text, defaultStr) => {
     if(!text) return defaultStr;
