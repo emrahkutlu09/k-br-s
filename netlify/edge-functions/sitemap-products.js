@@ -1,17 +1,10 @@
-let cachedAllProducts = null;
-let cachedAllStores = null;
-let cacheTime = 0;
-const CACHE_DURATION = 60 * 60 * 1000; // 1 saat önbellek
-
 export default async (request, context) => {
   const baseUrl = "https://kibrisbazar.com";
-
-  // URL'den hangi alt sayfanın istendiğini buluyoruz (Örn: /sitemap-products-3.xml -> sayfa 3)
   const match = request.url.match(/sitemap-products-(\d+)\.xml/);
   const page = match ? parseInt(match[1]) : 1;
-  const pageSize = 1000; // Her alt sayfada tam 1000 ürün
+  const pageSize = 1000;
 
-const productsBaseUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4f7/databases/(default)/documents/artifacts/kibris-pazar/public/data/products?pageSize=300";
+  const productsBaseUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4f7/databases/(default)/documents/artifacts/kibris-pazar/public/data/products?pageSize=300";
   const storesBaseUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4f7/databases/(default)/documents/artifacts/kibris-pazar/public/data/stores?pageSize=300";
 
   const slugify = (text, defaultStr) => {
@@ -29,20 +22,14 @@ const productsBaseUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4
   async function fetchAllData(apiUrl) {
     let allDocuments = [];
     let pageToken = "";
-
-    for (let i = 0; i < 20; i++) { // 20 x 300 = 6000+ ürüne kadar güvenli döngü
+    for (let i = 0; i < 20; i++) {
       let fetchUrl = apiUrl;
-      if (pageToken) {
-        fetchUrl += `&pageToken=${pageToken}`;
-      }
-
+      if (pageToken) fetchUrl += `&pageToken=${pageToken}`;
       const response = await fetch(fetchUrl);
       const data = await response.json();
-
       if (data.documents) {
         allDocuments = allDocuments.concat(data.documents);
       }
-
       if (data.nextPageToken) {
         pageToken = data.nextPageToken;
       } else {
@@ -52,28 +39,11 @@ const productsBaseUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4
     return allDocuments;
   }
 
-  const now = Date.now();
-  let allProducts = cachedAllProducts;
-  let allStores = cachedAllStores;
-
-  // Önbellekte yoksa tüm verileri çek
-  if (!allProducts || (now - cacheTime > CACHE_DURATION)) {
-    try {
-      allProducts = await fetchAllData(productsBaseUrl);
-      allStores = await fetchAllData(storesBaseUrl);
-      cachedAllProducts = allProducts;
-      cachedAllStores = allStores;
-      cacheTime = now;
-    } catch (error) {
-      allProducts = [];
-      allStores = [];
-    }
-  }
-
   let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
   try {
-    // 1. ÜRÜNLERİ DİLİMLE (Pagination: Sadece bu sayfaya ait 1000 ürünü al)
+    const allProducts = await fetchAllData(productsBaseUrl);
+    
     if (allProducts && allProducts.length > 0) {
       const startIndex = (page - 1) * pageSize;
       const endIndex = startIndex + pageSize;
@@ -88,8 +58,8 @@ const productsBaseUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4
       });
     }
 
-    // 2. MAĞAZALAR VE STATİK SAYFALAR (Sadece 1. sayfada gösterilsin ki şişme yapmasın)
     if (page === 1) {
+      const allStores = await fetchAllData(storesBaseUrl);
       if (allStores && allStores.length > 0) {
         allStores.forEach(doc => {
           const nameParts = doc.name.split('/');
@@ -105,7 +75,7 @@ const productsBaseUrl = "https://firestore.googleapis.com/v1/projects/kibris-6b4
     }
 
   } catch (error) {
-    xmlContent += `  <!-- Hata Detayı: ${error.message} -->\n`;
+    xmlContent += `  <!-- Hata Detayi: ${error.message} -->\n`;
   }
 
   xmlContent += `</urlset>`;
