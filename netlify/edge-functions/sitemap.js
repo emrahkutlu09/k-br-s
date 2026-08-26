@@ -13,6 +13,7 @@ ${sitemaps}</sitemapindex>`;
   return new Response(xmlContent, {
     headers: {
       "content-type": "application/xml; charset=utf-8",
+      "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
     },
   });
 };
