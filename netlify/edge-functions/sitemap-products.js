@@ -68,6 +68,7 @@ export default async (request, context) => {
   return new Response(xmlContent, {
     headers: {
       "content-type": "application/xml; charset=utf-8",
+      "Cache-Control": "public, max-age=43200, s-maxage=43200"
     },
   });
 };
