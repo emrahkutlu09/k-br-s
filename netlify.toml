@@ -11,11 +11,11 @@
   path = "/magaza/*"
   function = "seo-bot"
 
-# --- YENİ EKLENEN OTOMATİK SİTEMAP ROBOTU ---
+# --- OTOMATİK SİTEMAP ROBOTU (Çoklu Alt Sayfa Desteği) ---
 [[edge_functions]]
   path = "/sitemap.xml"
   function = "sitemap"
-[[edge_functions]]
-  path = "/sitemap-products.xml"
-  function = "sitemap-products"
 
+[[edge_functions]]
+  path = "/sitemap-products-*.xml"
+  function = "sitemap-products"
