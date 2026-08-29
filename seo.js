@@ -1,29 +1,25 @@
 (function() {
-    // 1. Mevcut sayfanın temiz URL'sini alıyoruz
     const currentUrl = window.location.href.split('?')[0].split('#')[0];
     
-    // 2. Head etiketinde mevcut bir canonical var mı kontrol ediyoruz
+    // 1. Canonical adresini zorunlu yapıyoruz
     let canonical = document.querySelector("link[rel='canonical']");
-    
     if (!canonical) {
         canonical = document.createElement('link');
         canonical.setAttribute('rel', 'canonical');
         document.head.appendChild(canonical);
     }
-    
-    // 3. Kesinlikle o anki sayfanın kendi adresini zorunlu kılıyoruz
     canonical.setAttribute('href', currentUrl);
 
-    // 4. Eğer mağaza sayfasındaysak Google'ın ana sayfa ile karıştırmaması için başlığı güçlendiriyoruz
+    // 2. Mağaza sayfalarında başlığı (Title) ana sayfadan ayırıyoruz
     if (currentUrl.includes('/magaza/')) {
-        setTimeout(() => {
-            if (document.title === "KıbrısBazar" || document.title === "") {
-                const pathParts = currentUrl.split('/');
-                const storeId = pathParts[pathParts.length - 1];
-                if (storeId) {
-                    document.title = "Mağaza Detayı - KıbrısBazar";
-                }
+        const checkContent = setInterval(() => {
+            // Mağaza adını sayfadaki başlık veya dükkan adından yakalamaya çalışıyoruz
+            const storeTitleElement = document.querySelector('h1') || document.querySelector('.store-title');
+            if (storeTitleElement && storeTitleElement.innerText.trim() !== "") {
+                const storeName = storeTitleElement.innerText.trim();
+                document.title = storeName + " - KıbrısBazar";
+                clearInterval(checkContent);
             }
-        }, 1000);
+        }, 500);
     }
 })();
