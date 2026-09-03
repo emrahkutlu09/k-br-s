@@ -1,146 +1,60 @@
 export default async (request, context) => {
-  const BASE_URL = "https://kibrisbazar.com";
+  const baseUrl = "https://kibrisbazar.com";
   const API_KEY = Netlify.env.get("FIREBASE_API_KEY");
-  const PROJECT_ID = Netlify.env.get("FIREBASE_PROJECT_ID");
-
-  if (!API_KEY || !PROJECT_ID) {
-    return new Response(
-      "Server Configuration Error",
-      {
-        status: 500,
-        headers: {
-          "content-type": "text/plain; charset=utf-8",
-          "cache-control": "no-store"
-        }
-      }
-    );
+  const projectId = Netlify.env.get("FIREBASE_PROJECT_ID");
+  
+  if (!API_KEY || !projectId) {
+    return new Response("Environment variables (FIREBASE_API_KEY or FIREBASE_PROJECT_ID) are missing.", { status: 500 });
   }
 
-  const aggregationUrl =
-    `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(PROJECT_ID)}` +
-    `/databases/(default)/documents:runAggregationQuery?key=${encodeURIComponent(API_KEY)}`;
+  const aggUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/artifacts/kibris-pazar/public/data/products:runAggregationQuery?key=${API_KEY}`;
 
   let totalProducts = 0;
-
   try {
-    const response = await fetch(aggregationUrl, {
+    const res = await fetch(aggUrl, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Origin": baseUrl,
+        "Referer": baseUrl + "/"
       },
       body: JSON.stringify({
         structuredAggregationQuery: {
-          structuredQuery: {
-            from: [
-              {
-                collectionId: "products"
-              }
-            ],
-            allDescendants: true
-          },
-          aggregations: [
-            {
-              alias: "total",
-              count: {}
-            }
-          ]
+          structuredQuery: { from: [{ collectionId: "products" }] },
+          aggregations: [{ count: {} }]
         }
       })
     });
-
-    if (!response.ok) {
-      return new Response(
-        `Firebase Aggregation Error: ${response.status}`,
-        {
-          status: 500,
-          headers: {
-            "content-type": "text/plain; charset=utf-8",
-            "cache-control": "no-store"
-          }
-        }
-      );
+    
+    if (!res.ok) {
+      return new Response(`Firebase Aggregation Error: ${res.status}`, { status: 500 });
     }
-
-    const result = await response.json();
-
-    const aggregateFields =
-      result?.[0]?.result?.aggregateFields ||
-      result?.result?.aggregateFields;
-
-    const countValue =
-      aggregateFields?.total?.integerValue ||
-      aggregateFields?.count?.integerValue;
-
-    if (countValue === undefined) {
-      return new Response(
-        "Firebase Aggregation Error: Count result missing",
-        {
-          status: 500,
-          headers: {
-            "content-type": "text/plain; charset=utf-8",
-            "cache-control": "no-store"
-          }
-        }
-      );
-    }
-
-    totalProducts = Number.parseInt(countValue, 10);
-
-    if (!Number.isFinite(totalProducts) || totalProducts < 0) {
-      return new Response(
-        "Firebase Aggregation Error: Invalid count",
-        {
-          status: 500,
-          headers: {
-            "content-type": "text/plain; charset=utf-8",
-            "cache-control": "no-store"
-          }
-        }
-      );
-    }
-  } catch (error) {
-    return new Response(
-      "Firebase Aggregation Connection Error",
-      {
-        status: 500,
-        headers: {
-          "content-type": "text/plain; charset=utf-8",
-          "cache-control": "no-store"
-        }
-      }
-    );
+    
+    const data = await res.json();
+    totalProducts = parseInt(data.result?.aggregateFields?.count?.integerValue || "0", 10);
+  } catch (err) {
+    return new Response(`Server Connection Error: ${err.message}`, { status: 500 });
   }
 
-  const PRODUCTS_PER_SITEMAP = 1000;
+  const pageSize = 1000;
+  const totalSitemaps = Math.ceil(totalProducts / pageSize) || 1;
 
-  const totalProductSitemaps =
-    Math.ceil(totalProducts / PRODUCTS_PER_SITEMAP);
-
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-  xml += `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-
-  for (let page = 1; page <= totalProductSitemaps; page++) {
-    xml += `  <sitemap>\n`;
-    xml += `    <loc>${BASE_URL}/sitemap-products-${page}.xml</loc>\n`;
-    xml += `  </sitemap>\n`;
+  let sitemapsXml = "";
+  for (let i = 1; i <= totalSitemaps; i++) {
+    sitemapsXml += `  <sitemap>\n    <loc>${baseUrl}/sitemap-products-${i}.xml</loc>\n  </sitemap>\n`;
   }
 
-  xml += `  <sitemap>\n`;
-  xml += `    <loc>${BASE_URL}/sitemap-stores.xml</loc>\n`;
-  xml += `  </sitemap>\n`;
+  sitemapsXml += `  <sitemap>\n    <loc>${baseUrl}/sitemap-stores.xml</loc>\n  </sitemap>\n`;
+  sitemapsXml += `  <sitemap>\n    <loc>${baseUrl}/sitemap-categories.xml</loc>\n  </sitemap>\n`;
 
-  xml += `  <sitemap>\n`;
-  xml += `    <loc>${BASE_URL}/sitemap-categories.xml</loc>\n`;
-  xml += `  </sitemap>\n`;
+  const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${sitemapsXml}</sitemapindex>`;
 
-  xml += `</sitemapindex>`;
-
-  return new Response(xml, {
-    status: 200,
+  return new Response(xmlContent, {
     headers: {
       "content-type": "application/xml; charset=utf-8",
-      "cache-control":
-        "public, max-age=43200, stale-while-revalidate=86400"
-    }
+      "Cache-Control": "public, max-age=43200, stale-while-revalidate=86400"
+    },
   });
 };
