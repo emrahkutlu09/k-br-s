@@ -2,438 +2,518 @@ export default async (request, context) => {
   const url = new URL(request.url);
   const path = url.pathname;
 
-  // Sadece ürün ve mağaza sayfalarında çalış
-  const isProduct = path.startsWith("/urun/");
-  const isStore = path.startsWith("/magaza/");
-
-  if (!isProduct && !isStore) {
+  // Sadece ürün ve mağaza sayfalarında SEO işlemini çalıştır
+  if (!path.startsWith('/urun/') && !path.startsWith('/magaza/')) {
     return await context.next();
   }
 
-  // HTML içinde güvenli kullanım
-  const escapeHtml = (value = "") =>
-    String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-
-  // JSON-LD içinde güvenli kullanım
-  const safeJsonLd = (obj) =>
-    JSON.stringify(obj).replace(/</g, "\\u003c");
-
-  const getField = (fields, name) => {
-    const field = fields?.[name];
-    if (!field) return "";
-
-    if (field.stringValue !== undefined) return field.stringValue;
-    if (field.integerValue !== undefined) return field.integerValue;
-    if (field.doubleValue !== undefined) return field.doubleValue;
-    if (field.booleanValue !== undefined) return field.booleanValue;
-
-    return "";
-  };
-
-  const getImages = (fields) => {
-    const values = fields?.images?.arrayValue?.values || [];
-
-    return values
-      .map((item) => item?.stringValue)
-      .filter(Boolean);
-  };
-
   try {
+    // ESki çalışan kodla aynı Firebase bağlantısı
     const apiKey = Deno.env.get("FIREBASE_API_KEY");
     const projectId = Deno.env.get("FIREBASE_PROJECT_ID");
-
-    const appId = "kibris-pazar";
+    const appId = 'kibris-pazar';
 
     if (!apiKey || !projectId) {
       return await context.next();
     }
 
-    // URL'deki ID'yi al
-    const cleanPath = path.replace(/\/$/, "");
-    const lastPart = cleanPath.split("/").pop();
+    let docPath = '';
+    let isProduct = false;
 
-    if (!lastPart) {
-      return await context.next();
-    }
+    // ------------------------------------------
+    // ÜRÜN
+    // ------------------------------------------
+    if (path.startsWith('/urun/')) {
+      isProduct = true;
 
-    // Örn:
-    // 3-boyutlu-cicekli-canta-ntXurveq1pNYztRjE9Hh
-    // Son "-" sonrası Firebase ID
-    const id = lastPart.split("-").pop();
+      const cleanPath = path
+        .split('/urun/')[1]
+        .replace(/\/$/, '');
 
-    if (!id) {
-      return await context.next();
-    }
+      // URL'nin sonundaki ID'yi al
+      const id = cleanPath.split('-').pop();
 
-    let docPath = "";
+      if (!id) {
+        return await context.next();
+      }
 
-    if (isProduct) {
       docPath = `artifacts/${appId}/public/data/products/${id}`;
-    }
 
-    if (isStore) {
+    // ------------------------------------------
+    // MAĞAZA
+    // ------------------------------------------
+    } else if (path.startsWith('/magaza/')) {
+
+      const cleanPath = path
+        .split('/magaza/')[1]
+        .replace(/\/$/, '');
+
+      const id = cleanPath.split('-').pop();
+
+      if (!id) {
+        return await context.next();
+      }
+
       docPath = `artifacts/${appId}/public/data/stores/${id}`;
     }
 
+    // ------------------------------------------
+    // FIRESTORE
+    // ------------------------------------------
+
     const firestoreUrl =
-      `https://firestore.googleapis.com/v1/projects/${projectId}` +
-      `/databases/(default)/documents/${docPath}?key=${apiKey}`;
+      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${docPath}?key=${apiKey}`;
 
-    const firebaseResponse = await fetch(firestoreUrl);
+    const res = await fetch(firestoreUrl);
 
-    // Ürün bulunamadıysa normal siteyi göster
-    if (!firebaseResponse.ok) {
-      const response = await context.next();
-
-      const headers = new Headers(response.headers);
-      headers.set("X-Kibris-SEO", "not-found");
-
-      return new Response(response.body, {
-        status: response.status,
-        statusText: response.statusText,
-        headers
-      });
+    // Firebase hata verirse normal siteyi göster
+    if (!res.ok) {
+      return await context.next();
     }
 
-    const data = await firebaseResponse.json();
+    const data = await res.json();
     const fields = data.fields || {};
 
-    /*
-     * =========================
-     * ÜRÜN SAYFASI
-     * =========================
-     */
+    // ------------------------------------------
+    // YARDIMCI FONKSİYONLAR
+    // ------------------------------------------
+
+    const getString = (field) => {
+      return field?.stringValue || '';
+    };
+
+    const getNumber = (field) => {
+      if (field?.integerValue !== undefined) {
+        return Number(field.integerValue);
+      }
+
+      if (field?.doubleValue !== undefined) {
+        return Number(field.doubleValue);
+      }
+
+      return null;
+    };
+
+    const getImages = (field) => {
+      const values = field?.arrayValue?.values || [];
+
+      return values
+        .map(item => item?.stringValue)
+        .filter(Boolean);
+    };
+
+    // HTML içinde güvenli kullanım
+    const escapeHtml = (value) => {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    };
+
+    // JSON-LD için güvenli JSON
+    const safeJson = (value) => {
+      return JSON.stringify(value)
+        .replace(/</g, '\\u003c')
+        .replace(/>/g, '\\u003e')
+        .replace(/&/g, '\\u0026');
+    };
+
+    // ------------------------------------------
+    // VARSAYILAN SEO BİLGİLERİ
+    // ------------------------------------------
+
+    let title = "Kıbrıs Bazar | Hızlı ve Güvenli Alışveriş";
+    let description =
+      "Kuzey Kıbrıs'ın komisyonsuz dijital pazar yeri.";
+
+    let image = "https://kibrisbazar.com/favicon.png";
+
+    let canonicalUrl = url.origin + path;
+
+    let seoContent = '';
+    let jsonLd = [];
+
+    // ==========================================
+    // ÜRÜN SEO
+    // ==========================================
 
     if (isProduct) {
-      const productTitle =
-        getField(fields, "title") || "Ürün";
 
-      const description =
-        getField(fields, "description") ||
-        `${productTitle} ürününü Kıbrıs Bazar'da inceleyin.`;
+      const pTitle =
+        getString(fields.title) || "Ürün";
 
-      const price = getField(fields, "price");
+      const pDescription =
+        getString(fields.description);
+
+      const price =
+        getNumber(fields.price);
 
       const storeName =
-        getField(fields, "storeName") ||
-        "Kıbrıs Bazar";
+        getString(fields.storeName) || "Kıbrıs Bazar";
 
       const currency =
-        getField(fields, "currency") ||
-        "TRY";
+        getString(fields.currency) || "TRY";
 
-      const images = getImages(fields);
+      const images =
+        getImages(fields.images);
 
-      const canonicalUrl = url.origin + cleanPath;
+      if (images.length > 0) {
+        image = images[0];
+      }
 
-      const title =
-        `${productTitle} - ${storeName} | Kıbrıs Bazar`;
+      // ----------------------------------------
+      // TITLE
+      // ----------------------------------------
 
-      const shortDescription =
-        String(description)
-          .replace(/\s+/g, " ")
-          .trim()
-          .substring(0, 160);
+      title =
+        `${pTitle} - ${storeName} | Kıbrıs Bazar`;
 
-      /*
-       * PRODUCT JSON-LD
-       */
+      // ----------------------------------------
+      // DESCRIPTION
+      // ----------------------------------------
+
+      description =
+        pDescription
+          ? pDescription
+              .replace(/\s+/g, ' ')
+              .trim()
+              .substring(0, 160)
+          : `${pTitle} ürününü ${storeName} mağazasından Kıbrıs Bazar'da inceleyin.`;
+
+      // ----------------------------------------
+      // CANONICAL
+      // ----------------------------------------
+
+      canonicalUrl =
+        `https://kibrisbazar.com${path}`;
+
+      // ----------------------------------------
+      // GOOGLE PRODUCT STRUCTURED DATA
+      // ----------------------------------------
 
       const productSchema = {
         "@context": "https://schema.org",
         "@type": "Product",
-        "name": productTitle,
-        "description": description,
-        "url": canonicalUrl
-      };
 
-      if (images.length > 0) {
-        productSchema.image = images;
-      }
+        "name": pTitle,
 
-      if (price !== "" && !isNaN(Number(price))) {
-        productSchema.offers = {
+        "description":
+          pDescription || description,
+
+        "image":
+          images.length > 0 ? images : [image],
+
+        "url":
+          canonicalUrl,
+
+        "brand": {
+          "@type": "Brand",
+          "name": storeName
+        },
+
+        "offers": {
           "@type": "Offer",
           "url": canonicalUrl,
           "priceCurrency": currency,
-          "price": Number(price),
+          "price": price !== null ? price : "",
           "availability":
-            "https://schema.org/InStock"
-        };
-      }
+            "https://schema.org/InStock",
 
-      /*
-       * BREADCRUMB JSON-LD
-       */
+          "seller": {
+            "@type": "Organization",
+            "name": storeName
+          }
+        }
+      };
+
+      // ----------------------------------------
+      // BREADCRUMB SCHEMA
+      // ----------------------------------------
 
       const breadcrumbSchema = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
+
         "itemListElement": [
           {
             "@type": "ListItem",
             "position": 1,
             "name": "Kıbrıs Bazar",
-            "item": url.origin
+            "item": "https://kibrisbazar.com/"
           },
           {
             "@type": "ListItem",
             "position": 2,
-            "name": productTitle,
+            "name": pTitle,
             "item": canonicalUrl
           }
         ]
       };
 
-      /*
-       * ANA HTML'İ AL
-       */
+      jsonLd.push(productSchema);
+      jsonLd.push(breadcrumbSchema);
 
-      const response = await context.next();
-      const html = await response.text();
+      // ----------------------------------------
+      // HTML İÇİ ÜRÜN İÇERİĞİ
+      // ----------------------------------------
 
-      /*
-       * META ETİKETLERİ
-       */
+      seoContent = `
+<section id="seo-product-content"
+  style="position:absolute;
+  left:-10000px;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;">
 
-      let modifiedHtml = html;
-
-      modifiedHtml = modifiedHtml.replace(
-        /<title>[\s\S]*?<\/title>/i,
-        `<title>${escapeHtml(title)}</title>`
-      );
-
-      modifiedHtml = modifiedHtml.replace(
-        /<meta\s+name=["']description["'][^>]*>/i,
-        `<meta name="description" content="${escapeHtml(shortDescription)}">`
-      );
-
-      modifiedHtml = modifiedHtml.replace(
-        /<meta\s+property=["']og:title["'][^>]*>/i,
-        `<meta property="og:title" content="${escapeHtml(title)}">`
-      );
-
-      modifiedHtml = modifiedHtml.replace(
-        /<meta\s+property=["']og:description["'][^>]*>/i,
-        `<meta property="og:description" content="${escapeHtml(shortDescription)}">`
-      );
-
-      if (images.length > 0) {
-        modifiedHtml = modifiedHtml.replace(
-          /<meta\s+property=["']og:image["'][^>]*>/i,
-          `<meta property="og:image" content="${escapeHtml(images[0])}">`
-        );
-      }
-
-      modifiedHtml = modifiedHtml.replace(
-        /<meta\s+name=["']twitter:title["'][^>]*>/i,
-        `<meta name="twitter:title" content="${escapeHtml(title)}">`
-      );
-
-      modifiedHtml = modifiedHtml.replace(
-        /<meta\s+name=["']twitter:description["'][^>]*>/i,
-        `<meta name="twitter:description" content="${escapeHtml(shortDescription)}">`
-      );
-
-      if (images.length > 0) {
-        modifiedHtml = modifiedHtml.replace(
-          /<meta\s+name=["']twitter:image["'][^>]*>/i,
-          `<meta name="twitter:image" content="${escapeHtml(images[0])}">`
-        );
-      }
-
-      /*
-       * CANONICAL
-       */
-
-      const canonicalTag =
-        `<link rel="canonical" href="${escapeHtml(canonicalUrl)}">`;
-
-      if (/<link\s+rel=["']canonical["']/i.test(modifiedHtml)) {
-        modifiedHtml = modifiedHtml.replace(
-          /<link\s+rel=["']canonical["'][^>]*>/i,
-          canonicalTag
-        );
-      } else {
-        modifiedHtml = modifiedHtml.replace(
-          /<\/head>/i,
-          `${canonicalTag}\n</head>`
-        );
-      }
-
-      /*
-       * PRODUCT JSON-LD
-       */
-
-      modifiedHtml = modifiedHtml.replace(
-        /<\/head>/i,
-        `
-<script type="application/ld+json">
-${safeJsonLd(productSchema)}
-</script>
-
-<script type="application/ld+json">
-${safeJsonLd(breadcrumbSchema)}
-</script>
-
-</head>`
-      );
-
-      /*
-       * GOOGLE / AI TARAYICILARI İÇİN
-       * GERÇEK ÜRÜN İÇERİĞİNİ HTML'E EKLE
-       */
-
-      const imageHtml =
-        images.length > 0
-          ? `<img src="${escapeHtml(images[0])}" alt="${escapeHtml(productTitle)}" loading="eager">`
-          : "";
-
-      const priceHtml =
-        price !== ""
-          ? `<p><strong>Fiyat:</strong> ${escapeHtml(price)} ${escapeHtml(currency)}</p>`
-          : "";
-
-      const seoContent = `
-<section id="seo-product-content">
-  <h1>${escapeHtml(productTitle)}</h1>
-
-  <p>${escapeHtml(description)}</p>
-
-  ${priceHtml}
+  <h1>${escapeHtml(pTitle)}</h1>
 
   <p>
-    <strong>Mağaza:</strong>
-    ${escapeHtml(storeName)}
+    ${escapeHtml(
+      pDescription ||
+      `${pTitle} ürününü ${storeName} mağazasından Kıbrıs Bazar'da inceleyin.`
+    )}
   </p>
 
-  ${imageHtml}
+  ${
+    price !== null
+      ? `<p>Fiyat: ${escapeHtml(price)} ${escapeHtml(currency)}</p>`
+      : ''
+  }
+
+  <p>Mağaza: ${escapeHtml(storeName)}</p>
+
+  ${
+    image
+      ? `<img src="${escapeHtml(image)}"
+          alt="${escapeHtml(pTitle)}"
+          width="800"
+          height="800">`
+      : ''
+  }
+
 </section>
 `;
 
-      modifiedHtml = modifiedHtml.replace(
-        /<body([^>]*)>/i,
-        `<body$1>${seoContent}`
-      );
+    // ==========================================
+    // MAĞAZA SEO
+    // ==========================================
 
-      const headers = new Headers(response.headers);
+    } else {
 
-      headers.set(
-        "Content-Type",
-        "text/html; charset=UTF-8"
-      );
-
-      // Test için
-      headers.set("X-Kibris-SEO", "product-found");
-
-      return new Response(modifiedHtml, {
-        status: response.status,
-        statusText: response.statusText,
-        headers
-      });
-    }
-
-    /*
-     * =========================
-     * MAĞAZA SAYFASI
-     * =========================
-     */
-
-    if (isStore) {
-      const storeName =
-        getField(fields, "name") ||
-        "Mağaza";
+      const sName =
+        getString(fields.name) || "Mağaza";
 
       const logo =
-        getField(fields, "logoUrl") ||
-        getField(fields, "coverUrl") ||
-        "";
+        getString(fields.logoUrl);
 
-      const canonicalUrl = url.origin + cleanPath;
+      const cover =
+        getString(fields.coverUrl);
 
-      const title =
-        `${storeName} Mağazası | Kıbrıs Bazar`;
+      title =
+        `${sName} Mağazası | Kıbrıs Bazar`;
 
-      const description =
-        `${storeName} mağazasındaki ürünleri Kıbrıs Bazar'da keşfedin.`;
+      description =
+        `${sName} mağazasının ürünlerini Kıbrıs Bazar'da inceleyin ve güvenli alışveriş yapın.`;
+
+      image =
+        logo ||
+        cover ||
+        image;
+
+      canonicalUrl =
+        `https://kibrisbazar.com${path}`;
+
+      // ----------------------------------------
+      // MAĞAZA SCHEMA
+      // ----------------------------------------
 
       const storeSchema = {
         "@context": "https://schema.org",
         "@type": "Store",
-        "name": storeName,
-        "url": canonicalUrl
+
+        "name": sName,
+
+        "url":
+          canonicalUrl,
+
+        "image":
+          image,
+
+        "description":
+          description
       };
 
-      if (logo) {
-        storeSchema.image = logo;
-      }
+      jsonLd.push(storeSchema);
 
-      const response = await context.next();
-      const html = await response.text();
+      // ----------------------------------------
+      // MAĞAZA HTML
+      // ----------------------------------------
 
-      let modifiedHtml = html;
+      seoContent = `
+<section id="seo-store-content"
+  style="position:absolute;
+  left:-10000px;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;">
 
-      modifiedHtml = modifiedHtml.replace(
-        /<title>[\s\S]*?<\/title>/i,
+  <h1>${escapeHtml(sName)} Mağazası</h1>
+
+  <p>
+    ${escapeHtml(description)}
+  </p>
+
+  ${
+    image
+      ? `<img src="${escapeHtml(image)}"
+          alt="${escapeHtml(sName)} mağazası"
+          width="800"
+          height="600">`
+      : ''
+  }
+
+</section>
+`;
+    }
+
+    // ------------------------------------------
+    // ORİJİNAL HTML'İ AL
+    // ------------------------------------------
+
+    const response = await context.next();
+
+    const html = await response.text();
+
+    // ------------------------------------------
+    // META ETİKETLERİNİ GÜNCELLE
+    // ------------------------------------------
+
+    let modifiedHtml = html;
+
+    modifiedHtml = modifiedHtml
+      .replace(
+        /<title>.*?<\/title>/i,
         `<title>${escapeHtml(title)}</title>`
+      )
+
+      .replace(
+        /<meta name="description" content=".*?"/i,
+        `<meta name="description" content="${escapeHtml(description)}"`
+      )
+
+      .replace(
+        /<meta property="og:title" content=".*?"/i,
+        `<meta property="og:title" content="${escapeHtml(title)}"`
+      )
+
+      .replace(
+        /<meta property="og:description" content=".*?"/i,
+        `<meta property="og:description" content="${escapeHtml(description)}"`
+      )
+
+      .replace(
+        /<meta property="og:image" content=".*?"/i,
+        `<meta property="og:image" content="${escapeHtml(image)}"`
+      )
+
+      .replace(
+        /<meta property="og:url" content=".*?"/i,
+        `<meta property="og:url" content="${escapeHtml(canonicalUrl)}"`
+      )
+
+      .replace(
+        /<meta name="twitter:title" content=".*?"/i,
+        `<meta name="twitter:title" content="${escapeHtml(title)}"`
+      )
+
+      .replace(
+        /<meta name="twitter:description" content=".*?"/i,
+        `<meta name="twitter:description" content="${escapeHtml(description)}"`
+      )
+
+      .replace(
+        /<meta name="twitter:image" content=".*?"/i,
+        `<meta name="twitter:image" content="${escapeHtml(image)}"`
       );
+
+    // ------------------------------------------
+    // CANONICAL EKLE
+    // ------------------------------------------
+
+    if (/<link[^>]+rel=["']canonical["']/i.test(modifiedHtml)) {
 
       modifiedHtml = modifiedHtml.replace(
-        /<meta\s+name=["']description["'][^>]*>/i,
-        `<meta name="description" content="${escapeHtml(description)}">`
+        /<link[^>]+rel=["']canonical["'][^>]*>/i,
+        `<link rel="canonical" href="${escapeHtml(canonicalUrl)}">`
       );
 
-      const canonicalTag =
-        `<link rel="canonical" href="${escapeHtml(canonicalUrl)}">`;
+    } else {
 
       modifiedHtml = modifiedHtml.replace(
         /<\/head>/i,
-        `
-${canonicalTag}
-
-<script type="application/ld+json">
-${safeJsonLd(storeSchema)}
-</script>
-
+        `<link rel="canonical" href="${escapeHtml(canonicalUrl)}">
 </head>`
       );
-
-      const seoContent = `
-<section id="seo-store-content">
-  <h1>${escapeHtml(storeName)}</h1>
-  <p>${escapeHtml(description)}</p>
-</section>
-`;
-
-      modifiedHtml = modifiedHtml.replace(
-        /<body([^>]*)>/i,
-        `<body$1>${seoContent}`
-      );
-
-      const headers = new Headers(response.headers);
-
-      headers.set(
-        "Content-Type",
-        "text/html; charset=UTF-8"
-      );
-
-      headers.set("X-Kibris-SEO", "store-found");
-
-      return new Response(modifiedHtml, {
-        status: response.status,
-        statusText: response.statusText,
-        headers
-      });
     }
 
-    return await context.next();
+    // ------------------------------------------
+    // PRODUCT / STORE JSON-LD EKLE
+    // ------------------------------------------
 
-  } catch (error) {
+    const jsonLdHtml = jsonLd
+      .map(schema => {
+        return `
+<script type="application/ld+json">
+${safeJson(schema)}
+</script>`;
+      })
+      .join('\n');
+
+    modifiedHtml = modifiedHtml.replace(
+      /<\/head>/i,
+      `${jsonLdHtml}
+</head>`
+    );
+
+    // ------------------------------------------
+    // ÜRÜN / MAĞAZA İÇERİĞİNİ BODY'YE EKLE
+    // ------------------------------------------
+
+    modifiedHtml = modifiedHtml.replace(
+      /<body([^>]*)>/i,
+      `<body$1>
+${seoContent}`
+    );
+
+    // ------------------------------------------
+    // RESPONSE
+    // ------------------------------------------
+
+    const headers = new Headers(response.headers);
+
+    // Debug / kontrol için
+    headers.set(
+      "X-Kibris-SEO",
+      isProduct ? "product-found" : "store-found"
+    );
+
+    headers.set(
+      "X-Robots-Tag",
+      "index, follow"
+    );
+
+    return new Response(modifiedHtml, {
+      headers,
+      status: response.status,
+      statusText: response.statusText
+    });
+
+  } catch (err) {
+
     // Herhangi bir hata olursa siteyi bozma
     return await context.next();
   }
