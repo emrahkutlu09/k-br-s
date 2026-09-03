@@ -1,7 +1,18 @@
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[[edge_functions]]
+  path = "/sitemap.xml"
+  function = "sitemap"
+
+[[edge_functions]]
+  path = "/sitemap-products-*.xml"
+  function = "sitemap-products"
+
+[[edge_functions]]
+  path = "/sitemap-stores.xml"
+  function = "sitemap-stores"
+
+[[edge_functions]]
+  path = "/sitemap-categories.xml"
+  function = "sitemap-categories"
 
 [[edge_functions]]
   path = "/urun/*"
@@ -11,11 +22,11 @@
   path = "/magaza/*"
   function = "seo-bot"
 
-# --- OTOMATİK SİTEMAP ROBOTU ---
 [[edge_functions]]
-  path = "/sitemap.xml"
-  function = "sitemap"
+  path = "/kategori/*"
+  function = "seo-bot"
 
-[[edge_functions]]
-  path = "/sitemap-products*"
-  function = "sitemap-products"
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
