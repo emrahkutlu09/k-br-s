@@ -1,3 +1,20 @@
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[edge_functions]]
+  path = "/urun/*"
+  function = "seo-bot"
+
+[[edge_functions]]
+  path = "/magaza/*"
+  function = "seo-bot"
+
+[[edge_functions]]
+  path = "/kategori/*"
+  function = "seo-bot"
+
 [[edge_functions]]
   path = "/sitemap.xml"
   function = "sitemap"
@@ -13,20 +30,3 @@
 [[edge_functions]]
   path = "/sitemap-categories.xml"
   function = "sitemap-categories"
-
-[[edge_functions]]
-  path = "/urun/*"
-  function = "seo-bot"
-
-[[edge_functions]]
-  path = "/magaza/*"
-  function = "seo-bot"
-
-[[edge_functions]]
-  path = "/kategori/*"
-  function = "seo-bot"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
