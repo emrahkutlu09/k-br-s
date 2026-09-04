@@ -11,7 +11,7 @@ export default async function(request, context) {
   }
 
   const userAgent = request.headers.get("user-agent") || "";
-  const isBot = /googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|whatsapp|viber|skype|telegram|discordbot/i.test(userAgent);
+  const isBot = /googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|whatsapp|viber|skype|telegram|discordbot|linkedinbot|pinterest|chatgpt|openai/i.test(userAgent);
 
   if (!isBot) return context.next();
 
