@@ -568,7 +568,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, query, where, getDocs, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, query, where, getDocs, getDoc, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -1084,13 +1084,15 @@
             return arr;
         };
 
-        async function initApp() {
+   async function initApp() {
             lucide.createIcons();
             updateCartUI();
             
-            onSnapshot(settingsRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
+            try {
+                // 1. AYARLAR (Settings) - onSnapshot yerine tek seferlik getDoc
+                const settingsSnap = await getDoc(settingsRef);
+                if (settingsSnap.exists()) {
+                    const data = settingsSnap.data();
                     if(data.platformName) {
                         appSettings.platformName = data.platformName;
                         document.getElementById('pageTitle').innerText = `${data.platformName} | Hızlı ve Güvenli Alışveriş`;
@@ -1106,44 +1108,62 @@
                     if(data.sideBanner2) appSettings.sideBanner2 = data.sideBanner2;
                     window.renderHome(document.getElementById('searchInput').value);
                 }
-                isSettingsLoaded = true; checkInitialLoadStatus();
-            });
-
-            onSnapshot(storesRef, (snapshot) => {
-                dbStores = [];
-                snapshot.forEach(doc => { dbStores.push({id: doc.id, ...doc.data()}); });
-                isStoresLoaded = true;
-                if(isStoresLoaded && isProductsLoaded) {
-                     window.handleRoute(); 
-                }
+                isSettingsLoaded = true; 
                 checkInitialLoadStatus();
-            });
 
-            onSnapshot(categoriesRef, (snapshot) => {
-                dbCategories = [];
-                snapshot.forEach(doc => dbCategories.push({id: doc.id, ...doc.data()}));
+                // 2. AKILLI CACHE FONKSİYONU (Tarayıcı Belleği)
+                async function fetchWithCache(cacheKey, ref) {
+                    const cachedItem = sessionStorage.getItem(cacheKey);
+                    if (cachedItem) {
+                        const parsed = JSON.parse(cachedItem);
+                        // 30 dakikalık geçerlilik süresi (Eğer 30 dk dolmadıysa Firebase'e hiç gitme)
+                        if (Date.now() - parsed.timestamp < 1800000) { 
+                            console.log(`${cacheKey} bellekten yüklendi. (Kota Harcanmadı)`);
+                            return parsed.data;
+                        }
+                    }
+                    console.log(`${cacheKey} Firebase'den çekiliyor...`);
+                    const snap = await getDocs(ref);
+                    const dataList = [];
+                    snap.forEach(d => dataList.push({ id: d.id, ...d.data() }));
+                    
+                    try {
+                        sessionStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: dataList }));
+                    } catch(e) { console.warn("Önbellek kapasitesi aşıldı."); }
+                    
+                    return dataList;
+                }
+
+                // 3. MAĞAZALAR
+                dbStores = await fetchWithCache('kb_cache_stores', storesRef);
+                isStoresLoaded = true;
+
+                // 4. KATEGORİLER
+                dbCategories = await fetchWithCache('kb_cache_categories', categoriesRef);
                 isCategoriesLoaded = true;
                 window.renderCategories();
-                // Eğer direkt URL'den /kategori/... ile girilmişse render edildikten sonra route'u tekrar işlet.
-                if(window.location.pathname.includes('/kategori/')) {
-                    window.handleRoute();
-                }
-                checkInitialLoadStatus();
-            });
 
-            onSnapshot(productsRef, (snapshot) => {
-                dbProducts = [];
-                snapshot.forEach(doc => { dbProducts.push({id: doc.id, ...doc.data()}); });
+                // 5. ÜRÜNLER
+                dbProducts = await fetchWithCache('kb_cache_products', productsRef);
                 isProductsLoaded = true;
-                if(isStoresLoaded && isProductsLoaded) {
-                     window.handleRoute(); 
-                }
-                checkInitialLoadStatus();
-            });
-            
-            applyTranslations();
-        }
 
+                // Tüm veriler indi, rotayı işlet
+                window.handleRoute();
+                checkInitialLoadStatus();
+                applyTranslations();
+
+            } catch (error) {
+                console.error("Veriler yüklenirken hata oluştu:", error);
+                
+                // Kota aşımı (429) durumunda müşteriye zarif bir ekran göster
+                if(error.code === 'resource-exhausted' || (error.message && error.message.includes('Quota'))) {
+                    const loaderBrand = document.getElementById('loaderBrandName');
+                    if(loaderBrand) loaderBrand.innerHTML = `<span class="text-rose-500">Sistem Bakımda</span>`;
+                    const loaderP = document.querySelector('#initialLoader p');
+                    if(loaderP) loaderP.innerText = "Sistemimiz şu an çok yoğun. Lütfen daha sonra tekrar deneyiniz.";
+                }
+            }
+        }
         function buildCategoryTree(categories, parentId) {
             let tree = [];
             categories.forEach(cat => {
