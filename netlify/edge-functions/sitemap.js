@@ -7,7 +7,8 @@ export default async (request, context) => {
     return new Response("Environment variables (FIREBASE_API_KEY or FIREBASE_PROJECT_ID) are missing.", { status: 500 });
   }
 
-  const aggUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/artifacts/kibris-pazar/public/data/products:runAggregationQuery?key=${API_KEY}`;
+  // DÜZELTME: Sorgu doğrudan collection'a değil, parent document'a atılmalı (data)
+  const aggUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/artifacts/kibris-pazar/public/data:runAggregationQuery?key=${API_KEY}`;
 
   let totalProducts = 0;
   try {
@@ -26,18 +27,25 @@ export default async (request, context) => {
       })
     });
     
-    if (!res.ok) {
-      return new Response(`Firebase Aggregation Error: ${res.status}`, { status: 500 });
+    if (res.ok) {
+      const data = await res.json();
+      // Firebase array veya object dönebilir, ikisini de kontrol et
+      if (Array.isArray(data) && data[0]?.result?.aggregateFields?.count?.integerValue) {
+        totalProducts = parseInt(data[0].result.aggregateFields.count.integerValue, 10);
+      } else if (data.result?.aggregateFields?.count?.integerValue) {
+        totalProducts = parseInt(data.result.aggregateFields.count.integerValue, 10);
+      }
+    } else {
+      // 400 vs. hata olursa sistemi çökertme, varsayılan olarak 1000 ürün kabul et
+      totalProducts = 1000; 
     }
-    
-    const data = await res.json();
-    totalProducts = parseInt(data.result?.aggregateFields?.count?.integerValue || "0", 10);
   } catch (err) {
-    return new Response(`Server Connection Error: ${err.message}`, { status: 500 });
+    // Sunucu bağlantı hatası olursa yine çökertme
+    totalProducts = 1000;
   }
 
   const pageSize = 1000;
-  const totalSitemaps = Math.ceil(totalProducts / pageSize) || 1;
+  const totalSitemaps = Math.max(1, Math.ceil(totalProducts / pageSize));
 
   let sitemapsXml = "";
   for (let i = 1; i <= totalSitemaps; i++) {
