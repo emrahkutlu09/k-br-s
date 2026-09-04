@@ -36,7 +36,8 @@ export default async (request, context) => {
 
   try {
     do {
-      let fetchUrl = `${storesBaseUrl}?pageSize=300&key=${API_KEY}`;
+      // DÜZELTME: Sadece mağaza adını (name) ve tarihi getir
+      let fetchUrl = `${storesBaseUrl}?pageSize=300&mask.fieldPaths=name&mask.fieldPaths=updatedAt&mask.fieldPaths=createdAt&key=${API_KEY}`;
       if (pageToken) fetchUrl += `&pageToken=${pageToken}`;
 
       const response = await fetch(fetchUrl, {
