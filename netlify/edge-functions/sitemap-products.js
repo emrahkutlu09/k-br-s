@@ -1,113 +1,173 @@
-export default async (request, context) => {
+export default async function(request, context) {
   const baseUrl = "https://kibrisbazar.com";
-  const match = request.url.match(/sitemap-products-(\d+)\.xml/);
-  const targetPage = match ? parseInt(match[1]) : 1;
-  const pageSize = 1000;
-
   const API_KEY = Netlify.env.get("FIREBASE_API_KEY");
-  const projectId = Netlify.env.get("FIREBASE_PROJECT_ID");
-  
-  if (!API_KEY || !projectId) {
-    return new Response("Environment variables are missing.", { status: 500 });
+  const PROJECT_ID = Netlify.env.get("FIREBASE_PROJECT_ID");
+
+  if (!API_KEY || !PROJECT_ID) {
+    return new Response("Missing Firebase Environment Variables", { status: 500 });
   }
 
-  const productsBaseUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/artifacts/kibris-pazar/public/data/products`;
+  const match = new URL(request.url).pathname.match(/^\/sitemap-products-(\d+)\.xml$/);
+
+  if (!match) {
+    return new Response("Not Found", { status: 404 });
+  }
+
+  const targetPage = parseInt(match[1], 10);
+
+  if (!Number.isInteger(targetPage) || targetPage < 1) {
+    return new Response("Not Found", { status: 404 });
+  }
+
+  const pageSize = 1000;
+
+  const productsUrl =
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}` +
+    `/databases/(default)/documents/artifacts/kibris-pazar/public/data/products`;
 
   const slugify = (text) => {
-    if (!text) return 'urun';
+    if (!text) return "urun";
+
     return text.toString().toLowerCase()
-      .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
-      .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
-      .replace(/\s+/g, '-')
-      .replace(/[^\w\-]+/g, '')
-      .replace(/\-\-+/g, '-')
-      .replace(/^-+/, '')
-      .replace(/-+$/, '');
+      .replace(/ğ/g, "g")
+      .replace(/ü/g, "u")
+      .replace(/ş/g, "s")
+      .replace(/ı/g, "i")
+      .replace(/ö/g, "o")
+      .replace(/ç/g, "c")
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-]+/g, "")
+      .replace(/\-\-+/g, "-")
+      .replace(/^-+/, "")
+      .replace(/-+$/, "");
   };
 
-  const escapeHtml = (str) => {
-    if (!str) return '';
-    return str.toString()
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
+  const xmlEscape = (value) =>
+    String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+
+  const getLastMod = (fields) => {
+    const field = fields?.updatedAt || fields?.createdAt;
+
+    if (!field) return null;
+
+    if (field.timestampValue) {
+      const date = new Date(field.timestampValue);
+
+      if (!Number.isNaN(date.getTime())) {
+        return date.toISOString();
+      }
+    }
+
+    if (field.integerValue) {
+      const value = Number(field.integerValue);
+
+      if (Number.isFinite(value)) {
+        const milliseconds =
+          value < 100000000000 ? value * 1000 : value;
+
+        const date = new Date(milliseconds);
+
+        if (!Number.isNaN(date.getTime())) {
+          return date.toISOString();
+        }
+      }
+    }
+
+    return null;
   };
 
-  let pageProducts = [];
   let pageToken = "";
-  let currentFetchedPage = 1;
+  let documents = [];
 
   try {
-    while (currentFetchedPage <= targetPage) {
-      let fetchUrl = `${productsBaseUrl}?pageSize=${pageSize}&mask.fieldPaths=title&mask.fieldPaths=updatedAt&mask.fieldPaths=createdAt&key=${API_KEY}`;
-      if (pageToken) fetchUrl += `&pageToken=${pageToken}`;
+    for (let page = 1; page <= targetPage; page++) {
+      let fetchUrl =
+        `${productsUrl}?pageSize=${pageSize}` +
+        `&mask.fieldPaths=title` +
+        `&mask.fieldPaths=updatedAt` +
+        `&mask.fieldPaths=createdAt` +
+        `&key=${API_KEY}`;
 
-      const response = await fetch(fetchUrl, {
-        headers: { "Origin": baseUrl, "Referer": baseUrl + "/" }
-      });
+      if (pageToken) {
+        fetchUrl += `&pageToken=${encodeURIComponent(pageToken)}`;
+      }
 
-      // --- KOTA VE HATA YÖNETİMİ ---
+      const response = await fetch(fetchUrl);
+
       if (!response.ok) {
         if (response.status === 429) {
-          // Firebase kotası dolmuş. Googlebot'a 503 (Geçici Servis Dışı) dönüyoruz.
-          // Retry-After: 86400 (1 gün sonra tekrar dene)
-          return new Response("Firebase Daily Quota Exceeded (429). Please try again tomorrow.", { 
+          return new Response("Firebase Daily Quota Exceeded", {
             status: 503,
-            headers: { "Retry-After": "86400", "Content-Type": "text/plain" }
+            headers: {
+              "Retry-After": "86400",
+              "Content-Type": "text/plain"
+            }
           });
         }
-        return new Response(`Firebase Products Fetch Error: ${response.status}`, { status: 500 });
+
+        return new Response(
+          `Firebase Products Error: ${response.status}`,
+          { status: 500 }
+        );
       }
 
       const data = await response.json();
-      
-      if (currentFetchedPage === targetPage) {
-        pageProducts = data.documents || [];
+
+      if (page === targetPage) {
+        documents = data.documents || [];
         break;
       }
 
-      if (data.nextPageToken) {
-        pageToken = data.nextPageToken;
-        currentFetchedPage++;
-      } else {
-        pageProducts = [];
-        break;
+      pageToken = data.nextPageToken || "";
+
+      if (!pageToken) {
+        return new Response("Not Found", { status: 404 });
       }
     }
+
   } catch (error) {
-    return new Response(`Internal Sitemap Error: ${error.message}`, { status: 500 });
+    return new Response("Products Sitemap Error", { status: 500 });
   }
 
-  let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  let xml =
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
-  if (pageProducts.length > 0) {
-    pageProducts.forEach(doc => {
-      const nameParts = doc.name.split('/');
-      const id = nameParts[nameParts.length - 1];
-      const titleStr = doc.fields?.title?.stringValue || "urun";
-      const slug = slugify(titleStr);
-      
-      let lastmodTag = "";
-      const fieldData = doc.fields?.updatedAt || doc.fields?.createdAt;
-      const rawTime = fieldData?.timestampValue || fieldData?.integerValue;
-      if (rawTime) {
-        const dateStr = new Date(typeof rawTime === 'string' ? rawTime : parseInt(rawTime, 10)).toISOString();
-        lastmodTag = `    <lastmod>${dateStr}</lastmod>\n`;
-      }
+  for (const doc of documents) {
+    const name = doc.name || "";
+    const id = name.split("/").pop();
 
-      xmlContent += `  <url>\n    <loc>${baseUrl}/urun/${escapeHtml(slug)}-${escapeHtml(id)}</loc>\n${lastmodTag}    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
-    });
+    if (!id) continue;
+
+    const title = doc.fields?.title?.stringValue || "urun";
+    const slug = slugify(title);
+    const lastmod = getLastMod(doc.fields);
+
+    xml +=
+      `  <url>\n` +
+      `    <loc>${baseUrl}/urun/${xmlEscape(slug)}-${xmlEscape(id)}</loc>\n`;
+
+    if (lastmod) {
+      xml += `    <lastmod>${lastmod}</lastmod>\n`;
+    }
+
+    xml +=
+      `    <changefreq>daily</changefreq>\n` +
+      `    <priority>0.9</priority>\n` +
+      `  </url>\n`;
   }
 
-  xmlContent += `</urlset>`;
+  xml += `</urlset>`;
 
-  return new Response(xmlContent, {
+  return new Response(xml, {
     headers: {
-      "content-type": "application/xml; charset=utf-8",
-      // CDN Önbellekleme: Tarayıcı ve Netlify CDN bu dosyayı 12-24 saat bellekte tutar, veritabanına her seferinde istek atılmaz.
-      "Cache-Control": "public, max-age=43200, stale-while-revalidate=86400"
-    },
+      "Content-Type": "application/xml; charset=UTF-8",
+      "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=172800"
+    }
   });
-};
+}
