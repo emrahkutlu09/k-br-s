@@ -41,7 +41,9 @@ export default async (request, context) => {
 
   try {
     while (currentFetchedPage <= targetPage) {
-      let fetchUrl = `${productsBaseUrl}?pageSize=${pageSize}&key=${API_KEY}`;
+      // DÜZELTME: mask.fieldPaths eklenerek gereksiz veri (görsel/açıklama) çekimi durduruldu.
+      // Sadece başlık, oluşturulma ve güncellenme tarihleri çekilir, bellek aşımı önlenir.
+      let fetchUrl = `${productsBaseUrl}?pageSize=${pageSize}&mask.fieldPaths=title&mask.fieldPaths=updatedAt&mask.fieldPaths=createdAt&key=${API_KEY}`;
       if (pageToken) fetchUrl += `&pageToken=${pageToken}`;
 
       const response = await fetch(fetchUrl, {
