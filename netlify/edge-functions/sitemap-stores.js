@@ -1,90 +1,164 @@
-export default async (request, context) => {
+export default async function(request, context) {
   const baseUrl = "https://kibrisbazar.com";
   const API_KEY = Netlify.env.get("FIREBASE_API_KEY");
-  const projectId = Netlify.env.get("FIREBASE_PROJECT_ID");
-  
-  if (!API_KEY || !projectId) {
-    return new Response("Environment variables are missing.", { status: 500 });
+  const PROJECT_ID = Netlify.env.get("FIREBASE_PROJECT_ID");
+
+  if (!API_KEY || !PROJECT_ID) {
+    return new Response("Missing Firebase Environment Variables", { status: 500 });
   }
 
-  const storesBaseUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/artifacts/kibris-pazar/public/data/stores`;
+  const storesUrl =
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}` +
+    `/databases/(default)/documents/artifacts/kibris-pazar/public/data/stores`;
 
   const slugify = (text) => {
-    if (!text) return 'magaza';
+    if (!text) return "magaza";
+
     return text.toString().toLowerCase()
-      .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
-      .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
-      .replace(/\s+/g, '-')
-      .replace(/[^\w\-]+/g, '')
-      .replace(/\-\-+/g, '-')
-      .replace(/^-+/, '')
-      .replace(/-+$/, '');
+      .replace(/ğ/g, "g")
+      .replace(/ü/g, "u")
+      .replace(/ş/g, "s")
+      .replace(/ı/g, "i")
+      .replace(/ö/g, "o")
+      .replace(/ç/g, "c")
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-]+/g, "")
+      .replace(/\-\-+/g, "-")
+      .replace(/^-+/, "")
+      .replace(/-+$/, "");
   };
 
-  const escapeHtml = (str) => {
-    if (!str) return '';
-    return str.toString()
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
+  const xmlEscape = (value) =>
+    String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+
+  const getLastMod = (fields) => {
+    const field = fields?.updatedAt || fields?.createdAt;
+
+    if (!field) return null;
+
+    if (field.timestampValue) {
+      const date = new Date(field.timestampValue);
+
+      if (!Number.isNaN(date.getTime())) {
+        return date.toISOString();
+      }
+    }
+
+    if (field.integerValue) {
+      const value = Number(field.integerValue);
+
+      if (Number.isFinite(value)) {
+        const milliseconds =
+          value < 100000000000 ? value * 1000 : value;
+
+        const date = new Date(milliseconds);
+
+        if (!Number.isNaN(date.getTime())) {
+          return date.toISOString();
+        }
+      }
+    }
+
+    return null;
   };
 
-  let allStores = [];
   let pageToken = "";
+  let stores = [];
 
   try {
     do {
-      // DÜZELTME: Sadece mağaza adını (name) ve tarihi getir
-      let fetchUrl = `${storesBaseUrl}?pageSize=300&mask.fieldPaths=name&mask.fieldPaths=updatedAt&mask.fieldPaths=createdAt&key=${API_KEY}`;
-      if (pageToken) fetchUrl += `&pageToken=${pageToken}`;
+      let fetchUrl =
+        `${storesUrl}?pageSize=300` +
+        `&mask.fieldPaths=name` +
+        `&mask.fieldPaths=updatedAt` +
+        `&mask.fieldPaths=createdAt` +
+        `&key=${API_KEY}`;
 
-      const response = await fetch(fetchUrl, {
-        headers: { "Origin": baseUrl, "Referer": baseUrl + "/" }
-      });
+      if (pageToken) {
+        fetchUrl += `&pageToken=${encodeURIComponent(pageToken)}`;
+      }
+
+      const response = await fetch(fetchUrl);
 
       if (!response.ok) {
-        return new Response(`Firebase Stores Fetch Error: ${response.status}`, { status: 500 });
+        if (response.status === 429) {
+          return new Response("Firebase Daily Quota Exceeded", {
+            status: 503,
+            headers: {
+              "Retry-After": "86400",
+              "Content-Type": "text/plain"
+            }
+          });
+        }
+
+        return new Response(
+          `Firebase Stores Error: ${response.status}`,
+          { status: 500 }
+        );
       }
 
       const data = await response.json();
+
       if (data.documents) {
-        allStores = allStores.concat(data.documents);
+        stores.push(...data.documents);
       }
+
       pageToken = data.nextPageToken || "";
+
     } while (pageToken);
+
   } catch (error) {
-    return new Response(`Internal Stores Error: ${error.message}`, { status: 500 });
+    return new Response("Stores Sitemap Error", { status: 500 });
   }
 
-  let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  let xml =
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
-  xmlContent += `  <url>\n    <loc>${baseUrl}/</loc>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+  xml +=
+    `  <url>\n` +
+    `    <loc>${baseUrl}/</loc>\n` +
+    `    <changefreq>hourly</changefreq>\n` +
+    `    <priority>1.0</priority>\n` +
+    `  </url>\n`;
 
-  allStores.forEach(doc => {
-    const nameParts = doc.name.split('/');
-    const id = nameParts[nameParts.length - 1];
-    const nameStr = doc.fields?.name?.stringValue || "magaza";
-    const slug = slugify(nameStr);
+  for (const doc of stores) {
+    const id = doc.name?.split("/").pop();
 
-    let lastmodTag = "";
-    const fieldData = doc.fields?.updatedAt || doc.fields?.createdAt;
-    const rawTime = fieldData?.timestampValue || fieldData?.integerValue;
-    if (rawTime) {
-      const dateStr = new Date(typeof rawTime === 'string' ? rawTime : parseInt(rawTime, 10)).toISOString();
-      lastmodTag = `    <lastmod>${dateStr}</lastmod>\n`;
+    if (!id) continue;
+
+    const name = doc.fields?.name?.stringValue;
+
+    if (!name) continue;
+
+    const slug = slugify(name);
+    const lastmod = getLastMod(doc.fields);
+
+    xml +=
+      `  <url>\n` +
+      `    <loc>${baseUrl}/magaza/${xmlEscape(slug)}-${xmlEscape(id)}</loc>\n`;
+
+    if (lastmod) {
+      xml += `    <lastmod>${lastmod}</lastmod>\n`;
     }
 
-    xmlContent += `  <url>\n    <loc>${baseUrl}/magaza/${escapeHtml(slug)}-${escapeHtml(id)}</loc>\n${lastmodTag}    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
-  });
+    xml +=
+      `    <changefreq>weekly</changefreq>\n` +
+      `    <priority>0.8</priority>\n` +
+      `  </url>\n`;
+  }
 
-  xmlContent += `</urlset>`;
+  xml += `</urlset>`;
 
-  return new Response(xmlContent, {
+  return new Response(xml, {
     headers: {
-      "content-type": "application/xml; charset=utf-8",
-      "Cache-Control": "public, max-age=43200, stale-while-revalidate=86400"
-    },
+      "Content-Type": "application/xml; charset=UTF-8",
+      "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=172800"
+    }
   });
-};
+}
