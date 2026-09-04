@@ -41,8 +41,6 @@ export default async (request, context) => {
 
   try {
     while (currentFetchedPage <= targetPage) {
-      // DÜZELTME: mask.fieldPaths eklenerek gereksiz veri (görsel/açıklama) çekimi durduruldu.
-      // Sadece başlık, oluşturulma ve güncellenme tarihleri çekilir, bellek aşımı önlenir.
       let fetchUrl = `${productsBaseUrl}?pageSize=${pageSize}&mask.fieldPaths=title&mask.fieldPaths=updatedAt&mask.fieldPaths=createdAt&key=${API_KEY}`;
       if (pageToken) fetchUrl += `&pageToken=${pageToken}`;
 
@@ -50,7 +48,16 @@ export default async (request, context) => {
         headers: { "Origin": baseUrl, "Referer": baseUrl + "/" }
       });
 
+      // --- KOTA VE HATA YÖNETİMİ ---
       if (!response.ok) {
+        if (response.status === 429) {
+          // Firebase kotası dolmuş. Googlebot'a 503 (Geçici Servis Dışı) dönüyoruz.
+          // Retry-After: 86400 (1 gün sonra tekrar dene)
+          return new Response("Firebase Daily Quota Exceeded (429). Please try again tomorrow.", { 
+            status: 503,
+            headers: { "Retry-After": "86400", "Content-Type": "text/plain" }
+          });
+        }
         return new Response(`Firebase Products Fetch Error: ${response.status}`, { status: 500 });
       }
 
@@ -99,6 +106,7 @@ export default async (request, context) => {
   return new Response(xmlContent, {
     headers: {
       "content-type": "application/xml; charset=utf-8",
+      // CDN Önbellekleme: Tarayıcı ve Netlify CDN bu dosyayı 12-24 saat bellekte tutar, veritabanına her seferinde istek atılmaz.
       "Cache-Control": "public, max-age=43200, stale-while-revalidate=86400"
     },
   });
