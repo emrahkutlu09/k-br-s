@@ -2,10 +2,21 @@ export default async (request, context) => {
   const url = new URL(request.url);
   const path = url.pathname;
 
-  // Sadece ürün ve mağaza sayfalarında SEO bot yönlendirmesini çalıştır
-  if (!path.startsWith('/urun/') && !path.startsWith('/magaza/')) {
+  // Sadece ürün, mağaza ve kategori sayfalarında çalış
+  if (!path.startsWith('/urun/') && !path.startsWith('/magaza/') && !path.startsWith('/kategori/')) {
     return await context.next();
   }
+
+  // --- KOTA KORUMASI: BOT TESPİTİ ---
+  const userAgent = request.headers.get("user-agent") || "";
+  // Google, Bing, Yandex, WhatsApp, Facebook, Twitter, Telegram vb. botları tanımla
+  const isBot = /googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|whatsapp|viber|skype|telegram|discordbot/i.test(userAgent);
+
+  // Eğer ziyaretçi gerçek bir insansa (tarayıcıysa), Firebase'e İSTEK ATMA!
+  if (!isBot) {
+    return await context.next();
+  }
+  // ----------------------------------
 
   try {
     const apiKey = Deno.env.get("FIREBASE_API_KEY");
@@ -30,13 +41,15 @@ export default async (request, context) => {
       const id = cleanPath.split('-').pop();
       if (!id) return await context.next();
       docPath = `artifacts/${appId}/public/data/stores/${id}`;
+    } else {
+      // Kategori ise botlara standart başlık dön
+      return await context.next();
     }
 
     const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${docPath}?key=${apiKey}`;
     
     const res = await fetch(firestoreUrl);
     
-    // Firebase kota aşımı (429) veya veri bulunamadı (404) durumunda siteyi çökceltmeden devam et
     if (!res.ok) {
       return await context.next();
     }
@@ -66,11 +79,9 @@ export default async (request, context) => {
       image = fields.logoUrl?.stringValue || fields.coverUrl?.stringValue || image;
     }
 
-    // Sayfanın orijinal HTML çıktısını al
     const response = await context.next();
     const html = await response.text();
 
-    // Meta etiketlerini dinamik olarak değiştir
     const modifiedHtml = html
       .replace(/<title>.*?<\/title>/i, `<title>${title}</title>`)
       .replace(/<meta name="description" content=".*?"/i, `<meta name="description" content="${description}"`)
@@ -88,7 +99,6 @@ export default async (request, context) => {
     });
 
   } catch (err) {
-    // 429 veya başka bir hata durumunda asla 500 hatası fırlatma, direkt sayfayı normal sun
     return await context.next();
   }
 };
