@@ -10,223 +10,158 @@ export default async function(request, context) {
     return context.next();
   }
 
+  const userAgent = request.headers.get("user-agent") || "";
+  const isBot = /googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|whatsapp|viber|skype|telegram|discordbot/i.test(userAgent);
+
+  if (!isBot) return context.next();
+
   const API_KEY = Netlify.env.get("FIREBASE_API_KEY");
   const PROJECT_ID = Netlify.env.get("FIREBASE_PROJECT_ID");
+  const APP_ID = "kibris-pazar";
 
   if (!API_KEY || !PROJECT_ID) {
     return new Response("Server Configuration Error", { status: 500 });
   }
 
-  const userAgent = request.headers.get("user-agent") || "";
-  const isBot = /googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|whatsapp|viber|skype|telegram|discordbot|linkedinbot|pinterest/i.test(userAgent);
+  const escapeHtml = (value) => String(value ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
-  if (!isBot) {
-    return context.next();
-  }
-
-  const APP_ID = "kibris-pazar";
-
-  const slugify = (text) => {
-    if (!text) return "urun";
-    return text.toString().toLowerCase()
-      .replace(/ğ/g, "g").replace(/ü/g, "u").replace(/ş/g, "s")
-      .replace(/ı/g, "i").replace(/ö/g, "o").replace(/ç/g, "c")
-      .replace(/\s+/g, "-").replace(/[^\w\-]+/g, "")
-      .replace(/\-\-+/g, "-").replace(/^-+/, "").replace(/-+$/, "");
-  };
-
-  const escapeHtml = (value) => {
-    if (value === undefined || value === null) return "";
-    return String(value)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-  };
-
-  const escapeJson = (value) => {
-    return JSON.stringify(value)
-      .replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026");
-  };
-
-  let type = "";
-  let id = "";
-
-  if (isProduct) {
-    type = "products";
-    const clean = path.replace("/urun/", "").replace(/\/$/, "");
-    const parts = clean.split("-");
-    if (parts.length < 2) return context.next();
-    id = parts[parts.length - 1];
-  } else if (isStore) {
-    type = "stores";
-    const clean = path.replace("/magaza/", "").replace(/\/$/, "");
-    const parts = clean.split("-");
-    if (parts.length < 2) return context.next();
-    id = parts[parts.length - 1];
-  } else if (isCategory) {
-    type = "categories";
-    id = decodeURIComponent(path.replace("/kategori/", "").replace(/\/$/, ""));
-  }
-
-  let data = null;
+  const jsonEscape = (value) => JSON.stringify(String(value ?? ""));
 
   try {
-    if (type === "categories") {
-      const collectionUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/artifacts/${APP_ID}/public/data/categories?pageSize=300&key=${API_KEY}`;
-      let pageToken = "";
+    let docPath = "";
+    let categorySlug = "";
 
-      while (true) {
-        let fetchUrl = collectionUrl;
-        if (pageToken) fetchUrl += `&pageToken=${encodeURIComponent(pageToken)}`;
+    if (isProduct || isStore) {
+      const clean = path.split("/").filter(Boolean).pop() || "";
+      const id = clean.split("-").pop();
+      if (!id) return new Response("Not Found", { status: 404 });
 
-        const response = await fetch(fetchUrl);
-
-        if (!response.ok) {
-          if (response.status === 429) {
-            return new Response("Firebase Daily Quota Exceeded (429). Please try again tomorrow.", {
-              status: 503,
-              headers: { "Retry-After": "86400", "Content-Type": "text/plain" }
-            });
-          }
-          return context.next();
-        }
-
-        const result = await response.json();
-        const documents = result.documents || [];
-
-        for (const document of documents) {
-          const categoryName = document.fields?.name?.stringValue || "";
-          if (slugify(categoryName) === id) {
-            data = document;
-            break;
-          }
-        }
-
-        if (data) break;
-
-        pageToken = result.nextPageToken || "";
-        if (!pageToken) break;
-      }
+      docPath = isProduct
+        ? `artifacts/${APP_ID}/public/data/products/${id}`
+        : `artifacts/${APP_ID}/public/data/stores/${id}`;
     } else {
-      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/artifacts/${APP_ID}/public/data/${type}/${encodeURIComponent(id)}?key=${API_KEY}`;
-      const response = await fetch(firestoreUrl);
-
-      if (!response.ok) {
-        if (response.status === 429) {
-          return new Response("Firebase Daily Quota Exceeded (429). Please try again tomorrow.", {
-            status: 503,
-            headers: { "Retry-After": "86400", "Content-Type": "text/plain" }
-          });
-        }
-
-        if (response.status === 404) {
-          return new Response("Not Found", { status: 404 });
-        }
-
-        return context.next();
-      }
-
-      data = await response.json();
+      categorySlug = path.split("/kategori/")[1]?.replace(/\/$/, "") || "";
+      if (!categorySlug) return new Response("Not Found", { status: 404 });
     }
-  } catch (error) {
-    return context.next();
-  }
 
-  if (!data || !data.fields) {
-    return new Response("Not Found", { status: 404 });
-  }
+    let data;
 
-  const fields = data.fields;
-  let title = "Kıbrıs Bazar";
-  let description = "Kuzey Kıbrıs dijital pazaryeri.";
-  let image = "https://kibrisbazar.com/favicon.png";
-  let jsonLd = "";
+    if (isCategory) {
+      const categoryUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/artifacts/${APP_ID}/public/data/categories?pageSize=300&key=${API_KEY}`;
+      const res = await fetch(categoryUrl);
+      if (!res.ok) return new Response("Not Found", { status: res.status === 404 ? 404 : 500 });
 
-  if (type === "products") {
-    const productTitle = fields.title?.stringValue || "Ürün";
-    const descriptionRaw = fields.description?.stringValue || "";
-    const price = fields.price?.doubleValue ?? fields.price?.integerValue ?? fields.price?.stringValue ?? "";
-    const storeName = fields.storeName?.stringValue || "Kıbrıs Bazar";
+      data = await res.json();
+    } else {
+      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${docPath}?key=${API_KEY}`;
+      const res = await fetch(firestoreUrl);
 
-    title = `${productTitle} - ${storeName} | Kıbrıs Bazar`;
-    description = descriptionRaw
-      ? descriptionRaw.substring(0, 160).replace(/\s+/g, " ")
-      : `${productTitle} ürününü ${storeName} mağazasından inceleyin.`;
-
-    const images = fields.images?.arrayValue?.values || [];
-    if (images.length > 0) image = images[0]?.stringValue || image;
-
-    const productSchema = {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      "name": productTitle,
-      "image": image ? [image] : [],
-      "description": description,
-      "sku": id,
-      "offers": {
-        "@type": "Offer",
-        "url": url.href,
-        "priceCurrency": "TRY",
-        "price": String(price),
-        "availability": "https://schema.org/InStock"
+      if (res.status === 404) return new Response("Not Found", { status: 404 });
+      if (res.status === 429) {
+        return new Response("Temporary service unavailable.", {
+          status: 503,
+          headers: { "Retry-After": "86400", "Content-Type": "text/plain; charset=utf-8" }
+        });
       }
-    };
+      if (!res.ok) return new Response("Firebase Upstream Error", { status: 500 });
 
-    jsonLd = `<script type="application/ld+json">${escapeJson(productSchema)}</script>`;
+      data = await res.json();
+    }
 
-  } else if (type === "stores") {
-    const storeName = fields.name?.stringValue || "Mağaza";
-    const district = fields.district?.stringValue || "Kuzey Kıbrıs";
+    let title = "Kıbrıs Bazar";
+    let description = "Kuzey Kıbrıs dijital pazar yeri.";
+    let image = "https://kibrisbazar.com/favicon.png";
+    let jsonLd = "";
 
-    title = `${storeName} Mağazası | Kıbrıs Bazar`;
-    description = `${district} bölgesindeki ${storeName} mağazasının ürünlerini keşfedin.`;
-    image = fields.logoUrl?.stringValue || fields.coverUrl?.stringValue || image;
+    if (isProduct) {
+      const p = data.fields || {};
+      const productTitle = p.title?.stringValue || "Ürün";
+      const price = p.price?.doubleValue ?? p.price?.integerValue ?? null;
+      const storeName = p.storeName?.stringValue || "Kıbrıs Bazar";
+      const rawDescription = p.description?.stringValue || `${productTitle} ürününü inceleyin.`;
 
-    const storeSchema = {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": storeName,
-      "url": url.href,
-      "logo": image
-    };
+      title = `${productTitle} - ${storeName} | Kıbrıs Bazar`;
+      description = rawDescription.substring(0, 160).replace(/\n/g, " ");
 
-    jsonLd = `<script type="application/ld+json">${escapeJson(storeSchema)}</script>`;
+      const images = p.images?.arrayValue?.values || [];
+      if (images[0]?.stringValue) image = images[0].stringValue;
 
-  } else if (type === "categories") {
-    const categoryName = fields.name?.stringValue || "Kategori";
+      const productSchema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: productTitle,
+        image: image ? [image] : undefined,
+        description: rawDescription,
+        brand: { "@type": "Brand", name: storeName },
+        offers: price !== null ? {
+          "@type": "Offer",
+          url: url.href,
+          priceCurrency: "TRY",
+          price: price,
+          availability: "https://schema.org/InStock"
+        } : undefined
+      };
 
-    title = `${categoryName} Ürünleri | Kıbrıs Bazar`;
-    description = `Kuzey Kıbrıs genelinde ${categoryName} ürünlerini Kıbrıs Bazar'da keşfedin.`;
+      jsonLd = `<script type="application/ld+json">${JSON.stringify(productSchema)}</script>`;
+    } else if (isStore) {
+      const s = data.fields || {};
+      const name = s.name?.stringValue || "Mağaza";
+      title = `${name} Mağazası | Kıbrıs Bazar`;
+      description = `${name} mağazasının ürünlerini inceleyin.`;
+      image = s.logoUrl?.stringValue || s.coverUrl?.stringValue || image;
 
-    const categorySchema = {
-      "@context": "https://schema.org",
-      "@type": "CollectionPage",
-      "name": `${categoryName} Ürünleri`,
-      "url": url.href
-    };
+      jsonLd = `<script type="application/ld+json">${JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name,
+        url: url.href,
+        logo: image
+      })}</script>`;
+    } else {
+      const slugify = (text) => {
+        if (!text) return "urun";
+        return text.toString().toLowerCase()
+          .replace(/ğ/g, "g").replace(/ü/g, "u").replace(/ş/g, "s")
+          .replace(/ı/g, "i").replace(/ö/g, "o").replace(/ç/g, "c")
+          .replace(/\s+/g, "-").replace(/[^\w\-]+/g, "")
+          .replace(/\-\-+/g, "-").replace(/^-+/, "").replace(/-+$/, "");
+      };
 
-    jsonLd = `<script type="application/ld+json">${escapeJson(categorySchema)}</script>`;
-  }
+      const docs = data.documents || [];
+      const matched = docs.find(doc => slugify(doc.fields?.name?.stringValue || "") === categorySlug);
+      if (!matched) return new Response("Not Found", { status: 404 });
 
-  const response = await context.next();
-  if (!response.ok) return response;
+      const name = matched.fields?.name?.stringValue || "Kategori";
+      title = `${name} Ürünleri | Kıbrıs Bazar`;
+      description = `Kuzey Kıbrıs genelinde ${name} seçenekleri Kıbrıs Bazar'da.`;
 
-  let html = await response.text();
+      jsonLd = `<script type="application/ld+json">${JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: `${name} Ürünleri`,
+        url: url.href
+      })}</script>`;
+    }
 
-  html = html
-    .replace(/<title[\s\S]*?<\/title>/gi, "")
-    .replace(/<meta\s+name=["']description["'][^>]*>/gi, "")
-    .replace(/<meta\s+property=["']og:title["'][^>]*>/gi, "")
-    .replace(/<meta\s+property=["']og:description["'][^>]*>/gi, "")
-    .replace(/<meta\s+property=["']og:image["'][^>]*>/gi, "")
-    .replace(/<meta\s+property=["']og:url["'][^>]*>/gi, "")
-    .replace(/<meta\s+name=["']twitter:title["'][^>]*>/gi, "")
-    .replace(/<meta\s+name=["']twitter:description["'][^>]*>/gi, "")
-    .replace(/<meta\s+name=["']twitter:image["'][^>]*>/gi, "")
-    .replace(/<link\s+rel=["']canonical["'][^>]*>/gi, "");
+    const response = await context.next();
+    if (!response.ok) return response;
 
-  html = html.replace(
-    /<head>/i,
-    `<head>
+    let html = await response.text();
+
+    html = html
+      .replace(/<title>[\s\S]*?<\/title>/gi, "")
+      .replace(/<meta\s+name=["']description["'][^>]*>/gi, "")
+      .replace(/<meta\s+property=["']og:title["'][^>]*>/gi, "")
+      .replace(/<meta\s+property=["']og:description["'][^>]*>/gi, "")
+      .replace(/<meta\s+property=["']og:image["'][^>]*>/gi, "")
+      .replace(/<meta\s+property=["']og:url["'][^>]*>/gi, "")
+      .replace(/<meta\s+name=["']twitter:[^"']+["'][^>]*>/gi, "")
+      .replace(/<link\s+rel=["']canonical["'][^>]*>/gi, "");
+
+    const tags = `
 <title>${escapeHtml(title)}</title>
 <meta name="description" content="${escapeHtml(description)}">
 <link rel="canonical" href="${escapeHtml(url.href)}">
@@ -238,14 +173,15 @@ export default async function(request, context) {
 <meta name="twitter:title" content="${escapeHtml(title)}">
 <meta name="twitter:description" content="${escapeHtml(description)}">
 <meta name="twitter:image" content="${escapeHtml(image)}">
-${jsonLd}`
-  );
+${jsonLd}`;
 
-  return new Response(html, {
-    status: response.status,
-    headers: {
-      "Content-Type": "text/html; charset=UTF-8",
-      "Cache-Control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
-    }
-  });
+    html = html.replace(/<head[^>]*>/i, match => `${match}\n${tags}\n`);
+
+    return new Response(html, {
+      status: response.status,
+      headers: { "Content-Type": "text/html; charset=utf-8" }
+    });
+  } catch (error) {
+    return new Response("Edge Bot Internal Error", { status: 500 });
+  }
 }
