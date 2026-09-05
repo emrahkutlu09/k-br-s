@@ -913,16 +913,20 @@
             return tObj[catName] || catName; 
         };
 
-        window.setLanguage = (lang) => {
-            const currentLang = getCurrentLang();
-            if (lang === 'tr' && currentLang !== 'tr') {
+       window.setLanguage = (lang) => {
+            if (lang === 'tr') {
+                // Türkçe seçildiğinde Google Translate çerezlerini (cookies) şartsız olarak sil
                 document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                 document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
+                
+                // URL'deki tüm lang takılarını temizle ve sayfayı saf Türkçe haliyle yenile
                 const newUrl = new URL(window.location);
-                newUrl.searchParams.set('lang', 'tr');
-                try { window.location.href = newUrl.toString(); } catch(e) {}
+                newUrl.searchParams.delete('lang'); 
+                window.location.href = newUrl.toString();
                 return;
             }
+
+            // Diğer diller (İngilizce, Rusça vb.) seçildiğinde URL'i güncelle ve çeviriyi başlat
             const newUrl = new URL(window.location);
             newUrl.searchParams.set('lang', lang);
             try {
