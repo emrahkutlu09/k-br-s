@@ -896,12 +896,11 @@
             ar: { dir: "rtl", all_cyprus: "كل قبرص", all_categories: "جميع الفئات", topbar_subtitle: "| سوق رقمي بدون عمولة", seller_panel: "البائع", search_placeholder: "ابحث...", loading_text: "جارٍ التحميل...", login_google: "الدخول بجوجل", my_orders_guest: "طلبات (ضيف)", my_orders: "طلباتي", cart_title: "سلة", cart_empty: "السلة فارغة.", footer_text: "&copy; 2026 Kıbrıs Bazar." }
         };
 
-     function getCurrentLang() {
+    function getCurrentLang() {
             const urlParams = new URLSearchParams(window.location.search);
             const urlLang = urlParams.get('lang');
             if (urlLang) return urlLang;
             
-            // URL'de lang yoksa ama tarayıcıda önceden kalma çeviri çerezi (cookie) varsa onu algıla
             const cookieMatch = document.cookie.match(/googtrans=\/tr\/([a-zA-Z\-]{2,5})/);
             if (cookieMatch && cookieMatch[1]) {
                 const cLang = cookieMatch[1].toLowerCase();
@@ -925,14 +924,12 @@
         window.setLanguage = (lang) => {
             const domain = window.location.hostname;
             
-            // 1. Var olan tüm çeviri çerezlerini (cookie) kökten temizle
             document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + domain + ";";
             document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + domain + ";";
 
             const newUrl = new URL(window.location);
 
-            // 2. Türkçe ise saf hale dön, başka dil ise o dilin çerezini zorla ekle
             if (lang === 'tr') {
                 newUrl.searchParams.delete('lang'); 
             } else {
@@ -942,8 +939,8 @@
                 newUrl.searchParams.set('lang', lang);
             }
 
-            // 3. Yarım çeviriyi engellemek için sayfayı yeni dille YENİDEN YÜKLE
-            window.location.href = newUrl.toString();
+            window.history.replaceState({}, '', newUrl);
+            window.location.reload(); 
         };
 
         function applyTranslations() {
