@@ -79,7 +79,7 @@
         <p class="text-xs font-bold text-slate-400 mt-2">Vitrin Hazırlanıyor...</p>
     </div>
 
-    <!-- GİZLİ GOOGLE ÇEVİRİ MOTORU (Orijinal Sistem) -->
+    <!-- GİZLİ GOOGLE ÇEVİRİ MOTORU -->
     <div id="google_translate_element" class="hidden"></div>
     <script type="text/javascript">
         function googleTranslateElementInit() {
@@ -300,6 +300,7 @@
 
                 <div>
                     <h4 class="font-black text-slate-900 mb-4" data-i18n="footer_categories">Kategoriler</h4>
+                    <!-- 🚀 SEO: Footer kategori linkleri gerçek A etiketlerine dönüştürüldü -->
                     <ul class="space-y-2 text-sm text-slate-500 font-medium">
                         <li><a href="/kategori/elektronik-teknoloji" onclick="window.handleCategoryClick(event, 'Elektronik & Teknoloji')" class="hover:text-orange-500 transition">Elektronik</a></li>
                         <li><a href="/kategori/moda-giyim" onclick="window.handleCategoryClick(event, 'Moda & Giyim')" class="hover:text-orange-500 transition">Moda</a></li>
@@ -352,7 +353,7 @@
             </div>
         </div>
 
-        <!-- Info Modals -->
+        <!-- Info Modals (Hakkımızda, Sözleşmeler) -->
         <div id="infoModal" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="window.closeInfoModal()"></div>
             <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="infoPanel">
@@ -396,7 +397,7 @@
             </div>
         </div>
 
-        <!-- Ürün Detay Modali -->
+        <!-- 🌟 PREMIUM ÜRÜN DETAY MODALI 🌟 -->
         <div id="productDetailModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4 sm:p-6">
             <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="window.closeProductDetail()"></div>
             
@@ -406,6 +407,7 @@
                 <div class="w-full md:w-1/2 lg:w-3/5 bg-slate-50/50 border-r border-slate-100 p-4 sm:p-8 flex flex-col h-full md:overflow-y-auto md:max-h-[95vh] no-scrollbar relative shrink-0">
                     <div class="w-full min-h-[300px] h-[300px] sm:min-h-[400px] sm:h-[400px] md:h-auto md:flex-1 bg-white rounded-3xl border border-slate-200 overflow-hidden relative flex items-center justify-center shadow-sm shrink-0">
                         <img id="detailMainImage" src="" class="absolute w-full h-full object-contain p-4 transition-transform duration-300" alt="Main Product Image"/>
+                        <!-- Ürün Detayı Ribbon (Şerit) Alanı -->
                         <div id="detailRibbonContainer" class="absolute top-4 left-0 flex flex-col gap-1 items-start z-10 pointer-events-none hidden"></div>
                     </div>
                     <div id="detailThumbnails" class="flex gap-3 overflow-x-auto mt-5 pb-2 pt-1 no-scrollbar snap-x items-center shrink-0"></div>
@@ -620,6 +622,7 @@
         let spActiveCategory = '';
         let spStoreProducts = [];
         
+        // FİLTRE DEĞİŞKENLERİ
         window.isFilterMenuOpen = false;
         window.filterFreeDeliveryActive = false;
         window.filterCashOnDeliveryActive = false;
@@ -637,6 +640,7 @@
                 .replace(/-+$/, '');
         };
 
+        // 🚀 SEO FAZ 1: SPA ve History API Yönlendirme Fonksiyonları (Gerçek Linkler İçin)
         window.navigateTo = (path, updateState = true) => {
             if (updateState) {
                 try {
@@ -649,6 +653,7 @@
         };
 
         window.handleRoute = (forcedPath) => {
+            // Hash yerine Path kullanıyoruz. (Geriye uyumluluk için eski hash varsa path'e çekilir).
             const path = forcedPath !== undefined ? forcedPath : window.location.pathname;
             
             let targetType = null;
@@ -668,6 +673,7 @@
                 targetCategorySlug = path.split('/kategori/')[1].replace(/\/$/, '');
             }
             
+            // Eğer URL değiştiyse ve ürün/mağaza modalı açık değilse onları temizle kapat
             if (targetType !== 'urun' && !document.getElementById('productDetailModal').classList.contains('hidden')) {
                 document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
                 setTimeout(() => document.getElementById('productDetailModal').classList.add('hidden'), 300);
@@ -677,6 +683,7 @@
                 document.body.style.overflow = 'auto';
             }
             
+            // Rota İşleme
             if (targetType === 'magaza' && targetId) {
                 window.openStoreProfile(targetId, false);
             } 
@@ -684,6 +691,7 @@
                 window.openProductDetail(targetId, false);
             } 
             else if (targetType === 'kategori' && targetCategorySlug) {
+                // Kategori adını bul
                 const catObj = dbCategories.find(c => window.slugify(c.name) === targetCategorySlug);
                 activeCategory = catObj ? catObj.name : '';
                 
@@ -707,6 +715,7 @@
 
         window.addEventListener('popstate', () => { window.handleRoute(); });
 
+        // Linklere tıklandığında çalışacak SPA Yakalayıcılar
         window.handleProductClick = (event, id) => {
             event.preventDefault();
             window.openProductDetail(id, true);
@@ -889,7 +898,7 @@
 
         function getCurrentLang() {
             const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('lang') || localStorage.getItem('kb_lang') || 'tr';
+            return urlParams.get('lang') || 'tr';
         }
 
         window.t = function(key) {
@@ -905,15 +914,23 @@
         };
 
         window.setLanguage = (lang) => {
-            localStorage.setItem('kb_lang', lang);
-            const newUrl = new URL(window.location);
-            if (lang === 'tr') {
-                newUrl.searchParams.delete('lang');
-            } else {
-                newUrl.searchParams.set('lang', lang);
+            const currentLang = getCurrentLang();
+            if (lang === 'tr' && currentLang !== 'tr') {
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('lang', 'tr');
+                try { window.location.href = newUrl.toString(); } catch(e) {}
+                return;
             }
-            window.history.replaceState({}, '', newUrl);
-            window.location.reload();
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('lang', lang);
+            try {
+                window.history.pushState({}, '', newUrl);
+            } catch (e) {
+                console.warn("History pushState çalışmadı.", e);
+            }
+            applyTranslations();
         };
 
         function applyTranslations() {
@@ -960,7 +977,16 @@
             if(isCartOpen && typeof updateCartUI === 'function') updateCartUI();
             
             lucide.createIcons();
+            setTimeout(() => { window.triggerGoogleTranslate(lang); }, 500);
         }
+
+        window.triggerGoogleTranslate = (lang) => {
+            const select = document.querySelector(".goog-te-combo");
+            if (select) {
+                select.value = lang === 'tr' ? '' : lang;
+                select.dispatchEvent(new Event('change'));
+            }
+        };
 
         window.showMessage = (msg, type = 'success') => {
             const toast = document.createElement('div');
@@ -1058,11 +1084,12 @@
             return arr;
         };
 
-        async function initApp() {
+   async function initApp() {
             lucide.createIcons();
             updateCartUI();
             
             try {
+                // 1. AYARLAR (Settings) - onSnapshot yerine tek seferlik getDoc
                 const settingsSnap = await getDoc(settingsRef);
                 if (settingsSnap.exists()) {
                     const data = settingsSnap.data();
@@ -1084,42 +1111,59 @@
                 isSettingsLoaded = true; 
                 checkInitialLoadStatus();
 
+                // 2. AKILLI CACHE FONKSİYONU (Tarayıcı Belleği)
                 async function fetchWithCache(cacheKey, ref) {
                     const cachedItem = sessionStorage.getItem(cacheKey);
                     if (cachedItem) {
                         const parsed = JSON.parse(cachedItem);
+                        // 30 dakikalık geçerlilik süresi (Eğer 30 dk dolmadıysa Firebase'e hiç gitme)
                         if (Date.now() - parsed.timestamp < 1800000) { 
+                            console.log(`${cacheKey} bellekten yüklendi. (Kota Harcanmadı)`);
                             return parsed.data;
                         }
                     }
+                    console.log(`${cacheKey} Firebase'den çekiliyor...`);
                     const snap = await getDocs(ref);
                     const dataList = [];
                     snap.forEach(d => dataList.push({ id: d.id, ...d.data() }));
+                    
                     try {
                         sessionStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: dataList }));
-                    } catch(e) {}
+                    } catch(e) { console.warn("Önbellek kapasitesi aşıldı."); }
+                    
                     return dataList;
                 }
 
+                // 3. MAĞAZALAR
                 dbStores = await fetchWithCache('kb_cache_stores', storesRef);
                 isStoresLoaded = true;
 
+                // 4. KATEGORİLER
                 dbCategories = await fetchWithCache('kb_cache_categories', categoriesRef);
                 isCategoriesLoaded = true;
                 window.renderCategories();
 
+                // 5. ÜRÜNLER
                 dbProducts = await fetchWithCache('kb_cache_products', productsRef);
                 isProductsLoaded = true;
 
+                // Tüm veriler indi, rotayı işlet
                 window.handleRoute();
                 checkInitialLoadStatus();
                 applyTranslations();
 
             } catch (error) {
                 console.error("Veriler yüklenirken hata oluştu:", error);
+                
+                // Kota aşımı (429) durumunda müşteriye zarif bir ekran göster
+                if(error.code === 'resource-exhausted' || (error.message && error.message.includes('Quota'))) {
+                    const loaderBrand = document.getElementById('loaderBrandName');
+                    if(loaderBrand) loaderBrand.innerHTML = `<span class="text-rose-500">Sistem Bakımda</span>`;
+                    const loaderP = document.querySelector('#initialLoader p');
+                    if(loaderP) loaderP.innerText = "Sistemimiz şu an çok yoğun. Lütfen daha sonra tekrar deneyiniz.";
+                }
             }
         }
-
         function buildCategoryTree(categories, parentId) {
             let tree = [];
             categories.forEach(cat => {
@@ -1152,6 +1196,7 @@
                             </div>
                             <ul id="sub-${node.id}" class="hidden bg-slate-50/50 border-y border-slate-100/50">
                                 <li>
+                                    <!-- 🚀 SEO FAZ 1: Kategori menüsünde A etiketi -->
                                     <a href="/kategori/${catSlug}" onclick="window.handleCategoryClick(event, '${node.name}')" class="block w-full text-left py-2 ${childPadding} pr-4 text-xs font-black text-orange-600 hover:text-orange-500 hover:bg-orange-50 transition-colors border-b border-slate-100/50">
                                         Tüm ${window.getCategoryTranslation(node.name)}
                                     </a>
@@ -1163,6 +1208,7 @@
                 } else {
                     html += `
                         <li>
+                            <!-- 🚀 SEO FAZ 1: Kategori menüsünde A etiketi -->
                             <a href="/kategori/${catSlug}" onclick="window.handleCategoryClick(event, '${node.name}')" class="block w-full text-left py-2.5 ${paddingClass} ${fontClass} ${activeClass} transition-colors flex items-center gap-2 text-sm border-b border-slate-50 last:border-0">
                                 ${iconHtml} <span class="truncate">${window.getCategoryTranslation(node.name)}</span>
                             </a>
@@ -1177,6 +1223,7 @@
             if(e) e.stopPropagation();
             const sub = document.getElementById(`sub-${id}`);
             const icon = document.getElementById(`icon-${id}`);
+            
             if (sub && sub.classList.contains('hidden')) {
                 sub.classList.remove('hidden');
                 if(icon) icon.classList.add('rotate-180');
@@ -1217,6 +1264,7 @@
             activeCategory = cat;
             document.getElementById('catDropdownMenu').classList.add('hidden');
             isCatMenuOpen = false;
+            
             if (updateState) {
                  const path = cat ? `/kategori/${window.slugify(cat)}` : '/';
                  window.navigateTo(path, true);
@@ -1281,6 +1329,7 @@
             window.renderHome(document.getElementById('searchInput').value);
         };
 
+        // 🚀 SEO FAZ 1: Ürün kartlarının A etiketi formatında yeniden düzenlenmesi
         window.createProductCard = (p) => {
             const discount = p.originalPrice > p.price ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
             const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500/cbd5e1/475569?text=Gorsel';
@@ -1312,6 +1361,7 @@
             
             return `
                 <div class="bg-white rounded-2xl p-3 hover:shadow-xl hover:border-orange-200 border border-slate-200 transition-all group flex flex-col w-full h-full relative">
+                    
                     <div class="relative w-full aspect-[4/5] mb-3 overflow-hidden rounded-xl bg-slate-100 shrink-0">
                         <a href="${productUrl}" onclick="window.handleProductClick(event, '${p.id}')" class="block w-full h-full">
                             <img src="${img}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.title}"/>
@@ -1644,6 +1694,7 @@
             document.getElementById('detailStoreIdHidden').value = product.storeId;
             document.getElementById('detailProductId').value = product.id; 
             
+            // 🚀 SEO FAZ 1: Detay sayfasındaki mağaza butonuna gerçek href
             const dStoreLink = document.getElementById('detailStoreLink');
             if (dStoreLink) {
                 const storeSlug = window.slugify(product.storeName);
@@ -1948,6 +1999,7 @@
         };
 
         window.closeProductDetail = () => {
+            // Modal kapatılırken URL'i ürün veya mağaza linkinden bir öncekine döndür (veya ana sayfaya)
             const wasInStore = document.getElementById('storeProfileModal') && !document.getElementById('storeProfileModal').classList.contains('hidden');
             if (!wasInStore) {
                 window.navigateTo(activeCategory ? `/kategori/${window.slugify(activeCategory)}` : '/', false); 
@@ -2641,8 +2693,16 @@
         window.closeMyOrders = () => {
             const panel = document.getElementById('myOrdersPanel');
             const modal = document.getElementById('myOrdersModal');
-            if (panel) panel.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { if (modal) modal.classList.add('hidden'); }, 300);
+            
+            if (panel) {
+                panel.classList.add('scale-95', 'opacity-0');
+            }
+            
+            setTimeout(() => { 
+                if (modal) {
+                    modal.classList.add('hidden'); 
+                }
+            }, 300);
         };
 
         window.markAsReceived = async (orderId) => {
@@ -2670,6 +2730,7 @@
             }
 
             const buyerUid = auth.currentUser.uid;
+
             const product = dbProducts.find(p => p.id === pId);
             if (product) {
                 const storeDoc = dbStores.find(s => s.id === product.storeId);
@@ -2706,6 +2767,7 @@
                 
                 await addDoc(reviewsRef, reviewData);
                 window.showMessage("Yorumunuz onaya gönderildi.");
+                
                 form.innerHTML = `<div class="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 p-3 rounded-lg text-center flex flex-col items-center gap-1"><i data-lucide="check-circle" class="w-5 h-5"></i> Değerlendirmeniz onaya gönderildi</div>`;
                 lucide.createIcons();
             } catch (err) {
@@ -2715,7 +2777,10 @@
             }
         };
 
+        // Uygulama başlatılıyor...
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
+
+
 </body>
 </html>
