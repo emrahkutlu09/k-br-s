@@ -55,11 +55,23 @@
         
         .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* GOOGLE TRANSLATE GİZLEME CSS'LERİ */
+        iframe.goog-te-banner-frame { display: none !important; }
+        .goog-te-banner-frame { display: none !important; }
+        .skiptranslate > iframe { display: none !important; }
+        body { top: 0px !important; position: static !important; }
+        html { height: auto !important; }
+        #goog-gt-tt { display: none !important; }
+        .goog-tooltip { display: none !important; }
+        .goog-tooltip:hover { display: none !important; }
+        .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
+        .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
+        .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
         * { -webkit-text-size-adjust: none; }
     </style>
 </head>
-
-<body class="bg-slate-50 text-slate-900 antialiased selection:bg-orange-500 selection:text-white notranslate">
+<body class="bg-slate-50 text-slate-900 antialiased selection:bg-orange-500 selection:text-white">
 
     <div id="initialLoader" class="fixed inset-0 z-[999] bg-slate-50 flex flex-col items-center justify-center transition-opacity duration-500">
         <i data-lucide="loader-2" class="w-12 h-12 text-orange-500 animate-spin mb-4"></i>
@@ -67,7 +79,14 @@
         <p class="text-xs font-bold text-slate-400 mt-2">Vitrin Hazırlanıyor...</p>
     </div>
 
-    <!-- GİZLİ GOOGLE ÇEVİRİ MOTORU TAMAMEN KALDIRILDI -->
+    <!-- GİZLİ GOOGLE ÇEVİRİ MOTORU -->
+    <div id="google_translate_element" class="hidden"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'tr', includedLanguages: 'en,el,ru,ar,tr', autoDisplay: false}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <div id="app" class="flex flex-col min-h-screen relative">
         
@@ -281,6 +300,7 @@
 
                 <div>
                     <h4 class="font-black text-slate-900 mb-4" data-i18n="footer_categories">Kategoriler</h4>
+                    <!-- 🚀 SEO: Footer kategori linkleri gerçek A etiketlerine dönüştürüldü -->
                     <ul class="space-y-2 text-sm text-slate-500 font-medium">
                         <li><a href="/kategori/elektronik-teknoloji" onclick="window.handleCategoryClick(event, 'Elektronik & Teknoloji')" class="hover:text-orange-500 transition">Elektronik</a></li>
                         <li><a href="/kategori/moda-giyim" onclick="window.handleCategoryClick(event, 'Moda & Giyim')" class="hover:text-orange-500 transition">Moda</a></li>
@@ -602,11 +622,12 @@
         let spActiveCategory = '';
         let spStoreProducts = [];
         
+        // FİLTRE DEĞİŞKENLERİ
         window.isFilterMenuOpen = false;
         window.filterFreeDeliveryActive = false;
         window.filterCashOnDeliveryActive = false;
         window.currentSortPreference = 'newest';
-
+        
         window.slugify = (text) => {
             if(!text) return 'kibris';
             return text.toString().toLowerCase()
@@ -619,6 +640,7 @@
                 .replace(/-+$/, '');
         };
 
+        // 🚀 SEO FAZ 1: SPA ve History API Yönlendirme Fonksiyonları (Gerçek Linkler İçin)
         window.navigateTo = (path, updateState = true) => {
             if (updateState) {
                 try {
@@ -631,6 +653,7 @@
         };
 
         window.handleRoute = (forcedPath) => {
+            // Hash yerine Path kullanıyoruz. (Geriye uyumluluk için eski hash varsa path'e çekilir).
             const path = forcedPath !== undefined ? forcedPath : window.location.pathname;
             
             let targetType = null;
@@ -650,6 +673,7 @@
                 targetCategorySlug = path.split('/kategori/')[1].replace(/\/$/, '');
             }
             
+            // Eğer URL değiştiyse ve ürün/mağaza modalı açık değilse onları temizle kapat
             if (targetType !== 'urun' && !document.getElementById('productDetailModal').classList.contains('hidden')) {
                 document.getElementById('productDetailPanel').classList.add('scale-95', 'opacity-0');
                 setTimeout(() => document.getElementById('productDetailModal').classList.add('hidden'), 300);
@@ -659,6 +683,7 @@
                 document.body.style.overflow = 'auto';
             }
             
+            // Rota İşleme
             if (targetType === 'magaza' && targetId) {
                 window.openStoreProfile(targetId, false);
             } 
@@ -666,6 +691,7 @@
                 window.openProductDetail(targetId, false);
             } 
             else if (targetType === 'kategori' && targetCategorySlug) {
+                // Kategori adını bul
                 const catObj = dbCategories.find(c => window.slugify(c.name) === targetCategorySlug);
                 activeCategory = catObj ? catObj.name : '';
                 
@@ -689,6 +715,7 @@
 
         window.addEventListener('popstate', () => { window.handleRoute(); });
 
+        // Linklere tıklandığında çalışacak SPA Yakalayıcılar
         window.handleProductClick = (event, id) => {
             event.preventDefault();
             window.openProductDetail(id, true);
@@ -886,20 +913,16 @@
             return tObj[catName] || catName; 
         };
 
-        // YENİ: Veritabanından gelen dinamik ürün verileri (Başlık, Açıklama) için Çeviri Çekici
-        window.getLocData = (item, field) => {
-            const lang = getCurrentLang();
-            if (lang === 'tr') return item[field] || '';
-            // Eğer ürünün 'translations' objesi varsa ve içinde seçili dile ait veri varsa onu getir
-            if (item.translations && item.translations[lang] && item.translations[lang][field]) {
-                return item.translations[lang][field];
-            }
-            // Çevirisi henüz yoksa (veya Türkçe seçiliyse) orijinalini (Türkçeyi) göster
-            return item[field] || ''; 
-        };
-
         window.setLanguage = (lang) => {
             const currentLang = getCurrentLang();
+            if (lang === 'tr' && currentLang !== 'tr') {
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('lang', 'tr');
+                try { window.location.href = newUrl.toString(); } catch(e) {}
+                return;
+            }
             const newUrl = new URL(window.location);
             newUrl.searchParams.set('lang', lang);
             try {
@@ -938,7 +961,6 @@
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
             
             if(!document.getElementById('productDetailModal').classList.contains('hidden') || !document.getElementById('storeProfileModal').classList.contains('hidden')) {
-                // Modal açıksa başlık modal içinde yönetilir, burada ezilmemeli.
             } else {
                 document.title = (tObj.seo_title) ? tObj.seo_title : `${pName} | ${tObj.homeTitle}`;
                 const metaDesc = document.getElementById('metaDesc');
@@ -955,11 +977,15 @@
             if(isCartOpen && typeof updateCartUI === 'function') updateCartUI();
             
             lucide.createIcons();
-            // Google Translate tamamen iptal edildi.
+            setTimeout(() => { window.triggerGoogleTranslate(lang); }, 500);
         }
 
         window.triggerGoogleTranslate = (lang) => {
-            // İPTAL EDİLDİ: Artık kendi veritabanı çevirimizi (getLocData) kullanıyoruz.
+            const select = document.querySelector(".goog-te-combo");
+            if (select) {
+                select.value = lang === 'tr' ? '' : lang;
+                select.dispatchEvent(new Event('change'));
+            }
         };
 
         window.showMessage = (msg, type = 'success') => {
@@ -1058,7 +1084,7 @@
             return arr;
         };
 
-        async function initApp() {
+   async function initApp() {
             lucide.createIcons();
             updateCartUI();
             
@@ -1138,7 +1164,6 @@
                 }
             }
         }
-
         function buildCategoryTree(categories, parentId) {
             let tree = [];
             categories.forEach(cat => {
@@ -1304,10 +1329,8 @@
             window.renderHome(document.getElementById('searchInput').value);
         };
 
-        // 🚀 Çok Dilli Veritabanı ve SEO FAZ 1
+        // 🚀 SEO FAZ 1: Ürün kartlarının A etiketi formatında yeniden düzenlenmesi
         window.createProductCard = (p) => {
-            const localizedTitle = window.getLocData(p, 'title');
-
             const discount = p.originalPrice > p.price ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
             const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500/cbd5e1/475569?text=Gorsel';
             const isFav = favorites.includes(p.id);
@@ -1319,7 +1342,7 @@
             
             const variantsText = window.t('variants_label');
 
-            const productSlug = window.slugify(localizedTitle);
+            const productSlug = window.slugify(p.title);
             const productUrl = `/urun/${productSlug}-${p.id}`;
             const storeSlug = window.slugify(p.storeName);
             const storeUrl = `/magaza/${storeSlug}-${p.storeId}`;
@@ -1341,7 +1364,7 @@
                     
                     <div class="relative w-full aspect-[4/5] mb-3 overflow-hidden rounded-xl bg-slate-100 shrink-0">
                         <a href="${productUrl}" onclick="window.handleProductClick(event, '${p.id}')" class="block w-full h-full">
-                            <img src="${img}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${localizedTitle}"/>
+                            <img src="${img}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.title}"/>
                         </a>
                         ${ribbonHtml}
                         <button onclick="event.preventDefault(); event.stopPropagation(); window.toggleFavorite('${p.id}')" class="absolute top-2 right-2 rtl:left-2 rtl:right-auto p-2 rounded-full bg-white/90 shadow hover:scale-110 z-10 transition" aria-label="Favorilere Ekle">
@@ -1360,7 +1383,7 @@
                         </div>
                         
                         <h3 class="text-xs font-bold text-slate-800 mb-1 line-clamp-2">
-                            <a href="${productUrl}" onclick="window.handleProductClick(event, '${p.id}')" class="hover:text-orange-500 transition-colors">${localizedTitle}</a>
+                            <a href="${productUrl}" onclick="window.handleProductClick(event, '${p.id}')" class="hover:text-orange-500 transition-colors">${p.title}</a>
                         </h3>
                         
                         ${hasVariants ? `<span class="text-[9px] font-bold text-orange-500 mb-1">${variantsText}</span>` : '<span class="text-[9px] mb-1 opacity-0">.</span>'}
@@ -1398,18 +1421,8 @@
             const filterCashOnDelivery = window.filterCashOnDeliveryActive || false;
 
             if (searchQuery) {
-                // ÇOK DİLLİ AKILLI ARAMA (Multilingual Search)
                 const q = searchQuery.toLocaleLowerCase('tr-TR');
-                displayProducts = displayProducts.filter(p => {
-                    const tTr = (p.title || '').toLocaleLowerCase('tr-TR');
-                    const tEn = (p.translations?.en?.title || '').toLocaleLowerCase('tr-TR');
-                    const tRu = (p.translations?.ru?.title || '').toLocaleLowerCase('tr-TR');
-                    const tEl = (p.translations?.el?.title || '').toLocaleLowerCase('tr-TR');
-                    const tAr = (p.translations?.ar?.title || '').toLocaleLowerCase('tr-TR');
-                    const sName = (p.storeName || '').toLocaleLowerCase('tr-TR');
-                    
-                    return tTr.includes(q) || tEn.includes(q) || tRu.includes(q) || tEl.includes(q) || tAr.includes(q) || sName.includes(q);
-                });
+                displayProducts = displayProducts.filter(p => p.title.toLocaleLowerCase('tr-TR').includes(q) || p.storeName.toLocaleLowerCase('tr-TR').includes(q));
             }
             if (activeCategory) {
                 let validCategoryNames = [activeCategory]; 
@@ -1601,13 +1614,9 @@
                 return;
             }
 
-            // AI Çevirisi yapılmış bilgileri al
-            const localizedTitle = window.getLocData(product, 'title');
-            const localizedDesc = window.getLocData(product, 'description');
-
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
-            const pageTitle = `${localizedTitle} - ${product.storeName} | ${pName}`;
-            const pageDesc = localizedDesc ? localizedDesc.substring(0, 160).replace(/\n/g, ' ') : `${localizedTitle} fırsatını ${product.storeName} mağazasından inceleyin.`;
+            const pageTitle = `${product.title} - ${product.storeName} | ${pName}`;
+            const pageDesc = product.description ? product.description.substring(0, 160).replace(/\n/g, ' ') : `${product.title} fırsatını ${product.storeName} mağazasından inceleyin.`;
             const mainImg = (product.images && product.images.length > 0) ? product.images[0] : '';
 
             document.title = pageTitle;
@@ -1651,9 +1660,9 @@
             });
             document.getElementById('detailThumbnails').innerHTML = thumbHtml;
 
-            document.getElementById('detailTitle').innerText = localizedTitle;
+            document.getElementById('detailTitle').innerText = product.title;
             
-            const descStr = localizedDesc ? localizedDesc.trim() : "";
+            const descStr = product.description ? product.description.trim() : "";
             const descContainer = document.getElementById('detailDescContainer');
             const descContentWrapper = document.getElementById('descContentWrapper');
             const descIcon = document.getElementById('descToggleIcon');
@@ -1685,6 +1694,7 @@
             document.getElementById('detailStoreIdHidden').value = product.storeId;
             document.getElementById('detailProductId').value = product.id; 
             
+            // 🚀 SEO FAZ 1: Detay sayfasındaki mağaza butonuna gerçek href
             const dStoreLink = document.getElementById('detailStoreLink');
             if (dStoreLink) {
                 const storeSlug = window.slugify(product.storeName);
@@ -1989,6 +1999,7 @@
         };
 
         window.closeProductDetail = () => {
+            // Modal kapatılırken URL'i ürün veya mağaza linkinden bir öncekine döndür (veya ana sayfaya)
             const wasInStore = document.getElementById('storeProfileModal') && !document.getElementById('storeProfileModal').classList.contains('hidden');
             if (!wasInStore) {
                 window.navigateTo(activeCategory ? `/kategori/${window.slugify(activeCategory)}` : '/', false); 
@@ -2325,8 +2336,6 @@
                         totalQty += item.quantity;
                         const itemImage = item.dynamicImage || ((item.product.images && item.product.images.length > 0) ? item.product.images[0] : 'https://placehold.co/100x100');
                         const itemPrice = item.dynamicPrice || item.product.price;
-                        
-                        const localizedTitle = window.getLocData(item.product, 'title');
 
                         let ribbonHtml = '<div class="absolute top-1 left-0 flex flex-col gap-0.5 items-start z-10 pointer-events-none">';
                         if (item.product.freeDelivery) {
@@ -2348,7 +2357,7 @@
                                 
                                 <div class="flex-1 flex flex-col justify-between">
                                     <div>
-                                        <h4 onclick="window.toggleCart(); setTimeout(() => window.openProductDetail('${item.product.id}'), 300);" class="text-sm font-bold text-slate-800 line-clamp-2 pr-6 rtl:pr-0 rtl:pl-6 cursor-pointer hover:text-orange-500 transition" title="Ürüne Git">${localizedTitle}</h4>
+                                        <h4 onclick="window.toggleCart(); setTimeout(() => window.openProductDetail('${item.product.id}'), 300);" class="text-sm font-bold text-slate-800 line-clamp-2 pr-6 rtl:pr-0 rtl:pl-6 cursor-pointer hover:text-orange-500 transition" title="Ürüne Git">${item.product.title}</h4>
                                         ${item.variant ? `<span class="text-[10px] font-bold text-orange-500 mt-1 bg-orange-50 px-1.5 py-0.5 rounded inline-block">${item.variant}</span>` : ''}
                                     </div>
                                     <div class="flex items-center justify-between mt-2">
@@ -2483,13 +2492,12 @@
             let message = `Merhaba *${orderData.storeName}*, Kıbrıs Bazar üzerinden sipariş vermek istiyorum:\n\n`;
             orderData.items.forEach((item, index) => {
                 const iPrice = item.dynamicPrice || item.product.price;
-                const localizedTitle = window.getLocData(item.product, 'title');
                 
                 const baseUrl = window.location.origin;
-                const slug = window.slugify(localizedTitle);
+                const slug = window.slugify(item.product.title);
                 const productUrl = `${baseUrl}/urun/${slug}-${item.product.id}`;
                 
-                message += `${index+1}. ${localizedTitle} ${item.variant ? `(Seçim: ${item.variant})` : ''} - ${item.quantity} Adet x ${iPrice} TL\n`;
+                message += `${index+1}. ${item.product.title} ${item.variant ? `(Seçim: ${item.variant})` : ''} - ${item.quantity} Adet x ${iPrice} TL\n`;
                 message += `🔗 Link: ${productUrl}\n\n`;
             });
             message += `*Ödenecek Tutar: ${orderData.total.toLocaleString('tr-TR')} TL*`;
@@ -2609,7 +2617,7 @@
                         let formsHtml = '';
                         order.items.forEach((item, idx) => {
                             const pId = item.product?.id || item.productId;
-                            const itemTitle = window.getLocData(item.product, 'title') || item.title || 'Product';
+                            const itemTitle = item.product?.title || item.title || 'Product';
                             formsHtml += `
                                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3">
                                     <p class="text-[10px] font-bold text-slate-600 line-clamp-1">${itemTitle}</p>
@@ -2643,7 +2651,7 @@
 
                     let itemsHtml = order.items.map(i => {
                         const pId = i.product?.id || i.productId;
-                        const pTitle = window.getLocData(i.product, 'title') || i.title;
+                        const pTitle = i.product?.title || i.title;
                         const slug = window.slugify(pTitle);
                         const linkHtml = pId ? `<a href="/urun/${slug}-${pId}" onclick="window.handleProductClick(event, '${pId}')" class="text-blue-500 hover:text-blue-700 inline-flex items-center ml-1 align-middle" title="Ürüne Git"><i data-lucide="external-link" class="w-3 h-3"></i></a>` : '';
                         return `<li class="text-sm text-slate-600 border-b border-slate-100 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0">${i.quantity}x ${pTitle} ${i.variant ? `<span class="text-xs text-orange-500">(${i.variant})</span>` : ''} ${linkHtml} <span class="font-black text-slate-800 rtl:mr-2 rtl:ml-0 ml-2 float-right rtl:float-left">${(i.price || i.product?.price).toLocaleString('tr-TR')} TL</span></li>`;
@@ -2772,5 +2780,7 @@
         // Uygulama başlatılıyor...
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
+
+
 </body>
 </html>
