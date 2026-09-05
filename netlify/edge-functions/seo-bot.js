@@ -28,8 +28,6 @@ export default async function(request, context) {
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 
-  const jsonEscape = (value) => JSON.stringify(String(value ?? ""));
-
   try {
     let docPath = "";
     let categorySlug = "";
@@ -86,8 +84,16 @@ export default async function(request, context) {
       title = `${productTitle} - ${storeName} | Kıbrıs Bazar`;
       description = rawDescription.substring(0, 160).replace(/\n/g, " ");
 
-      const images = p.images?.arrayValue?.values || [];
-      if (images[0]?.stringValue) image = images[0].stringValue;
+      // Resim yakalama mekanizmasını güçlendirdik (Farklı isimlerle kaydedilmiş olsa bile bulur)
+      const foundImage = p.images?.arrayValue?.values?.[0]?.stringValue || 
+                         p.image?.stringValue || 
+                         p.imageUrl?.stringValue || 
+                         p.coverPhoto?.stringValue;
+
+      if (foundImage) {
+        // Resim linkinin tam (https://...) olduğundan emin oluyoruz
+        image = foundImage.startsWith("http") ? foundImage : `https://kibrisbazar.com${foundImage.startsWith("/") ? "" : "/"}${foundImage}`;
+      }
 
       const productSchema = {
         "@context": "https://schema.org",
@@ -111,7 +117,11 @@ export default async function(request, context) {
       const name = s.name?.stringValue || "Mağaza";
       title = `${name} Mağazası | Kıbrıs Bazar`;
       description = `${name} mağazasının ürünlerini inceleyin.`;
-      image = s.logoUrl?.stringValue || s.coverUrl?.stringValue || image;
+      
+      const storeImage = s.logoUrl?.stringValue || s.coverUrl?.stringValue;
+      if (storeImage) {
+          image = storeImage.startsWith("http") ? storeImage : `https://kibrisbazar.com${storeImage.startsWith("/") ? "" : "/"}${storeImage}`;
+      }
 
       jsonLd = `<script type="application/ld+json">${JSON.stringify({
         "@context": "https://schema.org",
@@ -154,10 +164,7 @@ export default async function(request, context) {
     html = html
       .replace(/<title>[\s\S]*?<\/title>/gi, "")
       .replace(/<meta\s+name=["']description["'][^>]*>/gi, "")
-      .replace(/<meta\s+property=["']og:title["'][^>]*>/gi, "")
-      .replace(/<meta\s+property=["']og:description["'][^>]*>/gi, "")
-      .replace(/<meta\s+property=["']og:image["'][^>]*>/gi, "")
-      .replace(/<meta\s+property=["']og:url["'][^>]*>/gi, "")
+      .replace(/<meta\s+property=["']og:(title|description|image|url|image:secure_url)["'][^>]*>/gi, "")
       .replace(/<meta\s+name=["']twitter:[^"']+["'][^>]*>/gi, "")
       .replace(/<link\s+rel=["']canonical["'][^>]*>/gi, "");
 
@@ -168,6 +175,7 @@ export default async function(request, context) {
 <meta property="og:title" content="${escapeHtml(title)}">
 <meta property="og:description" content="${escapeHtml(description)}">
 <meta property="og:image" content="${escapeHtml(image)}">
+<meta property="og:image:secure_url" content="${escapeHtml(image)}">
 <meta property="og:url" content="${escapeHtml(url.href)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escapeHtml(title)}">
