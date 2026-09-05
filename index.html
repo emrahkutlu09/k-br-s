@@ -56,8 +56,18 @@
         .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         
+        /* GOOGLE TRANSLATE GİZLEME CSS'LERİ */
+        iframe.goog-te-banner-frame { display: none !important; }
+        .goog-te-banner-frame { display: none !important; }
+        .skiptranslate > iframe { display: none !important; }
         body { top: 0px !important; position: static !important; }
         html { height: auto !important; }
+        #goog-gt-tt { display: none !important; }
+        .goog-tooltip { display: none !important; }
+        .goog-tooltip:hover { display: none !important; }
+        .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
+        .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
+        .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
         * { -webkit-text-size-adjust: none; }
     </style>
 </head>
@@ -68,6 +78,15 @@
         <h2 id="loaderBrandName" class="text-2xl font-black text-slate-900 tracking-tighter animate-pulse">KIBRIS<span class="text-orange-500">BAZAR</span></h2>
         <p class="text-xs font-bold text-slate-400 mt-2">Vitrin Hazırlanıyor...</p>
     </div>
+
+    <!-- GİZLİ GOOGLE ÇEVİRİ MOTORU (Orijinal Sistem) -->
+    <div id="google_translate_element" class="hidden"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'tr', includedLanguages: 'en,el,ru,ar,tr', autoDisplay: false}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <div id="app" class="flex flex-col min-h-screen relative">
         
