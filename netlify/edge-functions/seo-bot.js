@@ -14,7 +14,8 @@ export default async function(request, context) {
   const isTestMode = url.searchParams.has("seo-test");
 
   const userAgent = request.headers.get("user-agent") || "";
-  const isBot = /googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|whatsapp|viber|skype|telegram|discordbot|linkedinbot|pinterest|chatgpt|openai/i.test(userAgent);
+ const isBot = /googlebot|google-inspectiontool|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|whatsapp|viber|skype|telegram|discordbot|linkedinbot|pinterest|chatgpt|openai/i.test(userAgent);
+
 
   // Bot değilse ve test modunda da değilsek, hiç yorulmadan normal SPA'ya geç
   if (!isBot && !isTestMode) return await context.next();
