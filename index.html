@@ -8,6 +8,15 @@
     <link rel="icon" href="/favicon.png" type="image/png">
     <meta name="google-site-verification" content="SEe85MWs4T_2cy0MrmCR487B4TdycD7iWbiE2YDGzVc" />
 
+    <!-- 🚀 DİNAMİK HREFLANG VE SEO META ALANI -->
+    <link rel="canonical" id="canonicalTag" href="https://kibrisbazar.com/">
+    <link rel="alternate" hreflang="tr" href="https://kibrisbazar.com/?lang=tr">
+    <link rel="alternate" hreflang="en" href="https://kibrisbazar.com/?lang=en">
+    <link rel="alternate" hreflang="el" href="https://kibrisbazar.com/?lang=el">
+    <link rel="alternate" hreflang="ru" href="https://kibrisbazar.com/?lang=ru">
+    <link rel="alternate" hreflang="ar" href="https://kibrisbazar.com/?lang=ar">
+    <link rel="alternate" hreflang="x-default" href="https://kibrisbazar.com/">
+
     <meta name="description" id="metaDesc" content="Kuzey Kıbrıs'ın yeni nesil, komisyonsuz dijital pazar yeridir. Yüzlerce yerel mağazadan güvenle online alışveriş yapın veya ücretsiz kendi mağazanızı açın.">
     <meta name="keywords" content="Kıbrıs Bazar, KKTC alışveriş, Kıbrıs e-ticaret, Kıbrıs online mağaza, Kıbrıs ilan, Lefkoşa alışveriş, Girne butik, komisyonsuz pazar yeri, Cyprus online shopping, KKTC pazar yeri">
     <meta name="author" content="Kıbrıs Bazar">
@@ -17,7 +26,7 @@
     <meta property="og:title" id="ogTitle" content="Kıbrıs Bazar | Kıbrıs'ın Ücretsiz Dijital Pazar Yeri">
     <meta property="og:description" id="ogDesc" content="Kuzey Kıbrıs'ın en büyük komisyonsuz online alışveriş platformu. Hemen alışverişe başla veya kendi mağazanı aç!">
     <meta property="og:image" content="https://placehold.co/1200x630/0f172a/f97316?text=KIBRIS+BAZAR">
-    <meta property="og:url" content="https://kibrisbazar.com">
+    <meta property="og:url" id="ogUrl" content="https://kibrisbazar.com">
     <meta property="og:type" content="website">
 
     <meta name="twitter:card" content="summary_large_image">
@@ -25,7 +34,8 @@
     <meta name="twitter:description" id="twitterDesc" content="Kuzey Kıbrıs'ın komisyonsuz dijital pazar yeri. Binlerce ürün bir tık uzağında.">
     <meta name="twitter:image" content="https://placehold.co/1200x630/0f172a/f97316?text=KIBRIS+BAZAR">
 
-    <script type="application/ld+json">
+    <!-- 🚀 DİNAMİK PRODUCT SCHEMA CONTAINER -->
+    <script type="application/ld+json" id="dynamicSchemaJson">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
@@ -55,19 +65,6 @@
         
         .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* GOOGLE TRANSLATE GİZLEME CSS'LERİ */
-        iframe.goog-te-banner-frame { display: none !important; }
-        .goog-te-banner-frame { display: none !important; }
-        .skiptranslate > iframe { display: none !important; }
-        body { top: 0px !important; position: static !important; }
-        html { height: auto !important; }
-        #goog-gt-tt { display: none !important; }
-        .goog-tooltip { display: none !important; }
-        .goog-tooltip:hover { display: none !important; }
-        .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
-        .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
-        .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
         * { -webkit-text-size-adjust: none; }
     </style>
 </head>
@@ -78,15 +75,6 @@
         <h2 id="loaderBrandName" class="text-2xl font-black text-slate-900 tracking-tighter animate-pulse">KIBRIS<span class="text-orange-500">BAZAR</span></h2>
         <p class="text-xs font-bold text-slate-400 mt-2">Vitrin Hazırlanıyor...</p>
     </div>
-
-    <!-- GİZLİ GOOGLE ÇEVİRİ MOTORU -->
-    <div id="google_translate_element" class="hidden"></div>
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({pageLanguage: 'tr', includedLanguages: 'en,el,ru,ar,tr', autoDisplay: false}, 'google_translate_element');
-        }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <div id="app" class="flex flex-col min-h-screen relative">
         
@@ -300,7 +288,6 @@
 
                 <div>
                     <h4 class="font-black text-slate-900 mb-4" data-i18n="footer_categories">Kategoriler</h4>
-                    <!-- 🚀 SEO: Footer kategori linkleri gerçek A etiketlerine dönüştürüldü -->
                     <ul class="space-y-2 text-sm text-slate-500 font-medium">
                         <li><a href="/kategori/elektronik-teknoloji" onclick="window.handleCategoryClick(event, 'Elektronik & Teknoloji')" class="hover:text-orange-500 transition">Elektronik</a></li>
                         <li><a href="/kategori/moda-giyim" onclick="window.handleCategoryClick(event, 'Moda & Giyim')" class="hover:text-orange-500 transition">Moda</a></li>
@@ -732,6 +719,23 @@
             window.setCategory(catName, true);
         };
 
+        // 🚀 ÇOKLU DİL VERİ ÇÖZÜMLEME YARDIMCISI
+        window.getLocalizedProductData = (p, lang) => {
+            if (!p) return { title: '', description: '' };
+            if (lang === 'tr' || !p.translations || !p.translations[lang] || !p.translations[lang].title) {
+                return {
+                    title: p.title || '',
+                    description: p.description || '',
+                    source: p.sourceLanguage || 'tr'
+                };
+            }
+            return {
+                title: p.translations[lang].title || p.title || '',
+                description: p.translations[lang].description || p.description || '',
+                source: p.translations[lang].source || 'ai'
+            };
+        };
+
         const appTranslations = {
             tr: {
                 dir: "ltr",
@@ -891,14 +895,15 @@
                 seo_title: "Kibris Bazar | Cyprus' Free Digital Marketplace",
                 seo_desc: "Northern Cyprus' new generation, commission-free digital marketplace."
             },
-            el: { dir: "ltr", all_cyprus: "Όλη η Κύπρος", all_categories: "Όλες οι Κατηγορίες", topbar_subtitle: "| Ψηφιακή Αγορά χωρίς Προμήθεια", seller_panel: "Πίνακας Πωλητή", search_placeholder: "Αναζήτηση...", loading_text: "Φόρτωση...", login_google: "Σύνδεση με Google", my_orders_guest: "Παραγγελίες (Επισκέπτης)", my_orders: "Παραγγελίες", cart_title: "Καλάθι", cart_empty: "Το καλάθι είναι άδειο.", footer_text: "&copy; 2026 Kıbrıs Bazar." },
-            ru: { dir: "ltr", all_cyprus: "Весь Кипр", all_categories: "Все категории", topbar_subtitle: "| Без комиссий", seller_panel: "Продавец", search_placeholder: "Поиск...", loading_text: "Загрузка...", login_google: "Войти через Google", my_orders_guest: "Заказы (Гость)", my_orders: "Заказы", cart_title: "Корзина", cart_empty: "Ваша корзина пуста.", footer_text: "&copy; 2026 Kıbrıs Bazar." },
-            ar: { dir: "rtl", all_cyprus: "كل قبرص", all_categories: "جميع الفئات", topbar_subtitle: "| سوق رقمي بدون عمولة", seller_panel: "البائع", search_placeholder: "ابحث...", loading_text: "جارٍ التحميل...", login_google: "الدخول بجوجل", my_orders_guest: "طلبات (ضيف)", my_orders: "طلباتي", cart_title: "سلة", cart_empty: "السلة فارغة.", footer_text: "&copy; 2026 Kıbrıs Bazar." }
+            el: { dir: "ltr", all_cyprus: "Όλη η Κύπρος", all_categories: "Όλες οι Κατηγορίες", topbar_subtitle: "| Ψηφιακή Αγορά χωρίς Προμήθεια", seller_panel: "Πίνακας Πωλητή", search_placeholder: "Αναζήτηση...", loading_text: "Φόρτωση...", login_google: "Σύνδεση με Google", my_orders_guest: "Παραγγελίες (Επισκέπτης)", my_orders: "Παραγγελίες", cart_title: "Καλάθι", cart_empty: "Το καλάθι είναι άδειο.", footer_text: "&copy; 2026 Kıbrıs Bazar.", seo_title: "Kıbrıs Bazar | Δωρεάν Ψηφιακή Αγορά Κύπρου", seo_desc: "Η νέα ψηφιακή αγορά της Βόρειας Κύπρου." },
+            ru: { dir: "ltr", all_cyprus: "Весь Кипр", all_categories: "Все категории", topbar_subtitle: "| Без комиссий", seller_panel: "Продавец", search_placeholder: "Поиск...", loading_text: "Загрузка...", login_google: "Войти через Google", my_orders_guest: "Заказы (Гость)", my_orders: "Заказы", cart_title: "Корзина", cart_empty: "Ваша корзина пуста.", footer_text: "&copy; 2026 Kıbrıs Bazar.", seo_title: "Kıbrıs Bazar | Бесплатный цифровой рынок Кипра", seo_desc: "Цифровой рынок нового поколения на Северном Кипре." },
+            ar: { dir: "rtl", all_cyprus: "كل قبرص", all_categories: "جميع الفئات", topbar_subtitle: "| سوق رقمي بدون عمولة", seller_panel: "البائع", search_placeholder: "ابحث...", loading_text: "جارٍ التحميل...", login_google: "الدخول بجوجل", my_orders_guest: "طلبات (ضيف)", my_orders: "طلباتي", cart_title: "سلة", cart_empty: "السلة فارغة.", footer_text: "&copy; 2026 Kıbrıs Bazar.", seo_title: "Kıbrıs Bazar | سوق قبرص الرقمي المجاني", seo_desc: "سوق رقمي خالي من العمولة في شمال قبرص." }
         };
 
         function getCurrentLang() {
             const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('lang') || 'tr';
+            if (urlParams.has('lang')) return urlParams.get('lang');
+            return localStorage.getItem('selectedLanguage') || 'tr';
         }
 
         window.t = function(key) {
@@ -914,15 +919,7 @@
         };
 
         window.setLanguage = (lang) => {
-            const currentLang = getCurrentLang();
-            if (lang === 'tr' && currentLang !== 'tr') {
-                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
-                const newUrl = new URL(window.location);
-                newUrl.searchParams.set('lang', 'tr');
-                try { window.location.href = newUrl.toString(); } catch(e) {}
-                return;
-            }
+            localStorage.setItem('selectedLanguage', lang);
             const newUrl = new URL(window.location);
             newUrl.searchParams.set('lang', lang);
             try {
@@ -958,9 +955,17 @@
                 if (tObj[key]) el.placeholder = tObj[key];
             });
 
+            // 🚀 SEO Meta Güncellemeleri & Hreflang Canonical Senkronizasyonu
+            const currentUrl = window.location.origin + window.location.pathname + '?lang=' + lang;
+            const canonicalEl = document.getElementById('canonicalTag');
+            if (canonicalEl) canonicalEl.href = currentUrl;
+            const ogUrlEl = document.getElementById('ogUrl');
+            if (ogUrlEl) ogUrlEl.content = currentUrl;
+
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
             
             if(!document.getElementById('productDetailModal').classList.contains('hidden') || !document.getElementById('storeProfileModal').classList.contains('hidden')) {
+                // Detay sayfasındayken dokunma, openProductDetail ilgileniyor
             } else {
                 document.title = (tObj.seo_title) ? tObj.seo_title : `${pName} | ${tObj.homeTitle}`;
                 const metaDesc = document.getElementById('metaDesc');
@@ -977,16 +982,7 @@
             if(isCartOpen && typeof updateCartUI === 'function') updateCartUI();
             
             lucide.createIcons();
-            setTimeout(() => { window.triggerGoogleTranslate(lang); }, 500);
         }
-
-        window.triggerGoogleTranslate = (lang) => {
-            const select = document.querySelector(".goog-te-combo");
-            if (select) {
-                select.value = lang === 'tr' ? '' : lang;
-                select.dispatchEvent(new Event('change'));
-            }
-        };
 
         window.showMessage = (msg, type = 'success') => {
             const toast = document.createElement('div');
@@ -1084,7 +1080,7 @@
             return arr;
         };
 
-   async function initApp() {
+        async function initApp() {
             lucide.createIcons();
             updateCartUI();
             
@@ -1164,6 +1160,7 @@
                 }
             }
         }
+
         function buildCategoryTree(categories, parentId) {
             let tree = [];
             categories.forEach(cat => {
@@ -1329,8 +1326,12 @@
             window.renderHome(document.getElementById('searchInput').value);
         };
 
-        // 🚀 SEO FAZ 1: Ürün kartlarının A etiketi formatında yeniden düzenlenmesi
+        // 🚀 ÜRÜN KARTI OLUŞTURUCU (Çoklu Dil Entegreli)
         window.createProductCard = (p) => {
+            const currentLang = getCurrentLang();
+            const localized = window.getLocalizedProductData(p, currentLang);
+            const title = localized.title;
+
             const discount = p.originalPrice > p.price ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
             const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/400x500/cbd5e1/475569?text=Gorsel';
             const isFav = favorites.includes(p.id);
@@ -1342,7 +1343,7 @@
             
             const variantsText = window.t('variants_label');
 
-            const productSlug = window.slugify(p.title);
+            const productSlug = window.slugify(title);
             const productUrl = `/urun/${productSlug}-${p.id}`;
             const storeSlug = window.slugify(p.storeName);
             const storeUrl = `/magaza/${storeSlug}-${p.storeId}`;
@@ -1364,7 +1365,7 @@
                     
                     <div class="relative w-full aspect-[4/5] mb-3 overflow-hidden rounded-xl bg-slate-100 shrink-0">
                         <a href="${productUrl}" onclick="window.handleProductClick(event, '${p.id}')" class="block w-full h-full">
-                            <img src="${img}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.title}"/>
+                            <img src="${img}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${title}"/>
                         </a>
                         ${ribbonHtml}
                         <button onclick="event.preventDefault(); event.stopPropagation(); window.toggleFavorite('${p.id}')" class="absolute top-2 right-2 rtl:left-2 rtl:right-auto p-2 rounded-full bg-white/90 shadow hover:scale-110 z-10 transition" aria-label="Favorilere Ekle">
@@ -1383,7 +1384,7 @@
                         </div>
                         
                         <h3 class="text-xs font-bold text-slate-800 mb-1 line-clamp-2">
-                            <a href="${productUrl}" onclick="window.handleProductClick(event, '${p.id}')" class="hover:text-orange-500 transition-colors">${p.title}</a>
+                            <a href="${productUrl}" onclick="window.handleProductClick(event, '${p.id}')" class="hover:text-orange-500 transition-colors">${title}</a>
                         </h3>
                         
                         ${hasVariants ? `<span class="text-[9px] font-bold text-orange-500 mb-1">${variantsText}</span>` : '<span class="text-[9px] mb-1 opacity-0">.</span>'}
@@ -1414,15 +1415,23 @@
             const standardStoreIds = dbStores.filter(s => s.packageType === 'standard' && !s.isPremium).map(s => s.id);
             const freeStoreIds = dbStores.filter(s => s.packageType === 'free' && !s.isPremium).map(s => s.id);
 
+            const currentLang = getCurrentLang();
             let html = '';
 
             const currentSort = window.currentSortPreference || 'newest';
             const filterFreeDelivery = window.filterFreeDeliveryActive || false;
             const filterCashOnDelivery = window.filterCashOnDeliveryActive || false;
 
+            // 🚀 ÇOK DİLLİ ARAMA DESTEĞİ
             if (searchQuery) {
                 const q = searchQuery.toLocaleLowerCase('tr-TR');
-                displayProducts = displayProducts.filter(p => p.title.toLocaleLowerCase('tr-TR').includes(q) || p.storeName.toLocaleLowerCase('tr-TR').includes(q));
+                displayProducts = displayProducts.filter(p => {
+                    const loc = window.getLocalizedProductData(p, currentLang);
+                    return loc.title.toLocaleLowerCase('tr-TR').includes(q) || 
+                           (loc.description && loc.description.toLocaleLowerCase('tr-TR').includes(q)) || 
+                           p.storeName.toLocaleLowerCase('tr-TR').includes(q) ||
+                           (p.category && p.category.toLocaleLowerCase('tr-TR').includes(q));
+                });
             }
             if (activeCategory) {
                 let validCategoryNames = [activeCategory]; 
@@ -1608,15 +1617,18 @@
             const product = dbProducts.find(p => p.id === id);
             if(!product) return;
             
+            const currentLang = getCurrentLang();
+            const localized = window.getLocalizedProductData(product, currentLang);
+
             if (updateState) {
-                const slug = window.slugify(product.title);
+                const slug = window.slugify(localized.title);
                 window.navigateTo(`/urun/${slug}-${id}`);
                 return;
             }
 
             const pName = window.appSettings?.platformName || 'Kıbrıs Bazar';
-            const pageTitle = `${product.title} - ${product.storeName} | ${pName}`;
-            const pageDesc = product.description ? product.description.substring(0, 160).replace(/\n/g, ' ') : `${product.title} fırsatını ${product.storeName} mağazasından inceleyin.`;
+            const pageTitle = `${localized.title} - ${product.storeName} | ${pName}`;
+            const pageDesc = localized.description ? localized.description.substring(0, 160).replace(/\n/g, ' ') : `${localized.title} fırsatını ${product.storeName} mağazasından inceleyin.`;
             const mainImg = (product.images && product.images.length > 0) ? product.images[0] : '';
 
             document.title = pageTitle;
@@ -1660,9 +1672,9 @@
             });
             document.getElementById('detailThumbnails').innerHTML = thumbHtml;
 
-            document.getElementById('detailTitle').innerText = product.title;
+            document.getElementById('detailTitle').innerText = localized.title;
             
-            const descStr = product.description ? product.description.trim() : "";
+            const descStr = localized.description ? localized.description.trim() : "";
             const descContainer = document.getElementById('detailDescContainer');
             const descContentWrapper = document.getElementById('descContentWrapper');
             const descIcon = document.getElementById('descToggleIcon');
@@ -1694,7 +1706,6 @@
             document.getElementById('detailStoreIdHidden').value = product.storeId;
             document.getElementById('detailProductId').value = product.id; 
             
-            // 🚀 SEO FAZ 1: Detay sayfasındaki mağaza butonuna gerçek href
             const dStoreLink = document.getElementById('detailStoreLink');
             if (dStoreLink) {
                 const storeSlug = window.slugify(product.storeName);
