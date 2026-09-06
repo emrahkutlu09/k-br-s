@@ -1614,13 +1614,26 @@
                     });
                 }
 
+                const titleVal = document.getElementById('pTitle').value;
+                const descVal = document.getElementById('pDesc').value;
+
                 const productData = {
                     storeId: myStore.id, storeName: myStore.name, storeWhatsapp: myStore.whatsapp, district: myStore.district,
-                    title: document.getElementById('pTitle').value, description: document.getElementById('pDesc').value,
+                    title: titleVal, description: descVal,
                     category: document.getElementById('pCategory').value, price: price,
                     freeDelivery: document.getElementById('pFreeDelivery').checked,
                     cashOnDelivery: document.getElementById('pCashOnDelivery').checked,
-                    images: finalImages, variants: variants, updatedAt: Date.now()
+                    images: finalImages, variants: variants, updatedAt: Date.now(),
+                    
+                    // Ana sayfanın çoklu dil sistemi (i18n) ile uyumlu çalışması için eklenen bölüm
+                    sourceLanguage: 'tr',
+                    translations: {
+                        tr: {
+                            title: titleVal,
+                            description: descVal,
+                            source: 'seller'
+                        }
+                    }
                 };
 
                 if (editId) {
