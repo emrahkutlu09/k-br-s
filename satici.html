@@ -1790,12 +1790,12 @@
             throw new Error("Cloudinary error");
         }
 // 🚀 YAPAY ZEKA: E-TİCARET & SEO ODAKLI GEMINI ÇEVİRİ FONKSİYONU
+       // 🚀 YAPAY ZEKA: E-TİCARET & SEO ODAKLI GEMINI ÇEVİRİ FONKSİYONU
         async function translateWithGemini(title, desc) {
-            // BURAYA KENDİ ÜCRETSİZ GEMINI API ANAHTARINIZI YAZIN
-            const GEMINI_API_KEY = "AQ.Ab8RN6IWk8RDYOispLD-asCBEviU7mUP6c664Dt9rIB5bG_6IQ";
+            const GEMINI_API_KEY = "AQ.Ab8RN6L4QC1pBljXqFnatyPwer-S57L78OS9FyC8ke2Dcmx6pA";
             
             const prompt = `Sen küresel pazarda (Kıbrıs ve dünya çapında) faaliyet gösteren dev bir e-ticaret platformunun Yapay Zeka SEO ve Yerelleştirme (Localization) Uzmanısın. 
-            Aşağıda bir satıcının yerel dilde girdiği ürün başlığı ve açıklaması yer alıyor. AQ.Ab8RN6IWk8RDYOispLD-asCBEviU7mUP6c664Dt9rIB5bG_6IQ
+            Aşağıda bir satıcının yerel dilde girdiği ürün başlığı ve açıklaması yer alıyor. 
             
             GÖREVİN: Bu metinleri hedef dillere (İngilizce [en], Rusça [ru], Yunanca [el], Arapça [ar]) çevirirken kelimesi kelimesine çeviri YAPma. Bunun yerine:
             1. Hedef ülkedeki tüketicilerin e-ticarette o ürünü aratırken kullandığı en popüler arama terimlerini ve SEO anahtar kelimelerini kullan.
@@ -1822,11 +1822,22 @@
                         generationConfig: { response_mime_type: "application/json" }
                     })
                 });
+                
                 const data = await response.json();
-                const resultText = data.candidates[0].content.parts[0].text;
+                
+                if(data.error) {
+                    console.error("API Hatası:", data.error.message);
+                    return null;
+                }
+
+                let resultText = data.candidates[0].content.parts[0].text;
+                
+                // 🚀 ÇÖZÜM: Gemini'ın ekleyebileceği fazlalık markdown işaretlerini temizle
+                resultText = resultText.replace(/```json/gi, '').replace(/```/g, '').trim();
+                
                 return JSON.parse(resultText);
             } catch (err) {
-                console.error("Gemini çeviri hatası:", err);
+                console.error("Gemini çeviri hatası (Lütfen formatı veya limiti kontrol edin):", err);
                 return null;
             }
         }
