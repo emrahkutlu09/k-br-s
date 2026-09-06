@@ -1789,11 +1789,53 @@
             if(data.secure_url) return data.secure_url;
             throw new Error("Cloudinary error");
         }
+// 🚀 YAPAY ZEKA: E-TİCARET & SEO ODAKLI GEMINI ÇEVİRİ FONKSİYONU
+        async function translateWithGemini(title, desc) {
+            // BURAYA KENDİ ÜCRETSİZ GEMINI API ANAHTARINIZI YAZIN
+            const GEMINI_API_KEY = "AQ.Ab8RN6IWk8RDYOispLD-asCBEviU7mUP6c664Dt9rIB5bG_6IQ";
+            
+            const prompt = `Sen küresel pazarda (Kıbrıs ve dünya çapında) faaliyet gösteren dev bir e-ticaret platformunun Yapay Zeka SEO ve Yerelleştirme (Localization) Uzmanısın. 
+            Aşağıda bir satıcının yerel dilde girdiği ürün başlığı ve açıklaması yer alıyor. AQ.Ab8RN6IWk8RDYOispLD-asCBEviU7mUP6c664Dt9rIB5bG_6IQ
+            
+            GÖREVİN: Bu metinleri hedef dillere (İngilizce [en], Rusça [ru], Yunanca [el], Arapça [ar]) çevirirken kelimesi kelimesine çeviri YAPma. Bunun yerine:
+            1. Hedef ülkedeki tüketicilerin e-ticarette o ürünü aratırken kullandığı en popüler arama terimlerini ve SEO anahtar kelimelerini kullan.
+            2. Ürünün ticari karşılığını ve cazibesini artıracak doğal bir e-ticaret dili kullan.
+            3. Eğer açıklama boşsa, çevirileri de boş string ("") olarak bırak.
+            
+            SADECE aşağıdaki JSON formatında çıktı ver, başka hiçbir metin ekleme:
+            {
+              "en": { "title": "...", "description": "..." },
+              "ru": { "title": "...", "description": "..." },
+              "el": { "title": "...", "description": "..." },
+              "ar": { "title": "...", "description": "..." }
+            }
 
+            Orijinal Başlık: ${title}
+            Orijinal Açıklama: ${desc}`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { response_mime_type: "application/json" }
+                    })
+                });
+                const data = await response.json();
+                const resultText = data.candidates[0].content.parts[0].text;
+                return JSON.parse(resultText);
+            } catch (err) {
+                console.error("Gemini çeviri hatası:", err);
+                return null;
+            }
+        }
+
+        // 🚀 GÜNCELLENMİŞ ÜRÜN KAYDETME FONKSİYONU
         window.saveProduct = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSaveProduct'); 
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin inline"></i>`; 
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin inline"></i> Yapay Zeka Çeviriyor...`; 
             btn.disabled = true;
             lucide.createIcons();
 
@@ -1828,8 +1870,25 @@
 
                 const titleVal = document.getElementById('pTitle').value;
                 const descVal = document.getElementById('pDesc').value;
+                const currentLang = getCurrentLang();
 
-                // ANA SAYFA İLE UYUMLU KAYIT (Translations ile)
+                // GEMINI'YI ÇALIŞTIR
+                const aiTranslations = await translateWithGemini(titleVal, descVal);
+
+                let finalTranslations = {
+                    [currentLang]: { title: titleVal, description: descVal, source: 'seller' }
+                };
+
+                if (aiTranslations) {
+                    finalTranslations.en = { ...aiTranslations.en, source: 'ai-seo' };
+                    finalTranslations.ru = { ...aiTranslations.ru, source: 'ai-seo' };
+                    finalTranslations.el = { ...aiTranslations.el, source: 'ai-seo' };
+                    finalTranslations.ar = { ...aiTranslations.ar, source: 'ai-seo' };
+                    
+                    // Satıcının girdiği dilin üzerine AI yazmasın diye tekrar güvenceye alıyoruz
+                    finalTranslations[currentLang] = { title: titleVal, description: descVal, source: 'seller' };
+                }
+
                 const productData = {
                     storeId: myStore.id, storeName: myStore.name, storeWhatsapp: myStore.whatsapp, district: myStore.district,
                     title: titleVal, description: descVal,
@@ -1838,14 +1897,8 @@
                     cashOnDelivery: document.getElementById('pCashOnDelivery').checked,
                     images: finalImages, variants: variants, updatedAt: Date.now(),
                     
-                    sourceLanguage: getCurrentLang(),
-                    translations: {
-                        [getCurrentLang()]: {
-                            title: titleVal,
-                            description: descVal,
-                            source: 'seller'
-                        }
-                    }
+                    sourceLanguage: currentLang,
+                    translations: finalTranslations
                 };
 
                 if (editId) {
