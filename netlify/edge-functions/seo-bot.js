@@ -1,6 +1,7 @@
 export default async function(request, context) {
   const url = new URL(request.url);
   const path = url.pathname;
+  const baseUrl = url.origin; // https://kibrisbazar.com
 
   const isProduct = path.startsWith("/urun/");
   const isStore = path.startsWith("/magaza/");
@@ -14,10 +15,10 @@ export default async function(request, context) {
   const isTestMode = url.searchParams.has("seo-test");
 
   const userAgent = request.headers.get("user-agent") || "";
- const isBot = /googlebot|google-inspectiontool|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|whatsapp|viber|skype|telegram|discordbot|linkedinbot|pinterest|chatgpt|openai/i.test(userAgent);
+  // Yapay zeka botları (ChatGPT, Perplexity vb.) zaten burada yakalanıyor, harika!
+  const isBot = /googlebot|google-inspectiontool|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|whatsapp|viber|skype|telegram|discordbot|linkedinbot|pinterest|chatgpt|openai|perplexity/i.test(userAgent);
 
-
-  // Bot değilse ve test modunda da değilsek, hiç yorulmadan normal SPA'ya geç
+  // Bot değilse ve test modunda da değilsek, hiç yorulmadan normal SPA'ya geç (SİSTEMİ BOZMA KURALI)
   if (!isBot && !isTestMode) return await context.next();
 
   // Netlify ortam değişkenlerini güvenli çağırma
@@ -65,78 +66,92 @@ export default async function(request, context) {
       data = await res.json();
     }
 
-    let title = "Kıbrıs Bazar";
-    let description = "Kuzey Kıbrıs dijital pazar yeri.";
+    let title = "Kıbrıs Bazar | KKTC Online Alışveriş ve Dijital Pazaryeri";
+    let description = "Kuzey Kıbrıs'ta online alışveriş için Kıbrıs Bazar. Yerel satıcılarla doğrudan iletişime geçin.";
     let image = "https://kibrisbazar.com/favicon.png";
     let jsonLd = "";
     let priceText = "";
+    let storeNameContext = "Kıbrıs Bazar"; 
 
     if (isProduct) {
       const p = data.fields || {};
       const productTitle = p.title?.stringValue || "Ürün";
       const price = p.price?.doubleValue ?? p.price?.integerValue ?? null;
       const storeName = p.storeName?.stringValue || "Kıbrıs Bazar";
-      const rawDescription = p.description?.stringValue || `${productTitle} ürününü inceleyin.`;
-
-      title = `${productTitle} - ${storeName} | Kıbrıs Bazar`;
+      const rawDescription = p.description?.stringValue || `${productTitle} ürününü Kuzey Kıbrıs'ın yerel pazaryeri Kıbrıs Bazar'da inceleyin.`;
+      
+      storeNameContext = storeName;
+      title = `${productTitle} - ${storeName} | Kıbrıs Bazar KKTC`;
       description = rawDescription.substring(0, 160).replace(/\n/g, " ");
 
-      const foundImage = p.images?.arrayValue?.values?.[0]?.stringValue || 
-                         p.image?.stringValue || 
-                         p.imageUrl?.stringValue || 
-                         p.coverPhoto?.stringValue;
-
+      const foundImage = p.images?.arrayValue?.values?.[0]?.stringValue || p.image?.stringValue || p.imageUrl?.stringValue || p.coverPhoto?.stringValue;
       if (foundImage) {
-        image = foundImage.startsWith("http") ? foundImage : `https://kibrisbazar.com${foundImage.startsWith("/") ? "" : "/"}${foundImage}`;
+        image = foundImage.startsWith("http") ? foundImage : `${baseUrl}${foundImage.startsWith("/") ? "" : "/"}${foundImage}`;
       }
-      
-      priceText = price !== null ? `<p>Fiyat: ${price} TL</p>` : "";
 
+      priceText = price !== null ? `<p><strong>Fiyat:</strong> ${price} TL</p>` : "";
+
+      // 4. YENİLİK: Product ve Breadcrumb Schema Birleştirildi (AI Botlar ve Google Alışveriş İçin Kusursuz Yapı)
       const productSchema = {
         "@context": "https://schema.org",
         "@type": "Product",
-        name: productTitle,
-        image: image ? [image] : undefined,
-        description: rawDescription,
-        brand: { "@type": "Organization", name: storeName },
-        offers: price !== null ? {
+        "name": productTitle,
+        "image": image ? [image] : undefined,
+        "description": rawDescription,
+        "sku": `KB-${id || '001'}`, // Benzersiz SKU oluşturumu
+        "brand": { "@type": "Brand", "name": storeName },
+        "offers": price !== null ? {
           "@type": "Offer",
-          url: url.href.split('?')[0],
-          priceCurrency: "TRY",
-          price: price,
-          availability: "https://schema.org/InStock",
-          seller: { "@type": "Organization", name: storeName }
+          "url": url.href.split('?')[0],
+          "priceCurrency": "TRY",
+          "price": price,
+          "availability": "https://schema.org/InStock",
+          "seller": { "@type": "Organization", "name": storeName }
         } : undefined
       };
 
-      jsonLd = `<script type="application/ld+json">${JSON.stringify(productSchema)}</script>`;
+      const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Ana Sayfa", "item": baseUrl },
+          { "@type": "ListItem", "position": 2, "name": "Mağazalar", "item": `${baseUrl}/magazalar` },
+          { "@type": "ListItem", "position": 3, "name": productTitle, "item": url.href.split('?')[0] }
+        ]
+      };
+
+      jsonLd = `
+<script type="application/ld+json">${JSON.stringify(productSchema)}</script>
+<script type="application/ld+json">${JSON.stringify(breadcrumbSchema)}</script>`;
+
     } else if (isStore) {
       const s = data.fields || {};
       const name = s.name?.stringValue || "Mağaza";
-      title = `${name} Mağazası | Kıbrıs Bazar`;
-      description = `${name} mağazasının ürünlerini inceleyin.`;
+      storeNameContext = name;
+      title = `${name} | Girne - KKTC Online Mağaza | Kıbrıs Bazar`;
+      description = `Kuzey Kıbrıs ${name} mağazasının ürünlerini inceleyin. Sıfır komisyonla yerel satıcıdan güvenle alışveriş yapın.`;
 
       const storeImage = s.logoUrl?.stringValue || s.coverUrl?.stringValue;
       if (storeImage) {
-          image = storeImage.startsWith("http") ? storeImage : `https://kibrisbazar.com${storeImage.startsWith("/") ? "" : "/"}${storeImage}`;
+          image = storeImage.startsWith("http") ? storeImage : `${baseUrl}${storeImage.startsWith("/") ? "" : "/"}${storeImage}`;
       }
 
       jsonLd = `<script type="application/ld+json">${JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Organization",
-        name,
-        url: url.href.split('?')[0],
-        logo: image
+        "name": name,
+        "url": url.href.split('?')[0],
+        "logo": image,
+        "address": { "@type": "PostalAddress", "addressRegion": "Kuzey Kıbrıs (KKTC)" }
       })}</script>`;
     } else {
-       // Kategori kısmı kodunu gereksiz uzatmamak için burayı senin yazdığın kategori formatında aynen bırakıyorum
        const docs = data.documents || [];
        const matched = docs.find(doc => doc.fields?.name?.stringValue?.toLowerCase().replace(/\s+/g, "-") === categorySlug);
        if (matched) {
          const name = matched.fields?.name?.stringValue || "Kategori";
-         title = `${name} Ürünleri | Kıbrıs Bazar`;
-         description = `Kuzey Kıbrıs genelinde ${name} seçenekleri Kıbrıs Bazar'da.`;
-         jsonLd = `<script type="application/ld+json">${JSON.stringify({"@context": "https://schema.org", "@type": "CollectionPage", name: `${name} Ürünleri`, url: url.href.split('?')[0] })}</script>`;
+         title = `${name} Ürünleri | KKTC Online Alışveriş | Kıbrıs Bazar`;
+         description = `Kuzey Kıbrıs genelinde en uygun ${name} seçenekleri Kıbrıs Bazar'da. Satıcılarla anında iletişime geçin.`;
+         jsonLd = `<script type="application/ld+json">${JSON.stringify({"@context": "https://schema.org", "@type": "CollectionPage", "name": `${name} Ürünleri`, "url": url.href.split('?')[0] })}</script>`;
        }
     }
 
@@ -145,7 +160,6 @@ export default async function(request, context) {
 
     let html = await response.text();
 
-    // 2. YENİLİK: Regex hatalarının kökten çözümü (id, class, vb. içeren etiketleri başarıyla siler ve eski WebSite JSON-LD'sini temizler)
     html = html
       .replace(/<title[^>]*>[\s\S]*?<\/title>/gi, "")
       .replace(/<meta\s+name=["']description["'][^>]*>/gi, "")
@@ -154,16 +168,28 @@ export default async function(request, context) {
       .replace(/<link\s+rel=["']canonical["'][^>]*>/gi, "")
       .replace(/<script[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi, ""); 
 
+    const cleanUrl = escapeHtml(url.href.split('?')[0]);
+
+    // 5. YENİLİK: Çoklu Dil SEO (Hreflang) Etiketleri
+    const hreflangTags = `
+<link rel="alternate" hreflang="tr-TR" href="${cleanUrl}">
+<link rel="alternate" hreflang="en" href="${baseUrl}/en${path}">
+<link rel="alternate" hreflang="ru" href="${baseUrl}/ru${path}">
+<link rel="alternate" hreflang="el" href="${baseUrl}/el${path}">
+<link rel="alternate" hreflang="ar" href="${baseUrl}/ar${path}">
+<link rel="alternate" hreflang="x-default" href="${cleanUrl}">`;
+
     const tags = `
 <title>${escapeHtml(title)}</title>
 <meta name="description" content="${escapeHtml(description)}">
-<link rel="canonical" href="${escapeHtml(url.href.split('?')[0])}">
+<link rel="canonical" href="${cleanUrl}">
+${hreflangTags}
 <meta property="og:title" content="${escapeHtml(title)}">
 <meta property="og:description" content="${escapeHtml(description)}">
 <meta property="og:image" content="${escapeHtml(image)}">
 <meta property="og:image:secure_url" content="${escapeHtml(image)}">
 <meta property="og:type" content="${isProduct ? 'product' : 'website'}">
-<meta property="og:url" content="${escapeHtml(url.href.split('?')[0])}">
+<meta property="og:url" content="${cleanUrl}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escapeHtml(title)}">
 <meta name="twitter:description" content="${escapeHtml(description)}">
@@ -172,15 +198,21 @@ ${jsonLd}`;
 
     html = html.replace(/<head[^>]*>/i, match => `${match}\n${tags}\n`);
 
-    // 3. YENİLİK: Crawler için sayfa içine metin enjekte et (Googlebot sadece meta taglere değil, HTML body içine de bakar)
+    // 6. YENİLİK: AEO (Answer Engine Optimization) İçin Anlamsal (Semantic) İçerik
+    // ChatGPT, Perplexity ve Google AI Overviews metinleri buradan çekecek!
     const semanticHtml = `
       <div id="seo-crawler-content" style="display:none;" aria-hidden="true">
         <h1>${escapeHtml(title)}</h1>
-        <p>${escapeHtml(description)}</p>
+        <p><strong>Platform:</strong> Kıbrıs Bazar - Kuzey Kıbrıs'ın %0 Komisyonlu Yerel Dijital Pazaryeri</p>
+        <p><strong>Lokasyon:</strong> Kuzey Kıbrıs, KKTC (Girne, Lefkoşa, Gazimağusa)</p>
+        <p><strong>Satıcı:</strong> ${escapeHtml(storeNameContext)}</p>
+        <p><strong>Açıklama:</strong> ${escapeHtml(description)}</p>
         ${priceText}
         <img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" />
+        <p>Ürün veya mağaza ile doğrudan WhatsApp üzerinden iletişime geçebilirsiniz.</p>
       </div>
     `;
+    
     html = html.replace('</body>', `${semanticHtml}\n</body>`);
 
     return new Response(html, {
@@ -188,7 +220,6 @@ ${jsonLd}`;
       headers: { "Content-Type": "text/html; charset=utf-8" }
     });
   } catch (error) {
-    // Firebase patlarsa, site göçmesin; normal SPA versin
     console.error("SEO Bot Error:", error);
     return await context.next(); 
   }
